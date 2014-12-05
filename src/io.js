@@ -73,7 +73,18 @@
 		fs.writeFileSync (filename, content);
 	}
 
+	function savePage (path, title, content) {
+		if (!path || !title || !content) {
+			throw Error ('processPage requires a path, title, and content.');
+		}
+
+		createPostDirectory (path);
+
+		writeFile (path + '/' + title, content);
+	}
+
 	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;
-	module.exports.createPostDirectory		 	= createPostDirectory;
 	module.exports.createPostFilename			 	= createPostFilename;
+	module.exports.savePage									= savePage;
+	module.exports.readFile									= readFile;
 } ());
