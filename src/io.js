@@ -31,7 +31,7 @@
 
 		dateArray = date.split (' ');
 
-		return (dateArray [0] + '-' + newTitle + '.html').toLowerCase ();
+		return (dateArray [0] + '-' + newTitle).toLowerCase ();
 	}
 
 	function getFileList (path) {
@@ -85,7 +85,7 @@
 
 		createPostDirectory (page.path);
 
-		writeFile (page.path + '/' + page.filename, page.output);
+		writeFile (page.path + '/' + page.filename + '.html', page.output);
 	}
 
 	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;

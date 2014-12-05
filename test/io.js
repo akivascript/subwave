@@ -14,7 +14,7 @@
 				title = "This Is the Title of a Post";
 				date = "2014-08-20 19:54";
 
-				expected = "2014-08-20-this-is-the-title-of-a-post.html";
+				expected = "2014-08-20-this-is-the-title-of-a-post";
 				actual = io.createPostFilename (title, date);
 
 				expect (actual).to.equal (expected);

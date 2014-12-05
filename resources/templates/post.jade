@@ -3,3 +3,8 @@ html(lang="en")
 	include ./includes/head.jade
 	body
 		div.col-lg-4.col-md-7.col-sm-6!= content
+		if previous
+			div.col-lg-4.col-md-7.col-sm-6!= previous.title
+		if next
+			div.col-lg-4.col-md-7.col-sm-6!= next.title
+
