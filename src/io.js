@@ -1,5 +1,4 @@
 (function () {
-
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 
@@ -45,7 +44,13 @@
 		fileList = fs.readdirSync (path);
 
 		return fileList.filter (function (file) {
-			return file.search (/^(\w|\d|-)+(.md)$/);
+			var result = file.search (/((\w|\d|-)+\.md)/);
+
+			if (result === -1) {
+				return false;
+			}
+
+			return true;
 		});
 	}
 
@@ -73,18 +78,19 @@
 		fs.writeFileSync (filename, content);
 	}
 
-	function savePage (path, title, content) {
-		if (!path || !title || !content) {
-			throw Error ('processPage requires a path, title, and content.');
+	function savePage (page) {
+		if (!page) {
+			throw Error ('savePage requires a page.');
 		}
 
-		createPostDirectory (path);
+		createPostDirectory (page.path);
 
-		writeFile (path + '/' + title, content);
+		writeFile (page.path + '/' + page.filename, page.output);
 	}
 
 	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;
 	module.exports.createPostFilename			 	= createPostFilename;
-	module.exports.savePage									= savePage;
+	module.exports.getFileList							= getFileList;
 	module.exports.readFile									= readFile;
+	module.exports.savePage									= savePage;
 } ());
