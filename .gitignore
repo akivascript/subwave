@@ -1,4 +1,5 @@
 node_modules/**/build
 /resources/inbox/
 /resources/public/
+/resources/data/
 /test/files/

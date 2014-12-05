@@ -92,5 +92,6 @@
 	module.exports.createPostFilename			 	= createPostFilename;
 	module.exports.getFileList							= getFileList;
 	module.exports.readFile									= readFile;
+	module.exports.writeFile								= writeFile;
 	module.exports.savePage									= savePage;
 } ());

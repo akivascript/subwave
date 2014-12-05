@@ -6,6 +6,6 @@ html(lang="en")
 			div.page-header
 				div.row
 					div.col-lg-4.col-md-7.col-sm-6.text-center Archives
-					each post in posts
+					each entry in entries
 						div.row
-						div.col-lg-4.col-md-7.col-sm-6= post.title / post.date
+							div.col-lg-4.col-md-7.col-sm-6 #{entry.title} / #{entry.date}

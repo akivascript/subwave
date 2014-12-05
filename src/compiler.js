@@ -3,21 +3,23 @@
 
 	var jade = require ('jade');
 	var io = require ('./io');
+	var arc = require ('./archives');
 	var md = require ('markdown').markdown;
 
-	var parentDir = 'resources/public/';
-	var postsPath = parentDir + 'posts/';
+	var siteFilePath = 'resources/public/';
+	var postsPath = 'posts/';
+	var postsFilePath = siteFilePath + postsPath;
 	var templatesPath = 'resources/templates/';
 
-	function parsePage (page) {
+	function processPage (page) {
 		var content, compiler, pagedata, matches,
 			filename, output, path, pattern, srcfile, template;
 		
 		if (!page) {
-			throw new Error ("parsePage requires a page.");
+			throw new Error ("processPage requires a page.");
 		}
 
-		pattern = /(\{(?:.|\n)+\})(?:\n)+((.|\n)+)/;
+		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
 		matches = page.match (pattern);
 
 		if (!matches || matches.length === 0) {
@@ -38,11 +40,15 @@
 		if (page.type === "post") {
 			template = templatesPath + 'post.jade';
 			page.filename = io.createPostFilename (pagedata.title, pagedata.date);
-			page.path = io.createPostDirectoryPath (pagedata.date, postsPath);
+			page.path = io.createPostDirectoryPath (pagedata.date, postsFilePath);
 		} else if (page.type === "page") {
 			template = templatesPath + 'page.jade';
-			//page.path = io.createPageDirectoryPath (pagesPath);
-			//page.filename = io.createPageFilename (pagedata.title);
+		} else if (page.type === "archives") {
+			template = templatesPath + 'archives.jade';
+			page.filename = 'archives.html';
+			page.path = 'resources/public/';
+		} else {
+			throw new Error ('Unable to determine template type from page.');
 		}
 
 		compiler = jade.compileFile (template, { pretty: true });
@@ -52,26 +58,45 @@
 	}
 
 	function processDirectory (path) {
-		var fileList, file, pages = [];
+		var filelist, file, pages = [];
 
 		if (!path) {
 			throw new Error ('processDirectory requires an path.');
 		}
 
-		fileList = io.getFileList (path);
+		filelist = io.getFileList (path);
 
-		fileList.forEach (function (post) {
-			file = io.readFile (path + post);
+		filelist.forEach (function (entry) {
+			file = io.readFile (path + entry);
 
-			pages.push (parsePage (file));
+			pages.push (processPage (file));
 		});
 
-		pages.forEach (function (page) {
-			io.savePage (page);
+		return pages;
+	}
+	
+	function commitCompile (archives, entries) {
+		archives = JSON.stringify (archives);
+
+		io.writeFile ('resources/data/archives.dat', archives);
+		io.savePage (processPage (archives));
+
+		entries.forEach (function (entry) {
+			io.savePage (entry);
 		});
 	}
 
-	processDirectory ('resources/inbox/');
+	function compile () {
+		var archives, entries, path;
 
-	module.exports.parsePage = parsePage;
+		path = ('resources/inbox/');
+		entries = processDirectory (path);
+		archives = arc.process (entries);
+
+		commitCompile (archives, entries, path);
+	}
+
+	compile ();
+
+	module.exports.processPage = processPage;
 } ());
