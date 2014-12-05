@@ -3,12 +3,10 @@
 
 	var jade = require ('jade');
 	var io = require ('./io');
-	var arc = require ('./archives');
+	var archive = require ('./archives');
+	var posts = require ('./posts');
 	var md = require ('markdown').markdown;
 
-	var siteFilePath = 'resources/public/';
-	var postsPath = 'posts/';
-	var postsFilePath = siteFilePath + postsPath;
 	var templatesPath = 'resources/templates/';
 
 	function processPage (page) {
@@ -38,21 +36,18 @@
 		page.content = content;
 
 		if (page.type === "post") {
-			template = templatesPath + 'post.jade';
-			page.filename = io.createPostFilename (pagedata.title, pagedata.date);
-			page.path = io.createPostDirectoryPath (pagedata.date, postsFilePath);
+			page.template = templatesPath + 'post.jade';
+
+			page = posts.process (page);
 		} else if (page.type === "page") {
-			template = templatesPath + 'page.jade';
+			page.template = templatesPath + 'page.jade';
 		} else if (page.type === "archives") {
-			template = templatesPath + 'archives.jade';
+			page.template = templatesPath + 'archives.jade';
 			page.filename = 'archives.html';
 			page.path = 'resources/public/';
 		} else {
 			throw new Error ('Unable to determine template type from page.');
 		}
-
-		compiler = jade.compileFile (template, { pretty: true });
-		page.output = compiler (page);
 
 		return page;
 	}
@@ -76,10 +71,8 @@
 	}
 	
 	function commitCompile (archives, entries) {
-		archives = JSON.stringify (archives);
-
-		io.writeFile ('resources/data/archives.dat', archives);
-		io.savePage (processPage (archives));
+		io.writeFile ('resources/data/archives.json', archives);
+		io.writeFile ('resources/public/archive.html', archives.output);
 
 		entries.forEach (function (entry) {
 			io.savePage (entry);
@@ -87,11 +80,21 @@
 	}
 
 	function compile () {
-		var archives, entries, path;
+		var archives, archivesCompiler, entriesCompiler, entries, path;
 
+		// TODO: Oof, this needs to be cleared up.
 		path = ('resources/inbox/');
 		entries = processDirectory (path);
-		archives = arc.process (entries);
+		archives = archive.process (entries);
+		archives = processPage (JSON.stringify (archives));
+		archivesCompiler = jade.compileFile (archives.template, { pretty: true });
+
+		entries.forEach (function (entry) {
+			entriesCompiler = jade.compileFile (entry.template, { pretty: true });
+			entry.output = entriesCompiler (entry);
+		});
+		
+		archives.output = archivesCompiler (archives);
 
 		commitCompile (archives, entries, path);
 	}

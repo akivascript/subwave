@@ -9,7 +9,8 @@
 
 		listing.title = entry.title;
 		listing.date = entry.date;
-		listing.url = entry.path + '/' + entry.filename;
+		listing.uri = entry.path + '/' + entry.filename + '.html';
+		listing.location = entry.location;
 
 		contains = archives.entries.filter (function (n) {
 			return JSON.stringify (n) === JSON.stringify (listing);
@@ -23,7 +24,7 @@
 	function process (entries) {
 		var contains, count, file, listing, page;
 
-		file = 'ressources/data/archives.dat';
+		file = 'resources/data/archives.json';
 
 		try {
 			archives = JSON.parse (io.readFile (file));
@@ -33,6 +34,31 @@
 				"entries": []
 			};
 		}
+
+		entries.forEach (function (entry, index, entries) {
+			var extension, next, previous;
+
+			extension = '.html';
+			next = entries [index + 1];
+			previous =  entries [index - 1];
+
+			if (previous) {
+				entry.previous = {};
+				
+				entry.previous.title = previous.title;
+				entry.previous.date = previous.date;
+				entry.previous.uri = previous.path + '/' + previous.filename + '.html';
+			}
+
+			if (next) {
+				entry.next = {};
+				
+				entry.next.title = next.title;
+				entry.next.date = next.date;
+				entry.next.uri = next.path + '/' + next.filename;
+				entry.next = next.path + '/' + next.filename + '.html';
+			}
+		});
 
 		entries.forEach (addEntries);
 
