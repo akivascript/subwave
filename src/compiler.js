@@ -5,7 +5,7 @@
 	var io = require ('./io');
 
 	var parentDir = 'resources/public/';
-	var postsPath = parentDir + 'posts/'
+	var postsPath = parentDir + 'posts/';
 	
 	function parsePage (filename) {
 		var body, frontMatter, matches, outputName, outputPath, pattern, srcFile;
