@@ -32,7 +32,7 @@
 
 		dateArray = date.split (' ');
 
-		return (dateArray [0] + '-' + newTitle + '.md').toLowerCase ();
+		return (dateArray [0] + '-' + newTitle + '.html').toLowerCase ();
 	}
 
 	function getFileList (path) {

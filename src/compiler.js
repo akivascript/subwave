@@ -42,4 +42,6 @@
 		
 		io.savePage (path, outfile, output);
 	}
+
+	//parsePage ('resources/inbox/new_post.md');
 } ());
