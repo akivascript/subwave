@@ -37,6 +37,7 @@
 			};
 		}
 
+<<<<<<< HEAD
 		return archives;
 	}
 
@@ -57,6 +58,12 @@
 		entries.forEach (function (entry, index, entries) {
 			var next, previous;
 
+=======
+		entries.forEach (function (entry, index, entries) {
+			var extension, next, previous;
+
+			extension = '.html';
+>>>>>>> 56c3b078ef3c66349c6966f236371caf035feb0c
 			next = entries [index + 1];
 			previous =  entries [index - 1];
 
@@ -73,9 +80,18 @@
 				
 				entry.next.title = next.title;
 				entry.next.date = next.date;
+<<<<<<< HEAD
 				entry.next.uri = next.path + '/' + next.filename + '.html';
 			}
 		});
+=======
+				entry.next.uri = next.path + '/' + next.filename;
+				entry.next = next.path + '/' + next.filename + '.html';
+			}
+		});
+
+		entries.forEach (addEntries);
+>>>>>>> 56c3b078ef3c66349c6966f236371caf035feb0c
 
 		return archives;
 	}

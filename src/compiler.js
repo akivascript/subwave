@@ -86,6 +86,7 @@
 		path = ('resources/inbox/');
 
 		entries = processDirectory (path);
+
 		archives = archive.getArchives ();
 		archives = archive.process (entries, archives);
 		archives = processPage (JSON.stringify (archives));
@@ -96,6 +97,8 @@
 			entriesCompiler = jade.compileFile (entry.template, { pretty: true });
 			entry.output = entriesCompiler (entry);
 		});
+		
+		archives.output = archivesCompiler (archives);
 
 		commitCompile (archives, entries, path);
 	}
