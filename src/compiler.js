@@ -1,11 +1,11 @@
 (function () {
 	'use strict';
 
-	var jade = require ('jade');
-	var io = require ('./io');
 	var archive = require ('./archives');
-	var posts = require ('./posts');
-	var md = require ('markdown').markdown;
+	var io 			= require ('./io');
+	var jade 		= require ('jade');
+	var md 			= require ('markdown').markdown;
+	var posts 	= require ('./posts');
 
 	var templatesPath = 'resources/templates/';
 
@@ -88,8 +88,9 @@
 		entries = processDirectory (path);
 
 		archives = archive.getArchives ();
-		archives = archive.process (entries, archives);
+		archives = archive.process (entries);
 		archives = processPage (JSON.stringify (archives));
+
 		archivesCompiler = jade.compileFile (archives.template, { pretty: true });
 		archives.output = archivesCompiler (archives);
 

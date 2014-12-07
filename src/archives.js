@@ -2,16 +2,21 @@
 	'use strict';
 
 	var jade = require ('jade');
-	var archives = {};
+	
+	var archives = {
+		type: "archives",
+		entries: []
+	};
 
 	function addEntry (entry) {
 		var contains, listing = {};
 
-		listing.title = entry.title;
-		listing.date = entry.date;
-		listing.uri = entry.path + '/' + entry.filename + '.html';
-		listing.location = entry.location;
+		listing.title			= entry.title;
+		listing.date 			= entry.date;
+		listing.uri 			= entry.path + '/' + entry.filename + '.html';
+		listing.location 	= entry.location;
 
+		// Avoids duplicating entries into the table of contents
 		contains = archives.entries.filter (function (n) {
 			return JSON.stringify (n) === JSON.stringify (listing);
 		});
@@ -19,8 +24,6 @@
 		if (!contains || contains.length === 0) {
 			archives.entries.push (listing);
 		}
-
-		return archives.entries.length - 1;
 	}
 
 	function getArchives () {
@@ -29,57 +32,54 @@
 		file = 'resources/data/archives.json';
 
 		try {
-			archives = JSON.parse (io.readFile (file));
+			archives.entries = JSON.parse (io.readFile (file));
 		} catch (e) {
-			archives = {
-				"type": "archives",
-				"entries": []
-			};
+			// If there's no archive.json file, we'll start with 
+			// a new, empty one. In other words, nothing to do here.
 		}
 
 		return archives;
 	}
 
-	function process (entries, archives) {
-		var contains, count, listing, page;
+	function process (entries) {
+		var index;
 
 		if (!entries) {
 			throw new Error ('process needs entries.');
 		}
 
-		if (!archives) {
-			archives = getArchives ();
-		}
-
-		// Adds each new entry to the archives vector
 		entries.forEach (addEntry);
 
-		entries.forEach (function (entry, index, entries) {
+		index = archives.entries.length - entries.length;
+		
+		entries.forEach (function (entry) {
 			var next, previous;
 
-			next = entries [index + 1];
-			previous =  entries [index - 1];
+			next 			= archives.entries [index + 1];
+			previous 	= archives.entries [index - 1];
 
 			if (previous) {
 				entry.previous = {};
-				
-				entry.previous.title = previous.title;
-				entry.previous.date = previous.date;
-				entry.previous.uri = previous.path + '/' + previous.filename + '.html';
+
+				entry.previous.title 	= previous.title;
+				entry.previous.date 	= previous.date;
+				entry.previous.uri 		= previous.uri;
 			}
 
 			if (next) {
 				entry.next = {};
-				
-				entry.next.title = next.title;
-				entry.next.date = next.date;
-				entry.next.uri = next.path + '/' + next.filename + '.html';
+
+				entry.next.title 			= next.title;
+				entry.next.date 			= next.date;
+				entry.next.uri 				= next.uri;
 			}
+
+			index = index + 1;
 		});
 
 		return archives;
 	}
 
-	module.exports.process = process;
-	module.exports.getArchives = getArchives;
+	module.exports.process 			= process;
+	module.exports.getArchives 	= getArchives;
 } ());

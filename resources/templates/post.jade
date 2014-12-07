@@ -4,6 +4,12 @@ html(lang="en")
 	body
 		div.col-lg-4.col-md-7.col-sm-6!= content
 		if previous
-			div.col-lg-4.col-md-7.col-sm-6!= previous.title
+			div.col-lg-4.col-md-7.col-sm-6 
+				| Previous: 
+				// Temporary while using file://
+				a(href='../../' + previous.uri) #{previous.title}
 		if next
-			div.col-lg-4.col-md-7.col-sm-6!= next.title
+			div.col-lg-4.col-md-7.col-sm-6 
+				| Next: 
+				// Temporary while using file://
+				a(href='../../' + next.uri) #{next.title}

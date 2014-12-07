@@ -12,10 +12,6 @@
 		dateArray = date.split (' ');
 		newPath = dateArray [0].replace (/(\d{4})-(\d{2})-\d{2}/, '$1/$2');
 
-		if (path) {
-			return path + newPath;
-		}
-
 		return newPath;
 	}
 
@@ -79,13 +75,15 @@
 	}
 
 	function savePage (page) {
+		var filePath = 'resources/public/posts/';
+
 		if (!page) {
 			throw Error ('savePage requires a page.');
 		}
 
-		createPostDirectory (page.path);
+		createPostDirectory (filePath + page.path);
 
-		writeFile (page.path + '/' + page.filename + '.html', page.output);
+		writeFile (filePath + page.path + '/' + page.filename + '.html', page.output);
 	}
 
 	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;
