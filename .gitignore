@@ -3,4 +3,6 @@ node_modules/**/build
 /resources/public/
 /resources/data/
 /resources/tmp/
+/public/*.html
+/public/posts/*
 /test/files/

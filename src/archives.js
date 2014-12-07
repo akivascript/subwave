@@ -1,7 +1,8 @@
 (function () {
 	'use strict';
 
-	var jade = require ('jade');
+	var io		= require ('./io');
+	var jade 	= require ('jade');
 	
 	var archives = {
 		type: "archives",
@@ -34,8 +35,8 @@
 		try {
 			archives.entries = JSON.parse (io.readFile (file));
 		} catch (e) {
-			// If there's no archive.json file, we'll start with 
-			// a new, empty one. In other words, nothing to do here.
+			// If no archives.json, assume we're starting from scratch
+			// so do nothing about the lack of that file existing
 		}
 
 		return archives;

@@ -44,7 +44,7 @@
 		} else if (page.type === "archives") {
 			page.template = templatesPath + 'archives.jade';
 			page.filename = 'archives.html';
-			page.path = 'resources/public/';
+			page.path = io.publicPath;
 		} else {
 			throw new Error ('Unable to determine template type from page.');
 		}
@@ -56,7 +56,7 @@
 		var filelist, file, pages = [];
 
 		if (!path) {
-			throw new Error ('processDirectory requires an path.');
+			throw new Error ('processDirectory requires a path.');
 		}
 
 		filelist = io.getFileList (path);
@@ -82,8 +82,8 @@
 	function compile () {
 		var archives, archivesCompiler, entriesCompiler, entries, path;
 
-		// TODO: Oof, this needs to be cleared up.
-		path = ('resources/inbox/');
+		// TODO: Oof, this needs to be cleared up. From here...
+		path = io.inboxPath;
 
 		entries = processDirectory (path);
 
@@ -100,6 +100,7 @@
 		});
 		
 		archives.output = archivesCompiler (archives);
+		// ...to here.
 
 		commitCompile (archives, entries, path);
 	}

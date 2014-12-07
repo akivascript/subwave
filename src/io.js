@@ -1,7 +1,15 @@
 (function () {
+	'use strict';
+
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 
+	var	resourcesPath =	'resources/';
+	var	inboxPath =			resourcesPath + 'inbox/';
+	var	archivePath = 	resourcesPath + 'archive/';
+	var	publicPath = 		'public/';
+	var	postsPath = 		publicPath + 'posts/';
+	
 	function createPostDirectoryPath (date, path) {
 		var newPath, dateArray;
 
@@ -55,6 +63,8 @@
 			throw Error ('createPostDirectory requires both a path');
 		}
 
+		// mkdirp allows us to create directory structures in one go.
+		// e.g. '2014/12/'
 		md.mkdirp.sync (path);
 	}
 
@@ -75,15 +85,23 @@
 	}
 
 	function savePage (page) {
-		var filePath = 'resources/public/posts/';
+		var path;
 
 		if (!page) {
 			throw Error ('savePage requires a page.');
 		}
 
-		createPostDirectory (filePath + page.path);
+		if (page.type === "post") {
+			path = postsPath;
+		} else if (page.type === "page" || page.type === "archives") {
+			path = publicPath;
+		} else {
+			throw new Error ('Unable to determine page type.');
+		}
 
-		writeFile (filePath + page.path + '/' + page.filename + '.html', page.output);
+		path = path + page.path;
+
+		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
 
 	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;
@@ -92,4 +110,9 @@
 	module.exports.readFile									= readFile;
 	module.exports.writeFile								= writeFile;
 	module.exports.savePage									= savePage;
+
+	module.exports.inboxPath								= inboxPath;
+	module.exports.archivePath							= archivePath;
+	module.exports.publicPath								= publicPath;
+	module.exports.postsPath								= postsPath;
 } ());
