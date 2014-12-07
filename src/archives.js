@@ -1,29 +1,32 @@
 (function () {
 	'use strict';
 
-	var io		= require ('./io');
-	var jade 	= require ('jade');
+	var jade 					= require ('jade');
+	var sub_compiler 	= require ('./compiler');
+	var sub_io				= require ('./io');
+	var sub_posts 		= require ('./posts');
 	
 	var archives = {
 		type: "archives",
-		entries: []
+		title: "Archives",
+		posts: []
 	};
 
-	function addEntry (entry) {
+	function addPost (post) {
 		var contains, listing = {};
 
-		listing.title			= entry.title;
-		listing.date 			= entry.date;
-		listing.uri 			= entry.path + '/' + entry.filename + '.html';
-		listing.location 	= entry.location;
+		listing.title			= post.title;
+		listing.date 			= post.date;
+		listing.uri 			= post.path + '/' + post.filename + '.html';
+		listing.location 	= post.location;
 
 		// Avoids duplicating entries into the table of contents
-		contains = archives.entries.filter (function (n) {
+		contains = archives.posts.filter (function (n) {
 			return JSON.stringify (n) === JSON.stringify (listing);
 		});
 
 		if (!contains || contains.length === 0) {
-			archives.entries.push (listing);
+			archives.posts.push (listing);
 		}
 	}
 
@@ -33,7 +36,7 @@
 		file = 'resources/data/archives.json';
 
 		try {
-			archives.entries = JSON.parse (io.readFile (file));
+			archives.posts = JSON.parse (sub_io.readFile (file));
 		} catch (e) {
 			// If no archives.json, assume we're starting from scratch
 			// so do nothing about the lack of that file existing
@@ -42,45 +45,6 @@
 		return archives;
 	}
 
-	function process (entries) {
-		var index;
-
-		if (!entries) {
-			throw new Error ('process needs entries.');
-		}
-
-		entries.forEach (addEntry);
-
-		index = archives.entries.length - entries.length;
-		
-		entries.forEach (function (entry) {
-			var next, previous;
-
-			next 			= archives.entries [index + 1];
-			previous 	= archives.entries [index - 1];
-
-			if (previous) {
-				entry.previous = {};
-
-				entry.previous.title 	= previous.title;
-				entry.previous.date 	= previous.date;
-				entry.previous.uri 		= previous.uri;
-			}
-
-			if (next) {
-				entry.next = {};
-
-				entry.next.title 			= next.title;
-				entry.next.date 			= next.date;
-				entry.next.uri 				= next.uri;
-			}
-
-			index = index + 1;
-		});
-
-		return archives;
-	}
-
-	module.exports.process 			= process;
-	module.exports.getArchives 	= getArchives;
+	module.exports.addPost = addPost;
+	module.exports.getArchives = getArchives;
 } ());

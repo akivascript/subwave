@@ -6,8 +6,8 @@ html(lang="en")
 			div.page-header
 				div.row
 					div.col-xs-12.text-center Archives
-						each entry in entries
+						each post in posts
 							div.row
 								div.col-lg-6.col-md-6.col-sm-6.text-left
-									a(href='posts/' + entry.uri) #{entry.title} 
-								div.col-lg-6.col-md-6.col-sm-6.text-right= entry.date
+									a(href='posts/' + post.uri) #{post.title} 
+								div.col-lg-6.col-md-6.col-sm-6.text-right= post.date

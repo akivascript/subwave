@@ -1,8 +1,9 @@
 node_modules/**/build
-/resources/inbox/
-/resources/public/
-/resources/data/
-/resources/tmp/
-/public/*.html
-/public/posts/*
-/test/files/
+public/*.html
+public/posts/
+resources/archive/
+resources/data/
+resources/inbox/
+resources/public/
+resources/tmp/
+test/files/

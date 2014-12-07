@@ -4,13 +4,13 @@
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 
-	var	resourcesPath =	'resources/';
-	var	inboxPath =			resourcesPath + 'inbox/';
-	var	archivePath = 	resourcesPath + 'archive/';
-	var	publicPath = 		'public/';
-	var	postsPath = 		publicPath + 'posts/';
-	
-	function createPostDirectoryPath (date, path) {
+	var resourcesPath		= 'resources/';
+	var inboxPath 			=	resourcesPath + 'inbox/';
+	var archivePath 		= resourcesPath + 'archive/';
+	var publicPath 			= 'public/';
+	var postsPath 			= publicPath + 'posts/';
+
+	function createPostDirectoryPathname (date, path) {
 		var newPath, dateArray;
 
 		if (!date) {
@@ -103,16 +103,17 @@
 
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
+	
+	module.exports.createPostDirectoryPathname = createPostDirectoryPathname;
+	module.exports.createPostDirectory = createPostDirectory;
+	module.exports.createPostFilename = createPostFilename;
+	module.exports.getFileList = getFileList;
+	module.exports.readFile = readFile;
+	module.exports.writeFile = writeFile;
+	module.exports.savePage = savePage;
 
-	module.exports.createPostDirectoryPath 	= createPostDirectoryPath;
-	module.exports.createPostFilename			 	= createPostFilename;
-	module.exports.getFileList							= getFileList;
-	module.exports.readFile									= readFile;
-	module.exports.writeFile								= writeFile;
-	module.exports.savePage									= savePage;
-
-	module.exports.inboxPath								= inboxPath;
-	module.exports.archivePath							= archivePath;
-	module.exports.publicPath								= publicPath;
-	module.exports.postsPath								= postsPath;
+	module.exports.inboxPath = inboxPath;
+	module.exports.archivePath = archivePath;
+	module.exports.publicPath = publicPath;
+	module.exports.postsPath = postsPath;
 } ());

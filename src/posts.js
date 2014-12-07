@@ -1,7 +1,8 @@
 (function () {
 	'use strict';
 
-	var io = require ('./io');
+	var sub_io	= require ('./io');
+	var jade 		= require ('jade');
 
 	var archivesFilePath	= 'resources/archives/';
 	var siteFilePath 			= 'resources/public/';
@@ -12,17 +13,4 @@
 	function movePost (filename) {
 		
 	}
-
-	function process (post) {
-		var archivePath;
-		
-		archivePath 	= io.createPostDirectoryPath (post.date, archivesFilePath + postsPath);
-		post.filename	= io.createPostFilename (post.title, post.date);
-		post.path 		= io.createPostDirectoryPath (post.date, postsFilePath);
-		post.location = archivePath + '/' + post.filename + '.md';
-
-		return post;
-	}
-	
-	module.exports.process = process;
 } ());
