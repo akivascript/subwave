@@ -1,9 +1,9 @@
 (function () {
 	'use strict';
 
-	var jade 			= require ('jade');
-	var arch 			= require ('./archives');
-	var io 				= require ('./io');
+	var jade = require ('jade');
+	var arch = require ('./archives');
+	var io = require ('./io');
 	var processor = require ('./processor');
 
 	function commitCompile (archives, posts) {
@@ -41,14 +41,14 @@
 	function compileArchives (archives) {
 		var compiler;
 
-		compiler 				= jade.compileFile (archives.template, { pretty: true });
+		compiler = jade.compileFile (archives.template, { pretty: true });
 		archives.output	= compiler (archives);
 	}
 
 	function compilePost (post) {
 		var compiler;
 
-		compiler 		= jade.compileFile (post.template, { pretty: true });
+		compiler = jade.compileFile (post.template, { pretty: true });
 		post.output = compiler (post);
 	}
 

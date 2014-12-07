@@ -1,10 +1,10 @@
 (function () {
 	'use strict';
 
-	var arch	= require ('./archives');
-	var comp	= require ('./compiler');
-	var io		= require ('./io');
-	var md 		= require ('markdown').markdown;
+	var arch = require ('./archives');
+	var comp = require ('./compiler');
+	var io = require ('./io');
+	var md = require ('markdown').markdown;
 
 	var templatesPath = 'resources/templates/';
 
@@ -33,15 +33,15 @@
 		posts.forEach (function (post) {
 			var next, nextPost, previous, prevPost;
 		
-			next 			= archives.posts [idx + 1];
-			previous 	= archives.posts [idx - 1];
+			next = archives.posts [idx + 1];
+			previous = archives.posts [idx - 1];
 
 			if (previous) {
 				post.previous = {};
 
 				post.previous.title	= previous.title;
-				post.previous.date 	= previous.date;
-				post.previous.uri 	= previous.uri;
+				post.previous.date = previous.date;
+				post.previous.uri = previous.uri;
 
 				// Although this is the previous post relative to the current one,
 				// the current one is next relative to the previous one.
@@ -53,8 +53,8 @@
 					prevPost.previous = {};
 
 					prevPost.previous.title = prevPrevPost.title;
-					prevPost.previous.date 	= prevPrevPost.date;
-					prevPost.previous.uri		= prevPrevPost.uri;
+					prevPost.previous.date = prevPrevPost.date;
+					prevPost.previous.uri	= prevPrevPost.uri;
 				}
 
 				comp.compilePost (prevPost);
@@ -66,9 +66,9 @@
 			if (next) {
 				post.next = {};
 
-				post.next.title			= next.title;
-				post.next.date 			= next.date;
-				post.next.uri 			= next.uri;
+				post.next.title	= next.title;
+				post.next.date = next.date;
+				post.next.uri = next.uri;
 
 				// See previous comment about the 'oppositeness'.
 				nextPost = processPostNav ("previous", post, next.location);
@@ -79,8 +79,8 @@
 					nextPost.previous = {};
 
 					nextPost.previous.title = nextNextPost.title;
-					nextPost.previous.date 	= nextNextPost.date;
-					nextPost.previous.uri		= nextNextPost.uri;
+					nextPost.previous.date = nextNextPost.date;
+					nextPost.previous.uri	= nextNextPost.uri;
 				}
 
 				comp.compilePost (nextPost);
@@ -128,9 +128,9 @@
 			throw new Error ("The file isn't the correct format.");
 		}
 
-		pagedata 	= JSON.parse (matches [1]);
-		content 	= md.toHTML (matches [2]);
-		page 			= {};
+		pagedata = JSON.parse (matches [1]);
+		content = md.toHTML (matches [2]);
+		page = {};
 
 		for (var attr in pagedata) {
 			page [attr] = pagedata [attr];
@@ -159,8 +159,8 @@
 		var archivePath;
 		
 		post.filename	= io.createPostFilename (post.title, post.date);
-		post.path 		= io.createPostDirectoryPathname (post.date, io.postsPath);
-		archivePath 	= io.createPostDirectoryPathname (post.date, io.archivePath + io.postsPath);
+		post.path = io.createPostDirectoryPathname (post.date, io.postsPath);
+		archivePath = io.createPostDirectoryPathname (post.date, io.archivePath + io.postsPath);
 		post.location = archivePath + '/' + post.filename + '.md';
 
 		return post;

@@ -1,10 +1,10 @@
 (function () {
 	'use strict';
 
-	var jade 					= require ('jade');
-	var sub_compiler 	= require ('./compiler');
-	var sub_io				= require ('./io');
-	var sub_posts 		= require ('./posts');
+	var jade = require ('jade');
+	var sub_compiler = require ('./compiler');
+	var sub_io = require ('./io');
+	var sub_posts	= require ('./posts');
 	
 	var archives = {
 		type: "archives",
@@ -15,10 +15,10 @@
 	function addPost (post) {
 		var contains, listing = {};
 
-		listing.title			= post.title;
-		listing.date 			= post.date;
-		listing.uri 			= post.path + '/' + post.filename + '.html';
-		listing.location 	= post.location;
+		listing.title	= post.title;
+		listing.date = post.date;
+		listing.uri	= post.path + '/' + post.filename + '.html';
+		listing.location = post.location;
 
 		// Avoids duplicating entries into the table of contents
 		contains = archives.posts.filter (function (n) {

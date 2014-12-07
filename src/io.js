@@ -4,11 +4,11 @@
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 
-	var resourcesPath		= 'resources/';
-	var inboxPath 			=	resourcesPath + 'inbox/';
-	var archivePath 		= resourcesPath + 'archive/';
-	var publicPath 			= 'public/';
-	var postsPath 			= publicPath + 'posts/';
+	var resourcesPath	= 'resources/';
+	var inboxPath	= resourcesPath + 'inbox/';
+	var archivePath = resourcesPath + 'archive/';
+	var publicPath = 'public/';
+	var postsPath = publicPath + 'posts/';
 
 	function createPostDirectoryPathname (date, path) {
 		var newPath, dateArray;
