@@ -6,20 +6,9 @@
 	var io = require ('./io');
 	var processor = require ('./processor');
 
-	function commitCompile (archives, posts) {
-		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
-		io.writeFile (archives.path + archives.filename, archives.output);
-
-		posts.forEach (function (post) {
-			io.createPostDirectory (io.postsPath + post.path);
-			io.savePage (post);
-		});
-	}
-
 	function compile () {
 		var archives, entriesCompiler, posts, path;
 
-		// TODO: Oof, this needs to be cleared up. From here...
 		path = io.inboxPath;
 
 		posts = processor.processDirectory (path);
@@ -28,18 +17,25 @@
 		archives = processor.processArchives (posts, archives);
 		archives = processor.processPage (JSON.stringify (archives));
 
+		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
+
 		compileArchives (archives);
+
+		io.writeFile (archives.path + archives.filename, archives.output);
 
 		posts.forEach (function (post) {
 			compilePost (post);
-		});
-		// ...to here.
 
-		commitCompile (archives, posts, path);
+			io.createPostDirectory (io.postsPath + post.path);
+
+			io.savePage (post);
+		});
 	}
 
 	function compileArchives (archives) {
 		var compiler;
+
+		archives.posts.reverse (); // Reverse ordering so newest is at the top
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 		archives.output	= compiler (archives);

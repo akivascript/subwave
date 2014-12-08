@@ -2,9 +2,7 @@
 	'use strict';
 
 	var jade = require ('jade');
-	var sub_compiler = require ('./compiler');
-	var sub_io = require ('./io');
-	var sub_posts	= require ('./posts');
+	var io = require ('./io');
 	
 	var archives = {
 		type: "archives",
@@ -36,7 +34,7 @@
 		file = 'resources/data/archives.json';
 
 		try {
-			archives.posts = JSON.parse (sub_io.readFile (file));
+			archives.posts = JSON.parse (io.readFile (file));
 		} catch (e) {
 			// If no archives.json, assume we're starting from scratch
 			// so do nothing about the lack of that file existing
