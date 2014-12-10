@@ -15,7 +15,8 @@
 
 		listing.title	= post.title;
 		listing.date = post.date;
-		listing.location = post.location;
+		listing.filename = post.filename;
+		listing.path = post.path;
 
 		// Avoids duplicating entries into the table of contents
 		contains = archives.posts.filter (function (n) {

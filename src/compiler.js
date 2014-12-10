@@ -7,19 +7,21 @@
 	var processor = require ('./processor');
 
 	function compile () {
-		var archives, entriesCompiler, posts;
+		var archives, posts;
 
 		posts = processor.processDirectory (io.inboxPath);
 
 		archives = arch.getArchives ();
-		archives = processor.processArchives (posts, archives);
+
+		processor.processArchives (posts, archives);
+
 		archives = processor.processPage (JSON.stringify (archives));
 
 		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
 
 		compileArchives (archives);
 
-		io.writeFile (archives.path + archives.filename + '.md', archives.output);
+		io.savePage (archives);
 
 		posts.forEach (function (post) {
 			compilePost (post);
@@ -31,6 +33,8 @@
 	}
 
 	function compileFileWithJade (file, prettify) {
+		var compiler;
+
 		compiler = jade.compileFile (file.template, { pretty: prettify });
 
 		return compiler (file);

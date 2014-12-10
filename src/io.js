@@ -10,24 +10,33 @@
 	var publicPath = 'public/';
 	var postsPath = publicPath + 'posts/';
 
-	function createPostDirectoryPathname (date) {
+	function parseDate (date) {
+		var day, month, year;
+
+		year = date.getFullYear ();
+		month = ('0' + (date.getMonth () + 1)).slice (-2);
+		day = ('0' + date.getDate ()).slice (-2);
+
+		return [year, month, day];
+	}
+
+	function getPostDirectoryPathname (date) {
 		var newPath, dateArray;
 
-		dateArray = date.split (' ');
-		newPath = dateArray [0].replace (/(\d{4})-(\d{2})-\d{2}/, '$1/$2');
+		dateArray = parseDate (date);
+		newPath = dateArray [0] + '/' + dateArray [1] + '/';
 
 		return newPath;
 	}
 
-	function createPostFilename (title, date) {
-		var newTitle, dateArray, titleArray;
+	function getPostFilename (title, date) {
+		var dateArray, day, month, newTitle, titleArray, year;
 
 		titleArray = title.split (' ');
 		newTitle = titleArray.join ('-');
+		dateArray = parseDate (date);
 
-		dateArray = date.split (' ');
-
-		return (dateArray [0] + '-' + newTitle).toLowerCase ();
+		return (dateArray.join ('-') + '-' + newTitle).toLowerCase ();
 	}
 
 	function getFileList (path) {
@@ -71,17 +80,19 @@
 			throw {
 				type: 'Error',
 				message: 'Unable to determine page type.'
-			}
+			};
 		}
 
-		path = path + page.path;
+		if (page.path) {
+			path = path + page.path;
+		}
 
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
 	
-	module.exports.createPostDirectoryPathname = createPostDirectoryPathname;
+	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.createPostDirectory = createPostDirectory;
-	module.exports.createPostFilename = createPostFilename;
+	module.exports.getPostFilename = getPostFilename;
 	module.exports.getFileList = getFileList;
 	module.exports.readFile = readFile;
 	module.exports.writeFile = writeFile;

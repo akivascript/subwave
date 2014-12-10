@@ -2,14 +2,17 @@ doctype html
 html(lang="en")
 	include ./includes/head.jade
 	body
-		div.col-lg-4.col-md-7.col-sm-6!= content
-		if previous
-			div.col-lg-4.col-md-7.col-sm-6 
-				| Previous: 
-				// Temporary while using file://
-				a(href='../../' + previous.filename + '.html') #{previous.title}
-		if next
-			div.col-lg-4.col-md-7.col-sm-6 
-				| Next: 
-				// Temporary while using file://
-				a(href='../../' + next.filename + '.html') #{next.title}
+		div.container
+			div.row
+				div.col-xs-12!= content
+					div.row
+						if previous
+							div.col-md-6.text-right
+								| Previous: 
+								// Temporary while using file://
+								a(href='../../' + previous.path + previous.filename + '.html') #{previous.title}
+						if next
+							div.col-md-6.text-left
+								| Next: 
+								// Temporary while using file://
+								a(href='../../' + next.path + next.filename + '.html') #{next.title}

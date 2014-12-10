@@ -8,6 +8,14 @@
 
 	var templatesPath = 'resources/templates/';
 
+	function convertStringToDate (date) {
+		var pattern;
+
+		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
+
+		return new Date (date.replace (pattern, '$1T$2:00'));
+	}
+
 	function comparePosts (postA, postB) {
 		if (!postA || !postB) {
 			return false;
@@ -20,80 +28,6 @@
 		}
 
 		return false;
-	}
-
-	function processArchives (posts, archives) {
-		var idx;
-
-		posts.forEach (arch.addPost);
-
-		idx = archives.posts.length - posts.length;
-
-		// TODO: Refactor all this
-		posts.forEach (function (post) {
-			var next, nextPost, previous, prevPost;
-		
-			next = archives.posts [idx + 1];
-			previous = archives.posts [idx - 1];
-
-			if (previous) {
-				post.previous = {};
-
-				post.previous.title	= previous.title;
-				post.previous.date = previous.date;
-				post.previous.filename = previous.filename;
-
-				// Although this is the previous post relative to the current one,
-				// the current one is next relative to the previous one.
-				prevPost = processPostNav ("next", post, previous.filename);
-
-				if (archives.posts [idx - 2]) {
-					var prevPrevPost = archives.posts [idx - 2];
-
-					prevPost.previous = {};
-
-					prevPost.previous.title = prevPrevPost.title;
-					prevPost.previous.date = prevPrevPost.date;
-					prevPost.previous.filename	= prevPrevPost.filename;
-				}
-
-				comp.compilePost (prevPost);
-
-				io.createPostDirectory (io.postsPath + prevPost.path);
-				io.savePage (prevPost);
-			}
-
-			if (next) {
-				post.next = {};
-
-				post.next.title	= next.title;
-				post.next.date = next.date;
-				post.next.filename = next.filename;
-
-				console.log (post);
-				// See previous comment about the 'oppositeness'.
-				nextPost = processPostNav ("previous", post, next.filename);
-
-				if (archives.posts [idx - 2]) {
-					var nextNextPost = archives.posts [idx - 2];
-
-					nextPost.previous = {};
-
-					nextPost.previous.title = nextNextPost.title;
-					nextPost.previous.date = nextNextPost.date;
-					nextPost.previous.filename	= nextNextPost.filename;
-				}
-
-				comp.compilePost (nextPost);
-
-				io.createPostDirectory (io.postsPath + nextPost.path);
-				io.savePage (nextPost);
-			}
-
-			idx = idx + 1;
-		});
-
-		return archives;
 	}
 
 	function processDirectory (path) {
@@ -111,9 +45,9 @@
 	}
 
 	function processPage (page) {
-		var content, compiler, pagedata, matches,
-			filename, output, path, pattern, srcfile, template;
-		
+		var content, compiler, pagedata, matches, filename, output;
+		var path, pattern, srcfile, template;
+
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
 		matches = page.match (pattern);
 
@@ -121,58 +55,124 @@
 			throw {
 				type: 'Error',
 				message: 'The file isn\'t the correct format.'
-			}
+			};
 		}
 
 		pagedata = JSON.parse (matches [1]);
-		content = md.toHTML (matches [2]);
 		page = {};
 
 		for (var attr in pagedata) {
 			page [attr] = pagedata [attr];
 		}
 
-		page.content = content;
+		content = md.toHTML (matches [2]);
 
-		if (page.type === "post") {
+		if (content) {
+			page.content = content;
+		}
+
+		if (page.type === 'post') {
 			page.template = templatesPath + 'post.jade';
 
-			page = processPost (page);
-		} else if (page.type === "page") {
+			processPost (page);
+		} else if (page.type === 'page') {
 			page.template = templatesPath + 'page.jade';
-		} else if (page.type === "archives") {
+		} else if (page.type === 'archives') {
 			page.template = templatesPath + 'archives.jade';
-			page.filename = 'archives.html';
-			page.path = io.publicPath;
+			page.filename = 'archives';
 		} else {
 			throw {
 				type: 'Error',
 				message: 'Unable to determine template type from page.'
-			}
+			};
 		}
 
 		return page;
 	}
 
 	function processPost (post) {
-		post.filename	= io.createPostFilename (post.title, post.date);
-		post.path = io.createPostDirectoryPathname (post.date);
-
-		return post;
+		post.date = convertStringToDate (post.date);
+		post.filename	= io.getPostFilename (post.title, post.date);
+		post.path = io.getPostDirectoryPathname (post.date);
 	}
 
-	function processPostNav (type, currentPost, file) {
-		var post;
+	function processArchives (posts, archives) {
+		var idx;
 
-		post = io.readFile (io.archivePath + file);
-		post = processPage (post);
+		posts.forEach (arch.addPost);
 
-		post [type] = {};
-		post [type].title = currentPost.title;
-		post [type].date = currentPost.date;
-		post [type].filename = currentPost.filename;
+		idx = archives.posts.length - posts.length;
 
-		return post;
+		posts.forEach (function (post) {
+			var next, previous;
+		
+			next = archives.posts [idx + 1];
+			previous = archives.posts [idx - 1];
+
+			if (previous) {
+				processSiblingPosts (post, previous, archives, idx, 'previous');
+			}
+
+			if (next) {
+				processSiblingPosts (post, next, archives, idx, 'next');
+			}
+
+			idx = idx + 1;
+		});
+	}
+
+	function processSiblingPosts (post, sibling, archives, index, direction) {
+		var oppDirection, nextSibling;
+
+		if (direction === 'previous') {
+			oppDirection = 'next';
+			index = index - 2;
+		} else {
+			oppDirection = direction;
+			index = index + 2;
+		}
+
+		linkSibling (sibling, post, direction);
+
+		sibling = processSibling (post, direction);
+
+		linkSibling (post, sibling, oppDirection);
+
+		if (archives.posts [index]) {
+			nextSibling = archives.posts [index];
+
+			linkSibling (nextSibling, sibling, direction);
+		}
+
+		comp.compilePost (sibling);
+
+		io.createPostDirectory (io.postsPath + sibling.path);
+
+		io.savePage (sibling);
+	}
+
+	function processSibling (post, direction) {
+		var path, sibling;
+
+		path = io.getPostDirectoryPathname (post [direction].date);
+		sibling = io.readFile (io.archivePath + path + post [direction].filename + '.md');
+		sibling = processPage (sibling);
+
+		return sibling;
+	}
+
+	function linkSibling (sibling, post, direction)
+	{
+		var date;
+
+		date = new Date (sibling.date);
+
+		post [direction] = {};
+
+		post [direction].title = sibling.title;
+		post [direction].date = date;
+		post [direction].path = io.getPostDirectoryPathname (date);
+		post [direction].filename = sibling.filename;
 	}
 
 	module.exports.processArchives = processArchives;
