@@ -13,7 +13,7 @@
 	function addPost (post) {
 		var contains, listing = {};
 
-		listing.title	= post.title;
+		listing.title = post.title;
 		listing.date = post.date;
 		listing.filename = post.filename;
 		listing.path = post.path;

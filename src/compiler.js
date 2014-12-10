@@ -9,9 +9,8 @@
 	function compile () {
 		var archives, posts;
 
-		posts = processor.processDirectory (io.inboxPath);
-
 		archives = arch.getArchives ();
+		posts = processor.processDirectory (io.inboxPath, processor.processPage);
 
 		processor.processArchives (posts, archives);
 

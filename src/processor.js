@@ -30,7 +30,7 @@
 		return false;
 	}
 
-	function processDirectory (path) {
+	function processDirectory (path, func) {
 		var filelist, file, pages = [];
 
 		filelist = io.getFileList (path);
@@ -38,7 +38,7 @@
 		filelist.forEach (function (entry) {
 			file = io.readFile (path + entry);
 
-			pages.push (processPage (file));
+			pages.push (func (file));
 		});
 
 		return pages;
@@ -92,7 +92,7 @@
 
 	function processPost (post) {
 		post.date = convertStringToDate (post.date);
-		post.filename	= io.getPostFilename (post.title, post.date);
+		post.filename = io.getPostFilename (post.title, post.date);
 		post.path = io.getPostDirectoryPathname (post.date);
 	}
 

@@ -4,7 +4,7 @@
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 
-	var resourcesPath	= 'resources/';
+	var resourcesPath = 'resources/';
 	var inboxPath	= resourcesPath + 'inbox/';
 	var archivePath = resourcesPath + 'archive/';
 	var publicPath = 'public/';
@@ -91,15 +91,14 @@
 	}
 	
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
-	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.getFileList = getFileList;
+	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.readFile = readFile;
 	module.exports.writeFile = writeFile;
 	module.exports.savePage = savePage;
 
 	module.exports.inboxPath = inboxPath;
 	module.exports.archivePath = archivePath;
-	module.exports.publicPath = publicPath;
 	module.exports.postsPath = postsPath;
 } ());
