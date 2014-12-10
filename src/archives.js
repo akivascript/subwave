@@ -15,7 +15,6 @@
 
 		listing.title	= post.title;
 		listing.date = post.date;
-		listing.uri	= post.path + '/' + post.filename + '.html';
 		listing.location = post.location;
 
 		// Avoids duplicating entries into the table of contents

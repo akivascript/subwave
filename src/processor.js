@@ -9,6 +9,10 @@
 	var templatesPath = 'resources/templates/';
 
 	function comparePosts (postA, postB) {
+		if (!postA || !postB) {
+			return false;
+		}
+
 		if (postA.title === postB.title &&
 				postA.author === postB.author &&
 				postA.date === postB.date) {
@@ -20,10 +24,6 @@
 
 	function processArchives (posts, archives) {
 		var idx;
-
-		if (!posts) {
-			throw new Error ('process needs posts.');
-		}
 
 		posts.forEach (arch.addPost);
 
@@ -41,11 +41,11 @@
 
 				post.previous.title	= previous.title;
 				post.previous.date = previous.date;
-				post.previous.uri = previous.uri;
+				post.previous.filename = previous.filename;
 
 				// Although this is the previous post relative to the current one,
 				// the current one is next relative to the previous one.
-				prevPost = processPostNav ("next", post, previous.location);
+				prevPost = processPostNav ("next", post, previous.filename);
 
 				if (archives.posts [idx - 2]) {
 					var prevPrevPost = archives.posts [idx - 2];
@@ -54,7 +54,7 @@
 
 					prevPost.previous.title = prevPrevPost.title;
 					prevPost.previous.date = prevPrevPost.date;
-					prevPost.previous.uri	= prevPrevPost.uri;
+					prevPost.previous.filename	= prevPrevPost.filename;
 				}
 
 				comp.compilePost (prevPost);
@@ -68,10 +68,11 @@
 
 				post.next.title	= next.title;
 				post.next.date = next.date;
-				post.next.uri = next.uri;
+				post.next.filename = next.filename;
 
+				console.log (post);
 				// See previous comment about the 'oppositeness'.
-				nextPost = processPostNav ("previous", post, next.location);
+				nextPost = processPostNav ("previous", post, next.filename);
 
 				if (archives.posts [idx - 2]) {
 					var nextNextPost = archives.posts [idx - 2];
@@ -80,7 +81,7 @@
 
 					nextPost.previous.title = nextNextPost.title;
 					nextPost.previous.date = nextNextPost.date;
-					nextPost.previous.uri	= nextNextPost.uri;
+					nextPost.previous.filename	= nextNextPost.filename;
 				}
 
 				comp.compilePost (nextPost);
@@ -98,10 +99,6 @@
 	function processDirectory (path) {
 		var filelist, file, pages = [];
 
-		if (!path) {
-			throw new Error ('processDirectory requires a path.');
-		}
-
 		filelist = io.getFileList (path);
 
 		filelist.forEach (function (entry) {
@@ -117,15 +114,14 @@
 		var content, compiler, pagedata, matches,
 			filename, output, path, pattern, srcfile, template;
 		
-		if (!page) {
-			throw new Error ("processPage requires a page.");
-		}
-
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
 		matches = page.match (pattern);
 
 		if (!matches || matches.length === 0) {
-			throw new Error ("The file isn't the correct format.");
+			throw {
+				type: 'Error',
+				message: 'The file isn\'t the correct format.'
+			}
 		}
 
 		pagedata = JSON.parse (matches [1]);
@@ -149,19 +145,18 @@
 			page.filename = 'archives.html';
 			page.path = io.publicPath;
 		} else {
-			throw new Error ('Unable to determine template type from page.');
+			throw {
+				type: 'Error',
+				message: 'Unable to determine template type from page.'
+			}
 		}
 
 		return page;
 	}
 
 	function processPost (post) {
-		var archivePath;
-		
 		post.filename	= io.createPostFilename (post.title, post.date);
-		post.path = io.createPostDirectoryPathname (post.date, io.postsPath);
-		archivePath = io.createPostDirectoryPathname (post.date, io.archivePath + io.postsPath);
-		post.location = archivePath + '/' + post.filename + '.md';
+		post.path = io.createPostDirectoryPathname (post.date);
 
 		return post;
 	}
@@ -175,7 +170,7 @@
 		post [type] = {};
 		post [type].title = currentPost.title;
 		post [type].date = currentPost.date;
-		post [type].uri = currentPost.path + '/' + currentPost.filename + '.html';
+		post [type].filename = currentPost.filename;
 
 		return post;
 	}

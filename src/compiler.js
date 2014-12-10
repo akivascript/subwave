@@ -7,11 +7,9 @@
 	var processor = require ('./processor');
 
 	function compile () {
-		var archives, entriesCompiler, posts, path;
+		var archives, entriesCompiler, posts;
 
-		path = io.inboxPath;
-
-		posts = processor.processDirectory (path);
+		posts = processor.processDirectory (io.inboxPath);
 
 		archives = arch.getArchives ();
 		archives = processor.processArchives (posts, archives);
@@ -21,7 +19,7 @@
 
 		compileArchives (archives);
 
-		io.writeFile (archives.path + archives.filename, archives.output);
+		io.writeFile (archives.path + archives.filename + '.md', archives.output);
 
 		posts.forEach (function (post) {
 			compilePost (post);
@@ -32,20 +30,22 @@
 		});
 	}
 
-	function compileArchives (archives) {
-		var compiler;
+	function compileFileWithJade (file, prettify) {
+		compiler = jade.compileFile (file.template, { pretty: prettify });
 
-		archives.posts.reverse (); // Reverse ordering so newest is at the top
-
-		compiler = jade.compileFile (archives.template, { pretty: true });
-		archives.output	= compiler (archives);
+		return compiler (file);
 	}
 
-	function compilePost (post) {
-		var compiler;
+	// Runs the archives.html page through Jade
+	function compileArchives (archives) {
+		archives.posts.reverse (); // Reverse ordering so newest is at the top
 
-		compiler = jade.compileFile (post.template, { pretty: true });
-		post.output = compiler (post);
+		archives.output = compileFileWithJade (archives, true);
+	}
+
+	// Runs a post through Jade
+	function compilePost (post) {
+		post.output = compileFileWithJade (post, true);
 	}
 
 	module.exports.compile = compile;
