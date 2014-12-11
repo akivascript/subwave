@@ -8,14 +8,6 @@
 
 	var templatesPath = 'resources/templates/';
 
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
-	}
-
 	function comparePosts (postA, postB) {
 		if (!postA || !postB) {
 			return false;
@@ -91,7 +83,7 @@
 	}
 
 	function processPost (post) {
-		post.date = convertStringToDate (post.date);
+		post.date = new Date (post.date);
 		post.filename = io.getPostFilename (post.title, post.date);
 		post.path = io.getPostDirectoryPathname (post.date);
 	}
