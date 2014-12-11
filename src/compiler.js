@@ -1,9 +1,10 @@
 (function () {
 	'use strict';
 
-	var jade = require ('jade');
 	var arch = require ('./archives');
 	var io = require ('./io');
+	var jade = require ('jade');
+	var moment = require ('moment');
 	var processor = require ('./processor');
 
 	function compile () {
@@ -42,6 +43,10 @@
 	// Runs the archives.html page through Jade
 	function compileArchives (archives) {
 		archives.posts.reverse (); // Reverse ordering so newest is at the top
+
+		archives.posts.forEach (function (post) {
+			post.displayDate = moment (post.date).format ('MMMM D');
+		});
 
 		archives.output = compileFileWithJade (archives, true);
 	}
