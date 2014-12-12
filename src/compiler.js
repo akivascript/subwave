@@ -8,10 +8,18 @@
 	var processor = require ('./processor');
 
 	function compile () {
-		var archives, posts;
+		var archives, files, posts;
 
 		archives = arch.getArchives ();
-		posts = processor.processDirectory (io.inboxPath, processor.processPage);
+		files = io.getFileList (io.inboxPath);
+
+		if (!files) {
+			console.log ('There are no new files to process.');
+
+			return 1;
+		}
+
+		posts = processor.processFiles (files, io.inboxPath, processor.processPage);
 
 		processor.processArchives (posts, archives);
 

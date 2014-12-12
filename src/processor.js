@@ -15,22 +15,21 @@
 
 		if (postA.title === postB.title &&
 				postA.author === postB.author &&
-				postA.date === postB.date) {
+				postA.date.getTime ()  === postB.date.getTime () &&
+			 	postA.filename === postB.filename) {
 			return true;
 		}
 
 		return false;
 	}
 
-	function processDirectory (path, func) {
-		var filelist, file, pages = [];
+	function processFiles (files, path, fn) {
+		var pages = [];
 
-		filelist = io.getFileList (path);
+		files.forEach (function (file) {
+			file = io.readFile (path + file);
 
-		filelist.forEach (function (entry) {
-			file = io.readFile (path + entry);
-
-			pages.push (func (file));
+			pages.push (fn (file));
 		});
 
 		return pages;
@@ -65,8 +64,9 @@
 
 		if (page.type === 'post') {
 			page.template = templatesPath + 'post.jade';
-
-			processPost (page);
+			page.date = new Date (page.date);
+			page.filename = io.getPostFilename (page.title, page.date);
+			page.path = io.getPostDirectoryPathname (page.date);
 		} else if (page.type === 'page') {
 			page.template = templatesPath + 'page.jade';
 		} else if (page.type === 'archives') {
@@ -80,12 +80,6 @@
 		}
 
 		return page;
-	}
-
-	function processPost (post) {
-		post.date = new Date (post.date);
-		post.filename = io.getPostFilename (post.title, post.date);
-		post.path = io.getPostDirectoryPathname (post.date);
 	}
 
 	function processArchives (posts, archives) {
@@ -120,7 +114,7 @@
 			oppDirection = 'next';
 			index = index - 2;
 		} else {
-			oppDirection = direction;
+			oppDirection = 'previous';
 			index = index + 2;
 		}
 
@@ -160,7 +154,6 @@
 		date = new Date (sibling.date);
 
 		post [direction] = {};
-
 		post [direction].title = sibling.title;
 		post [direction].date = date;
 		post [direction].path = io.getPostDirectoryPathname (date);
@@ -168,6 +161,7 @@
 	}
 
 	module.exports.processArchives = processArchives;
-	module.exports.processDirectory = processDirectory;
+	module.exports.processFiles = processFiles;
 	module.exports.processPage = processPage;
+	module.exports.comparePosts = comparePosts;
 } ());
