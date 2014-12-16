@@ -20,6 +20,18 @@
 		return compiler (archives);
 	}
 
+	function createArchives (posts) {
+		var archives;
+
+		archives = {
+			type: "archives",
+			title: "Blog Title - Archives",
+			posts: posts
+		};
+
+		return archives;
+	}
+
 	function createNewEntries (posts) {
 		var i, newEntry, newEntries;
 
@@ -31,6 +43,7 @@
 			newEntry.date = posts [i].date;
 			newEntry.filename = posts [i].filename;
 			newEntry.path = posts [i].path;
+			newEntry.tags = posts [i].tags;
 
 			newEntries.push (newEntry);
 		}
@@ -38,36 +51,13 @@
 		return newEntries;
 	}
 
-	function getArchives () {
-		var archives, file;
-
-		archives = {
-			type: "archives",
-			title: "Archives",
-			posts: []
-		};
-
-		file = 'resources/data/archives.json';
-
-		try {
-			archives.posts = JSON.parse (io.readFile (file));
-		} catch (e) {
-			// If no archives.json, assume we're starting from scratch
-			// so do nothing about the lack of that file existing
-		}
-
-		return archives;
-	}
-
 	function saveArchives (archives) {
-		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
-
 		archives.output = compile (archives);
 
 		io.savePage (archives);
 	}
 
+	module.exports.createArchives = createArchives;
 	module.exports.createNewEntries = createNewEntries;
-	module.exports.getArchives = getArchives;
 	module.exports.saveArchives = saveArchives;
 } ());

@@ -30,7 +30,7 @@
 
 		homePage = {
 			type: 'index',
-			title: 'Backed Up Somewhere',
+			title: 'Blog Title',
 			filename: 'index',
 			posts: posts,
 			template: io.templatesPath + 'index.jade'

@@ -119,5 +119,6 @@
 	module.exports.inboxPath = inboxPath;
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
+	module.exports.resourcesPath = resourcesPath;
 	module.exports.templatesPath = templatesPath;
 } ());

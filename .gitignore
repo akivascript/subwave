@@ -2,8 +2,8 @@ node_modules/**/build
 public/*.html
 public/posts/
 resources/archive/
-resources/data/
 resources/inbox/
 resources/public/
 resources/tmp/
 test/files/
+*.json
