@@ -25,32 +25,32 @@
 		return io.readFiles (io.inboxPath, pa.createPage);
 	}
 
-	// This function adds new posts to the archives object which is used to:
+	// This function adds new posts to the state object which is used to:
 	// 		1. Update the archives.html page; and,
-	// 		2. Track all of the posts that have been added to the site (archives.json).
-	// archives.json is important when adding and updating posts as it is used to
+	// 		2. Track all of the posts that have been added to the site (state.json).
+	// state.json is important when adding and updating posts as it is used to
 	// load and modify adjacent posts so that their individual navigation links point
 	// to the proper sibling post. For example, when adding a new post, the previous
 	// most recent post needs to be loaded and have a 'next' link added to point to
 	// the new most recent post.
-	function handlePostsWithSiblings (archives, posts) {
+	function handlePostsWithSiblings (state, posts) {
 		var idx;
 
 		// TODO: What did you do, Ray.
-		idx = archives.posts.length - posts.length;
+		idx = state.posts.length - posts.length;
 
 		posts.forEach (function (post) {
 			var next, previous;
 		
-			next = archives.posts [idx + 1];
-			previous = archives.posts [idx - 1];
+			next = state.posts [idx + 1];
+			previous = state.posts [idx - 1];
 
 			if (previous) {
-				processSiblingPosts (post, previous, archives, idx, 'previous');
+				processSiblingPosts (post, previous, state, idx, 'previous');
 			}
 
 			if (next) {
-				processSiblingPosts (post, next, archives, idx, 'next');
+				processSiblingPosts (post, next, state, idx, 'next');
 			}
 
 			idx = idx + 1;
@@ -81,7 +81,7 @@
 		return sibling;
 	}
 
-	function processSiblingPosts (post, sibling, archives, index, direction) {
+	function processSiblingPosts (post, sibling, state, index, direction) {
 		var oppDirection, nextSibling;
 
 		if (direction === 'previous') {
@@ -98,8 +98,8 @@
 
 		sibling = processSibling (post, direction);
 
-		if (archives.posts [index]) {
-			nextSibling = archives.posts [index];
+		if (state.posts [index]) {
+			nextSibling = state.posts [index];
 
 			linkSibling (sibling, nextSibling, direction);
 		}
