@@ -1,0 +1,12 @@
+doctype html
+html(lang="en")
+	include ./includes/head.jade
+	body
+		div.container
+			each post in posts
+				div.row
+					div.col-xs-12!= post.title
+				div.row
+					div.col-xs-12!= post.displayDate
+				div.row
+					div.col-xs-12!= post.content

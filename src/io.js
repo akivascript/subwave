@@ -11,14 +11,10 @@
 	var postsPath = publicPath + 'posts/';
 	var templatesPath = resourcesPath + 'templates/';
 
-	function parseDate (date) {
-		var day, month, year;
- 
-		year = date.getFullYear ();
-		month = ('0' + (date.getMonth () + 1)).slice (-2);
-		day = ('0' + date.getDate ()).slice (-2);
-
-		return [year, month, day];
+	function createPostDirectory (path) {
+		// mkdirp allows us to create directory structures in one go.
+		// e.g. '2014/12/'
+		md.mkdirp.sync (path);
 	}
 
 	function getPostDirectoryPathname (date) {
@@ -56,26 +52,43 @@
 		});
 	}
 
-	function createPostDirectory (path) {
-		// mkdirp allows us to create directory structures in one go.
-		// e.g. '2014/12/'
-		md.mkdirp.sync (path);
+	function parseDate (date) {
+		var day, month, year;
+ 
+		year = date.getFullYear ();
+		month = ('0' + (date.getMonth () + 1)).slice (-2);
+		day = ('0' + date.getDate ()).slice (-2);
+
+		return [year, month, day];
 	}
 
 	function readFile (filename) {
 		return fs.readFileSync (filename, 'utf8');
 	}
 
-	function writeFile (filename, content) {
-		fs.writeFileSync (filename, content);
+	function readFiles (path, fn) {
+		var filelist, files;
+
+		files = [];
+		filelist = getFileList (path);
+
+		filelist.forEach (function (file) {
+			file = readFile (path + file);
+
+			files.push (fn (file));
+		});
+
+		return files;
 	}
 
 	function savePage (page) {
 		var path;
 
-		if (page.type === "post") {
+		if (page.type === 'post') {
 			path = postsPath;
-		} else if (page.type === "page" || page.type === "archives") {
+		} else if (page.type === 'page' || 
+							 page.type === 'archives' ||
+							 page.type === 'index') {
 			path = publicPath;
 		} else {
 			throw {
@@ -90,12 +103,16 @@
 
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
+
+	function writeFile (filename, content) {
+		fs.writeFileSync (filename, content);
+	}
 	
+	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
-	module.exports.getFileList = getFileList;
-	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.readFile = readFile;
+	module.exports.readFiles = readFiles;
 	module.exports.writeFile = writeFile;
 	module.exports.savePage = savePage;
 

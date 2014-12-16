@@ -3,15 +3,17 @@
 
 	var ar = require ('./archives');
 	var io = require ('./io');
+	var pa = require ('./pages');
 	var po = require ('./posts');
 	var pr = require ('./processor');
 
 	function compile () {
-		var archives, newEntries, posts;
+		var archives, homePage, newEntries, posts;
 
 		archives = ar.getArchives ();
 		posts = po.getPosts ();
 		newEntries = ar.createNewEntries (posts);
+		homePage = pa.createHomePage ([posts [posts.length - 1]]);
 
 		if (newEntries) {
 			archives.posts = archives.posts.concat (newEntries);
@@ -26,6 +28,8 @@
 		ar.saveArchives (archives);
 
 		po.savePosts (posts);
+
+		pa.savePage (homePage);
 	}
 
 	module.exports.compile = compile;

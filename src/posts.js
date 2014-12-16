@@ -11,6 +11,8 @@
 
 		compiler = jade.compileFile (post.template, { pretty: true });
 		
+		post.displayDate = pr.formatDateForDisplay (post.date);
+
 		return compiler (post);
 	}
 
@@ -30,21 +32,7 @@
 
 	// An indirector for clarity.
 	function getPosts () {
-		return pr.readFiles (io.inboxPath, pr.createPage);
-	}
-
-	function linkSibling (sibling, post, direction)
-	{
-		var date;
-
-		date = new Date (sibling.date);
-
-		post [direction] = {};
-
-		post [direction].title = sibling.title;
-		post [direction].date = sibling.date;
-		post [direction].path = io.getPostDirectoryPathname (sibling.date);
-		post [direction].filename = sibling.filename;
+		return io.readFiles (io.inboxPath, pr.createPage);
 	}
 
 	// This function adds new posts to the archives object which is used to:
@@ -79,6 +67,20 @@
 		});
 	}
 
+	function linkSibling (sibling, post, direction)
+	{
+		var date;
+
+		date = new Date (sibling.date);
+
+		post [direction] = {};
+
+		post [direction].title = sibling.title;
+		post [direction].date = sibling.date;
+		post [direction].path = io.getPostDirectoryPathname (sibling.date);
+		post [direction].filename = sibling.filename;
+	}
+
 	function processSibling (post, direction) {
 		var path, sibling;
 
@@ -96,7 +98,7 @@
 			oppDirection = 'next';
 			index = index - 2;
 		} else {
-			oppDirection = direction;
+			oppDirection = 'previous';
 			index = index + 2;
 		}
 

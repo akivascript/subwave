@@ -1,6 +1,8 @@
 (function () {
 	'use strict';
 
+	var moment = require ('moment');
+
 	var io = require ('./io');
 	var md = require ('markdown').markdown;
 	var po = require ('./posts');
@@ -11,6 +13,14 @@
 		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
 
 		return new Date (date.replace (pattern, '$1T$2:00'));
+	}
+	
+	function formatDateForDisplay (date) {
+		var postDate;
+
+		postDate = moment (date);
+
+		return postDate.format ('MMMM DD, YYYY');
 	}
 
 	// Converts a file into a page. A file has some front matter which is converted
@@ -63,21 +73,6 @@
 		return page;
 	}
 
-	function readFiles (path, fn) {
-		var filelist, files;
-
-		files = [];
-		filelist = io.getFileList (path);
-
-		filelist.forEach (function (file) {
-			file = io.readFile (path + file);
-
-			files.push (fn (file));
-		});
-
-		return files;
-	}
-
-	module.exports.readFiles = readFiles;
 	module.exports.createPage = createPage;
+	module.exports.formatDateForDisplay = formatDateForDisplay;
 } ());
