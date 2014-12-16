@@ -57,7 +57,7 @@
 		});
 	}
 
-	function linkSibling (sibling, post, direction)
+	function linkSibling (post, sibling, direction)
 	{
 		var date;
 
@@ -92,15 +92,16 @@
 			index = index + 2;
 		}
 
-		linkSibling (sibling, post, direction);
-		linkSibling (post, sibling, oppDirection);
+
+		linkSibling (post, sibling, direction);
+		linkSibling (sibling, post, oppDirection);
 
 		sibling = processSibling (post, direction);
 
 		if (archives.posts [index]) {
 			nextSibling = archives.posts [index];
 
-			linkSibling (nextSibling, sibling, direction);
+			linkSibling (sibling, nextSibling, direction);
 		}
 
 		sibling.output = pa.compilePage (sibling);
