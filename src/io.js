@@ -81,7 +81,7 @@
 		return files;
 	}
 
-	function savePage (page) {
+	function saveHtmlPage (page) {
 		var path;
 
 		if (page.type === 'post') {
@@ -114,7 +114,7 @@
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
 	module.exports.writeFile = writeFile;
-	module.exports.savePage = savePage;
+	module.exports.saveHtmlPage = saveHtmlPage;
 
 	module.exports.inboxPath = inboxPath;
 	module.exports.archivePath = archivePath;

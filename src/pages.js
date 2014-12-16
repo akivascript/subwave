@@ -100,7 +100,7 @@
 	function savePage (page) {
 		page.output = compilePage (page);
 
-		io.savePage (page);
+		io.saveHtmlPage (page);
 	}
 
 	module.exports.compilePage = compilePage;

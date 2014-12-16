@@ -54,7 +54,7 @@
 	function saveArchives (archives) {
 		archives.output = compile (archives);
 
-		io.savePage (archives);
+		io.saveHtmlPage (archives);
 	}
 
 	module.exports.createArchives = createArchives;

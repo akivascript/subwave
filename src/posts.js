@@ -57,7 +57,7 @@
 		});
 	}
 
-	function linkSibling (post, sibling, direction)
+	function linkSibling (sibling, post, direction)
 	{
 		var date;
 
@@ -92,23 +92,22 @@
 			index = index + 2;
 		}
 
-
-		linkSibling (post, sibling, direction);
-		linkSibling (sibling, post, oppDirection);
+		linkSibling (sibling, post, direction);
+		linkSibling (post, sibling, oppDirection);
 
 		sibling = processSibling (post, direction);
 
 		if (state.posts [index]) {
 			nextSibling = state.posts [index];
 
-			linkSibling (sibling, nextSibling, direction);
+			linkSibling (nextSibling, sibling, direction);
 		}
 
 		sibling.output = pa.compilePage (sibling);
 
 		io.createPostDirectory (io.postsPath + sibling.path);
 
-		io.savePage (sibling);
+		io.saveHtmlPage (sibling);
 	}
 
 	function savePosts (posts) {
@@ -117,7 +116,7 @@
 
 			io.createPostDirectory (io.postsPath + post.path);
 
-			io.savePage (post);
+			io.saveHtmlPage (post);
 		});
 	}
 
