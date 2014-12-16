@@ -1,57 +1,30 @@
 (function () {
 	'use strict';
 
-	var jade = require ('jade');
-	var arch = require ('./archives');
+	var ar = require ('./archives');
 	var io = require ('./io');
-	var processor = require ('./processor');
+	var po = require ('./posts');
+	var pr = require ('./processor');
 
 	function compile () {
-		var archives, posts;
+		var archives, newEntries, posts;
 
-		posts = processor.processDirectory (io.inboxPath);
+		archives = ar.getArchives ();
+		posts = po.getPosts ();
+		newEntries = ar.createNewEntries (posts);
 
-		archives = arch.getArchives ();
+		if (newEntries) {
+			archives.posts = archives.posts.concat (newEntries);
+		}
 
-		processor.processArchives (posts, archives);
+		po.handlePostsWithSiblings (archives, posts);
 
-		archives = processor.processPage (JSON.stringify (archives));
+		archives = pr.createPage (JSON.stringify (archives));
 
-		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
+		ar.saveArchives (archives);
 
-		compileArchives (archives);
-
-		io.savePage (archives);
-
-		posts.forEach (function (post) {
-			compilePost (post);
-
-			io.createPostDirectory (io.postsPath + post.path);
-
-			io.savePage (post);
-		});
-	}
-
-	function compileFileWithJade (file, prettify) {
-		var compiler;
-
-		compiler = jade.compileFile (file.template, { pretty: prettify });
-
-		return compiler (file);
-	}
-
-	// Runs the archives.html page through Jade
-	function compileArchives (archives) {
-		archives.posts.reverse (); // Reverse ordering so newest is at the top
-
-		archives.output = compileFileWithJade (archives, true);
-	}
-
-	// Runs a post through Jade
-	function compilePost (post) {
-		post.output = compileFileWithJade (post, true);
+		po.savePosts (posts);
 	}
 
 	module.exports.compile = compile;
-	module.exports.compilePost = compilePost;
 } ());
