@@ -5,7 +5,6 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
-	var pr = require ('./processor');
 
 	function compile () {
 		var archives, homePage, newEntries, posts;
@@ -23,7 +22,7 @@
 		// if a post has siblings that need to be handled.
 		po.handlePostsWithSiblings (archives, posts);
 
-		archives = pr.createPage (JSON.stringify (archives));
+		archives = pa.createPage (JSON.stringify (archives));
 
 		ar.saveArchives (archives);
 

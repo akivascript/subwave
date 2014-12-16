@@ -4,17 +4,17 @@
 	var jade = require ('jade');
 
 	var io = require ('./io');
-	var pr = require ('./processor');
+	var pa = require ('./pages');
 
 	function compile (archives) {
 		var compiler;
 
-		archives.posts.reverse (); // Reverse ordering so newest is at the top
-
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
+		archives.posts.reverse (); // Reverse ordering so newest is at the top
+
 		archives.posts.forEach (function (post) {
-			post.displayDate = pr.formatDateForDisplay (post.date);
+			post.displayDate = pa.formatDateForDisplay (post.date);
 		});
 
 		return compiler (archives);

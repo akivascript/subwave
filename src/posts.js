@@ -4,17 +4,7 @@
 	var jade = require ('jade');
 
 	var io = require ('./io');
-	var pr = require ('./processor');
-
-	function compile (post) {
-		var compiler;
-
-		compiler = jade.compileFile (post.template, { pretty: true });
-		
-		post.displayDate = pr.formatDateForDisplay (post.date);
-
-		return compiler (post);
-	}
+	var pa = require ('./pages');
 
 	function comparePosts (postA, postB) {
 		if (!postA || !postB) {
@@ -32,7 +22,7 @@
 
 	// An indirector for clarity.
 	function getPosts () {
-		return io.readFiles (io.inboxPath, pr.createPage);
+		return io.readFiles (io.inboxPath, pa.createPage);
 	}
 
 	// This function adds new posts to the archives object which is used to:
@@ -86,7 +76,7 @@
 
 		path = io.getPostDirectoryPathname (post [direction].date);
 		sibling = io.readFile (io.archivePath + path + post [direction].filename + '.md');
-		sibling = pr.createPage (sibling);
+		sibling = pa.createPage (sibling);
 
 		return sibling;
 	}
@@ -113,7 +103,7 @@
 			linkSibling (nextSibling, sibling, direction);
 		}
 
-		sibling.output = compile (sibling);
+		sibling.output = pa.compilePage (sibling);
 
 		io.createPostDirectory (io.postsPath + sibling.path);
 
@@ -122,7 +112,7 @@
 
 	function savePosts (posts) {
 		posts.forEach (function (post) {
-			post.output = compile (post);
+			post.output = pa.compilePage (post);
 
 			io.createPostDirectory (io.postsPath + post.path);
 
