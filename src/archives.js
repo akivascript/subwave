@@ -4,32 +4,42 @@
 	var jade = require ('jade');
 	var io = require ('./io');
 	
-	var archives = {
-		type: "archives",
-		title: "Archives",
-		posts: []
-	};
+	function compile (archives) {
+		var compiler;
 
-	function addPost (post) {
-		var contains, listing = {};
+		archives.posts.reverse (); // Reverse ordering so newest is at the top
 
-		listing.title = post.title;
-		listing.date = post.date;
-		listing.filename = post.filename;
-		listing.path = post.path;
+		compiler = jade.compileFile (archives.template, { pretty: true });
 
-		// Avoids duplicating entries into the table of contents
-		contains = archives.posts.filter (function (n) {
-			return JSON.stringify (n) === JSON.stringify (listing);
-		});
+		return compiler (archives);
+	}
 
-		if (!contains || contains.length === 0) {
-			archives.posts.push (listing);
+	function createNewEntries (posts) {
+		var i, newEntry, newEntries;
+
+		newEntries = [];
+
+		for (i = 0; i < posts.length; i = i + 1) {
+			newEntry = {};
+			newEntry.title = posts [i].title;
+			newEntry.date = posts [i].date;
+			newEntry.filename = posts [i].filename;
+			newEntry.path = posts [i].path;
+
+			newEntries.push (newEntry);
 		}
+
+		return newEntries;
 	}
 
 	function getArchives () {
-		var file;
+		var archives, file;
+
+		archives = {
+			type: "archives",
+			title: "Archives",
+			posts: []
+		};
 
 		file = 'resources/data/archives.json';
 
@@ -43,6 +53,15 @@
 		return archives;
 	}
 
-	module.exports.addPost = addPost;
+	function saveArchives (archives) {
+		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
+
+		archives.output = compile (archives);
+
+		io.savePage (archives);
+	}
+
+	module.exports.createNewEntries = createNewEntries;
 	module.exports.getArchives = getArchives;
+	module.exports.saveArchives = saveArchives;
 } ());

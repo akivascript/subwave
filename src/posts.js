@@ -1,16 +1,134 @@
 (function () {
 	'use strict';
 
-	var sub_io	= require ('./io');
-	var jade 		= require ('jade');
+	var jade = require ('jade');
 
-	var archivesFilePath	= 'resources/archives/';
-	var siteFilePath 			= 'resources/public/';
-	var postsPath 				= 'posts/';
-	var postsFilePath 		= siteFilePath + postsPath;
+	var io = require ('./io');
+	var pr = require ('./processor');
 
-	// Archives a processed post by moving it from inbox to archives.
-	function movePost (filename) {
+	function compile (post) {
+		var compiler;
+
+		compiler = jade.compileFile (post.template, { pretty: true });
 		
+		return compiler (post);
 	}
+
+	function comparePosts (postA, postB) {
+		if (!postA || !postB) {
+			return false;
+		}
+
+		if (postA.title === postB.title &&
+				postA.author === postB.author &&
+				postA.date === postB.date) {
+			return true;
+		}
+
+		return false;
+	}
+
+	// An indirector for clarity.
+	function getPosts () {
+		return pr.readFiles (io.inboxPath, pr.createPage);
+	}
+
+	function linkSibling (sibling, post, direction)
+	{
+		var date;
+
+		date = new Date (sibling.date);
+
+		post [direction] = {};
+
+		post [direction].title = sibling.title;
+		post [direction].date = sibling.date;
+		post [direction].path = io.getPostDirectoryPathname (sibling.date);
+		post [direction].filename = sibling.filename;
+	}
+
+	// This function adds new posts to the archives object which is used to:
+	// 		1. Update the archives.html page; and,
+	// 		2. Track all of the posts that have been added to the site (archives.json).
+	// archives.json is important when adding and updating posts as it is used to
+	// load and modify adjacent posts so that their individual navigation links point
+	// to the proper sibling post. For example, when adding a new post, the previous
+	// most recent post needs to be loaded and have a 'next' link added to point to
+	// the new most recent post.
+	function handlePostsWithSiblings (archives, posts) {
+		var idx;
+
+		// TODO: What did you do, Ray.
+		idx = archives.posts.length - posts.length;
+
+		posts.forEach (function (post) {
+			var next, previous;
+		
+			next = archives.posts [idx + 1];
+			previous = archives.posts [idx - 1];
+
+			if (previous) {
+				processSiblingPosts (post, previous, archives, idx, 'previous');
+			}
+
+			if (next) {
+				processSiblingPosts (post, next, archives, idx, 'next');
+			}
+
+			idx = idx + 1;
+		});
+	}
+
+	function processSibling (post, direction) {
+		var path, sibling;
+
+		path = io.getPostDirectoryPathname (post [direction].date);
+		sibling = io.readFile (io.archivePath + path + post [direction].filename + '.md');
+		sibling = pr.createPage (sibling);
+
+		return sibling;
+	}
+
+	function processSiblingPosts (post, sibling, archives, index, direction) {
+		var oppDirection, nextSibling;
+
+		if (direction === 'previous') {
+			oppDirection = 'next';
+			index = index - 2;
+		} else {
+			oppDirection = direction;
+			index = index + 2;
+		}
+
+		linkSibling (sibling, post, direction);
+		linkSibling (post, sibling, oppDirection);
+
+		sibling = processSibling (post, direction);
+
+		if (archives.posts [index]) {
+			nextSibling = archives.posts [index];
+
+			linkSibling (nextSibling, sibling, direction);
+		}
+
+		sibling.output = compile (sibling);
+
+		io.createPostDirectory (io.postsPath + sibling.path);
+
+		io.savePage (sibling);
+	}
+
+	function savePosts (posts) {
+		posts.forEach (function (post) {
+			post.output = compile (post);
+
+			io.createPostDirectory (io.postsPath + post.path);
+
+			io.savePage (post);
+		});
+	}
+
+	module.exports.getPosts = getPosts;
+	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
+	module.exports.savePosts = savePosts;
 } ());

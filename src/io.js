@@ -9,10 +9,11 @@
 	var archivePath = resourcesPath + 'archive/';
 	var publicPath = 'public/';
 	var postsPath = publicPath + 'posts/';
+	var templatesPath = resourcesPath + 'templates/';
 
 	function parseDate (date) {
 		var day, month, year;
-
+ 
 		year = date.getFullYear ();
 		month = ('0' + (date.getMonth () + 1)).slice (-2);
 		day = ('0' + date.getDate ()).slice (-2);
@@ -78,7 +79,7 @@
 			path = publicPath;
 		} else {
 			throw {
-				type: 'Error',
+				name: 'Error',
 				message: 'Unable to determine page type.'
 			};
 		}
@@ -101,4 +102,5 @@
 	module.exports.inboxPath = inboxPath;
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
+	module.exports.templatesPath = templatesPath;
 } ());

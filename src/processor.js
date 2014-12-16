@@ -1,46 +1,27 @@
 (function () {
 	'use strict';
 
-	var arch = require ('./archives');
-	var comp = require ('./compiler');
 	var io = require ('./io');
 	var md = require ('markdown').markdown;
+	var po = require ('./posts');
 
-	var templatesPath = 'resources/templates/';
+	function convertStringToDate (date) {
+		var pattern;
 
-	function comparePosts (postA, postB) {
-		if (!postA || !postB) {
-			return false;
-		}
+		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
 
-		if (postA.title === postB.title &&
-				postA.author === postB.author &&
-				postA.date.getTime ()  === postB.date.getTime () &&
-			 	postA.filename === postB.filename) {
-			return true;
-		}
-
-		return false;
+		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
-	function processFiles (files, path, fn) {
-		var pages = [];
+	// Converts a file into a page. A file has some front matter which is converted
+	// to JSON. This front matter is used to configure the page, determine its type,
+	// and so forth
+	function createPage (source) {
+		var content, compiler, page, metadata, matches, filename, pattern, template;
 
-		files.forEach (function (file) {
-			file = io.readFile (path + file);
-
-			pages.push (fn (file));
-		});
-
-		return pages;
-	}
-
-	function processPage (page) {
-		var content, compiler, pagedata, matches, filename, output;
-		var path, pattern, srcfile, template;
-
+		// Matches '{key: value, key: value, ...} content ...'
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
-		matches = page.match (pattern);
+		matches = source.match (pattern);
 
 		if (!matches || matches.length === 0) {
 			throw {
@@ -49,11 +30,11 @@
 			};
 		}
 
-		pagedata = JSON.parse (matches [1]);
+		metadata = JSON.parse (matches [1]);
 		page = {};
 
-		for (var attr in pagedata) {
-			page [attr] = pagedata [attr];
+		for (var attr in metadata) {
+			page [attr] = metadata [attr];
 		}
 
 		content = md.toHTML (matches [2]);
@@ -63,14 +44,14 @@
 		}
 
 		if (page.type === 'post') {
-			page.template = templatesPath + 'post.jade';
-			page.date = new Date (page.date);
+			page.template = io.templatesPath + 'post.jade';
+			page.date = convertStringToDate (page.date);
 			page.filename = io.getPostFilename (page.title, page.date);
 			page.path = io.getPostDirectoryPathname (page.date);
 		} else if (page.type === 'page') {
-			page.template = templatesPath + 'page.jade';
+			page.template = io.templatesPath + 'page.jade';
 		} else if (page.type === 'archives') {
-			page.template = templatesPath + 'archives.jade';
+			page.template = io.templatesPath + 'archives.jade';
 			page.filename = 'archives';
 		} else {
 			throw {
@@ -82,86 +63,21 @@
 		return page;
 	}
 
-	function processArchives (posts, archives) {
-		var idx;
+	function readFiles (path, fn) {
+		var filelist, files;
 
-		posts.forEach (arch.addPost);
+		files = [];
+		filelist = io.getFileList (path);
 
-		idx = archives.posts.length - posts.length;
+		filelist.forEach (function (file) {
+			file = io.readFile (path + file);
 
-		posts.forEach (function (post) {
-			var next, previous;
-		
-			next = archives.posts [idx + 1];
-			previous = archives.posts [idx - 1];
-
-			if (previous) {
-				processSiblingPosts (post, previous, archives, idx, 'previous');
-			}
-
-			if (next) {
-				processSiblingPosts (post, next, archives, idx, 'next');
-			}
-
-			idx = idx + 1;
+			files.push (fn (file));
 		});
+
+		return files;
 	}
 
-	function processSiblingPosts (post, sibling, archives, index, direction) {
-		var oppDirection, nextSibling;
-
-		if (direction === 'previous') {
-			oppDirection = 'next';
-			index = index - 2;
-		} else {
-			oppDirection = 'previous';
-			index = index + 2;
-		}
-
-		linkSibling (sibling, post, direction);
-
-		sibling = processSibling (post, direction);
-
-		linkSibling (post, sibling, oppDirection);
-
-		if (archives.posts [index]) {
-			nextSibling = archives.posts [index];
-
-			linkSibling (nextSibling, sibling, direction);
-		}
-
-		comp.compilePost (sibling);
-
-		io.createPostDirectory (io.postsPath + sibling.path);
-
-		io.savePage (sibling);
-	}
-
-	function processSibling (post, direction) {
-		var path, sibling;
-
-		path = io.getPostDirectoryPathname (post [direction].date);
-		sibling = io.readFile (io.archivePath + path + post [direction].filename + '.md');
-		sibling = processPage (sibling);
-
-		return sibling;
-	}
-
-	function linkSibling (sibling, post, direction)
-	{
-		var date;
-
-		date = new Date (sibling.date);
-
-		post [direction] = {};
-		post [direction].title = sibling.title;
-		post [direction].date = date;
-		post [direction].path = io.getPostDirectoryPathname (date);
-		post [direction].filename = sibling.filename;
-	}
-
-	module.exports.processArchives = processArchives;
-	module.exports.processFiles = processFiles;
-	module.exports.processPage = processPage;
-	module.exports.comparePosts = comparePosts;
+	module.exports.readFiles = readFiles;
+	module.exports.createPage = createPage;
 } ());

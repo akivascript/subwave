@@ -1,69 +1,32 @@
 (function () {
 	'use strict';
 
-	var arch = require ('./archives');
+	var ar = require ('./archives');
 	var io = require ('./io');
-	var jade = require ('jade');
-	var moment = require ('moment');
-	var processor = require ('./processor');
+	var po = require ('./posts');
+	var pr = require ('./processor');
 
 	function compile () {
-		var archives, files, posts;
+		var archives, newEntries, posts;
 
-		archives = arch.getArchives ();
-		files = io.getFileList (io.inboxPath);
+		archives = ar.getArchives ();
+		posts = po.getPosts ();
+		newEntries = ar.createNewEntries (posts);
 
-		if (!files) {
-			console.log ('There are no new files to process.');
-
-			return 1;
+		if (newEntries) {
+			archives.posts = archives.posts.concat (newEntries);
 		}
 
-		posts = processor.processFiles (files, io.inboxPath, processor.processPage);
+		// We handle appending the archives first (above) so we can more easily determine
+		// if a post has siblings that need to be handled.
+		po.handlePostsWithSiblings (archives, posts);
 
-		processor.processArchives (posts, archives);
+		archives = pr.createPage (JSON.stringify (archives));
 
-		archives = processor.processPage (JSON.stringify (archives));
+		ar.saveArchives (archives);
 
-		io.writeFile ('resources/data/archives.json', JSON.stringify (archives.posts));
-
-		compileArchives (archives);
-
-		io.savePage (archives);
-
-		posts.forEach (function (post) {
-			compilePost (post);
-
-			io.createPostDirectory (io.postsPath + post.path);
-
-			io.savePage (post);
-		});
-	}
-
-	function compileFileWithJade (file, prettify) {
-		var compiler;
-
-		compiler = jade.compileFile (file.template, { pretty: prettify });
-
-		return compiler (file);
-	}
-
-	// Runs the archives.html page through Jade
-	function compileArchives (archives) {
-		archives.posts.reverse (); // Reverse ordering so newest is at the top
-
-		archives.posts.forEach (function (post) {
-			post.displayDate = moment (post.date).format ('MMMM D');
-		});
-
-		archives.output = compileFileWithJade (archives, true);
-	}
-
-	// Runs a post through Jade
-	function compilePost (post) {
-		post.output = compileFileWithJade (post, true);
+		po.savePosts (posts);
 	}
 
 	module.exports.compile = compile;
-	module.exports.compilePost = compilePost;
 } ());
