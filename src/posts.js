@@ -110,17 +110,15 @@
 		io.saveHtmlPage (sibling);
 	}
 
-	function savePosts (posts) {
-		posts.forEach (function (post) {
-			post.output = pa.compilePage (post);
+	function savePost (post) {
+		post.output = pa.compilePage (post);
 
-			io.createPostDirectory (io.postsPath + post.path);
+		io.createPostDirectory (io.postsPath + post.path);
 
-			io.saveHtmlPage (post);
-		});
+		io.saveHtmlPage (post);
 	}
 
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
-	module.exports.savePosts = savePosts;
+	module.exports.savePost = savePost;
 } ());

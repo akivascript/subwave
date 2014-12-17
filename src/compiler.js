@@ -6,18 +6,32 @@
 	var pa = require ('./pages');
 	var po = require ('./posts');
 	var st = require ('./state');
+	var ta = require ('./tags');
 
 	function compile () {
 		var archives, homePage, newEntries, posts, state;
 
 		state = st.getState ();
-		posts = po.getPosts ();
+		posts = po.getNewPosts ();
+
+		if (!posts) {
+			return 'No new posts found.';
+		}
+
 		newEntries = ar.createNewEntries (posts);
 		homePage = pa.createHomePage ([posts [posts.length - 1]]);
 
 		if (newEntries) {
 			state.posts = state.posts.concat (newEntries);
+
+			newEntries.forEach (function (entry) {
+				st.addPostToTagGroups (state, entry);
+			});
 		}
+
+		homePage.tags = state.tags;
+
+		st.saveState (state);
 
 		// We handle appending the archives first (above) so we can more easily determine
 		// if a post has siblings that need to be handled.
@@ -28,11 +42,11 @@
 
 		ar.saveArchives (archives);
 
-		po.savePosts (posts);
+		posts.forEach (function (post) {
+			po.savePost (post);
+		});
 
 		pa.savePage (homePage);
-
-		st.saveState (state);
 	}
 
 	module.exports.compile = compile;
