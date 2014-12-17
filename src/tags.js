@@ -6,7 +6,10 @@
 			if (!taglist.some (function (t) {
 				return t === tag;
 			})) {
-				taglist.push (tag);
+				taglist.push ({
+					tag: tag,
+					posts: []
+				});
 			}
 		});
 	}

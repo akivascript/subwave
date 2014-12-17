@@ -5,7 +5,7 @@ html(lang="en")
 		div.container
 			div.row
 				div.col-xs-3 Sidebar!
-					each tag in tags
+					each tag in Object.keys (tags)
 						div.row
 							div.col.xs.3= tag
 				div.col-xs-7
@@ -15,6 +15,6 @@ html(lang="en")
 						div.row
 							div.col-xs-7!= post.displayDate
 						div.row
-							div.col-xs-7!= tags
+							div.col-xs-7!= post.tags
 						div.row
 							div.col-xs-7!= post.content

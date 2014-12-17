@@ -9,6 +9,7 @@
 	var archivePath = resourcesPath + 'archive/';
 	var publicPath = 'public/';
 	var postsPath = publicPath + 'posts/';
+	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
 
 	function createPostDirectory (path) {
@@ -120,5 +121,6 @@
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
 	module.exports.resourcesPath = resourcesPath;
+	module.exports.tagsPath = tagsPath;
 	module.exports.templatesPath = templatesPath;
 } ());

@@ -2,6 +2,19 @@
 	'use strict';
 
 	var io = require ('./io');
+	var ta = require ('./tags');
+
+	function addPostToTagGroups (state, post) {
+		post.tags.forEach (function (tag) {
+			if (!state.tags [tag]) {
+				state.tags [tag] = {
+					posts: []
+				};
+			}
+
+			state.tags [tag].posts.push (post.filename);
+		});
+	}
 
 	// Returns a JSON object representing the current state of the blog
 	// or returns a fresh one if no state currently exists (this should only
@@ -18,7 +31,7 @@
 			state = {
 				lastUpdated: '',
 				posts: [],
-				tags: []
+				tags: {}
 			};
 		}
 
@@ -34,6 +47,7 @@
 		io.writeFile (filename, JSON.stringify (state, null, '\t'));
 	}
 
+	module.exports.addPostToTagGroups = addPostToTagGroups; 
 	module.exports.getState = getState;
 	module.exports.saveState = saveState;
 } ());

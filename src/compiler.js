@@ -23,11 +23,11 @@
 
 		if (newEntries) {
 			state.posts = state.posts.concat (newEntries);
-		}
 
-		state.posts.forEach (function (post) {
-			ta.addTags (post.tags, state.tags);
-		});
+			newEntries.forEach (function (entry) {
+				st.addPostToTagGroups (state, entry);
+			});
+		}
 
 		homePage.tags = state.tags;
 
