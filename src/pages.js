@@ -15,7 +15,8 @@
 		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
-	function compilePage (page, fn) {
+	// Runs a page through Jade so that it is formatted for display.
+	function compilePage (page) {
 		var compiler;
 
 		compiler = jade.compileFile (page.template, { pretty: true });
@@ -25,6 +26,8 @@
 		return compiler (page);
 	}
 	
+	// Creates a new index homepage. This gets rebuilt each time a new post is added
+	// to the site.
 	function createHomePage (posts) {
 		var homePage;
 
@@ -33,6 +36,7 @@
 			title: 'Blog Title',
 			filename: 'index',
 			posts: posts,
+			tags: [],
 			template: io.templatesPath + 'index.jade'
 		};
 
@@ -43,18 +47,9 @@
 	// to JSON. This front matter is used to configure the page, determine its type,
 	// and so forth
 	function createPage (source) {
-		var content, compiler, page, metadata, matches, filename, pattern, template;
+		var content, compiler, filename, metadata, matches, page;
 
-		// Matches '{key: value, key: value, ...} content ...'
-		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
-		matches = source.match (pattern);
-
-		if (!matches || matches.length === 0) {
-			throw {
-				type: 'Error',
-				message: 'The file isn\'t the correct format.'
-			};
-		}
+		matches = processFile (source);
 
 		metadata = JSON.parse (matches [1]);
 		page = {};
@@ -89,6 +84,7 @@
 		return page;
 	}
 	
+	// This is the display format for archives.html and individual posts.
 	function formatDateForDisplay (date) {
 		var postDate;
 
@@ -97,6 +93,35 @@
 		return postDate.format ('MMMM DD, YYYY');
 	}
 
+	// Processes a file and returns only its content (e.g., the body of a post).
+	function getFileContent (source) {
+		var matches;
+
+		matches = processFile (source);
+
+		return mkdwn.toHTML (matches [2]);
+	}
+
+	// Takes the contents of a file as a string and separates the metadata from the
+	// content of the page. 
+	function processFile (source) {
+		var matches, pattern;
+
+		// Matches '{key: value, key: value, ...} content ...'
+		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
+		matches = source.match (pattern);
+
+		if (!matches || matches.length === 0) {
+			throw {
+				type: 'Error',
+				message: 'The file isn\'t the correct format.'
+			};
+		}
+
+		return matches;
+	}
+
+	// Compile and commit HTML file to disk.
 	function savePage (page) {
 		page.output = compilePage (page);
 
@@ -107,5 +132,6 @@
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
+	module.exports.getFileContent = getFileContent;
 	module.exports.savePage = savePage;
 } ());

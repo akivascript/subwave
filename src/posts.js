@@ -21,14 +21,14 @@
 	}
 
 	// An indirector for clarity.
-	function getPosts () {
+	function getNewPosts () {
 		return io.readFiles (io.inboxPath, pa.createPage);
 	}
 
-	// This function adds new posts to the state object which is used to:
+	// This function adds new posts to the archives object which is used to:
 	// 		1. Update the archives.html page; and,
-	// 		2. Track all of the posts that have been added to the site (state.json).
-	// state.json is important when adding and updating posts as it is used to
+	// 		2. Track all of the posts that have been added to the site (archives.json).
+	// archives.json is important when adding and updating posts as it is used to
 	// load and modify adjacent posts so that their individual navigation links point
 	// to the proper sibling post. For example, when adding a new post, the previous
 	// most recent post needs to be loaded and have a 'next' link added to point to
@@ -57,26 +57,30 @@
 		});
 	}
 
-	function linkSibling (sibling, post, direction)
+	function linkSibling (source)
 	{
-		var date;
+		var target;
 
-		date = new Date (sibling.date);
-
-		post [direction] = {};
-
-		post [direction].title = sibling.title;
-		post [direction].date = sibling.date;
-		post [direction].path = io.getPostDirectoryPathname (sibling.date);
-		post [direction].filename = sibling.filename;
+		target = {};
+		target.title = source.title;
+		target.date = source.date;
+		target.path = source.path;
+		target.filename = source.filename;
+		
+		return target;
 	}
 
-	function processSibling (post, direction) {
-		var path, sibling;
+	function processSibling (sibling, direction) {
+		var file, filename, path;
 
-		path = io.getPostDirectoryPathname (post [direction].date);
-		sibling = io.readFile (io.archivePath + path + post [direction].filename + '.md');
-		sibling = pa.createPage (sibling);
+		path = sibling.path;
+		filename = sibling.filename;
+
+		file = io.readFile (io.archivePath + path + filename + '.md');
+
+		sibling.type = 'post';
+		sibling.content = pa.getFileContent (file);
+		sibling.template = io.templatesPath + 'post.jade';
 
 		return sibling;
 	}
@@ -92,16 +96,16 @@
 			index = index + 2;
 		}
 
-		linkSibling (sibling, post, direction);
-		linkSibling (post, sibling, oppDirection);
-
-		sibling = processSibling (post, direction);
+		post [direction] = linkSibling (sibling);
+		sibling [oppDirection] = linkSibling (post);
 
 		if (state.posts [index]) {
 			nextSibling = state.posts [index];
 
-			linkSibling (nextSibling, sibling, direction);
+			sibling [direction] = linkSibling (nextSibling);
 		}
+
+		sibling = processSibling (sibling, oppDirection);
 
 		sibling.output = pa.compilePage (sibling);
 
@@ -120,7 +124,7 @@
 		});
 	}
 
-	module.exports.getPosts = getPosts;
+	module.exports.getNewPosts = getNewPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePosts = savePosts;
 } ());

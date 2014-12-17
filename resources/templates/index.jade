@@ -3,10 +3,18 @@ html(lang="en")
 	include ./includes/head.jade
 	body
 		div.container
-			each post in posts
-				div.row
-					div.col-xs-12!= post.title
-				div.row
-					div.col-xs-12!= post.displayDate
-				div.row
-					div.col-xs-12!= post.content
+			div.row
+				div.col-xs-3 Sidebar!
+					each tag in tags
+						div.row
+							div.col.xs.3= tag
+				div.col-xs-7
+					each post in posts
+						div.row
+							div.col-xs-7!= post.title
+						div.row
+							div.col-xs-7!= post.displayDate
+						div.row
+							div.col-xs-7!= tags
+						div.row
+							div.col-xs-7!= post.content
