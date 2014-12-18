@@ -143,6 +143,7 @@
 	module.exports.inboxPath = inboxPath;
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
+	module.exports.publicPath = publicPath;
 	module.exports.resourcesPath = resourcesPath;
 	module.exports.tagsPath = tagsPath;
 	module.exports.templatesPath = templatesPath;

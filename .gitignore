@@ -1,7 +1,5 @@
 node_modules/**/build
-public/*.html
-public/posts/
-public/tags/
+public/
 resources/archive/
 resources/inbox/
 resources/public/

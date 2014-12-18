@@ -3,12 +3,16 @@
 (function () {
 	'use strict';
 
+	var rss = require ('rss');
+
 	var ar = require ('./archives');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
 	var st = require ('./state');
 	var ta = require ('./tags');
+
+	var siteUrl = 'http://www.example.com/';
 
 	// Ceci n'est pas un commentaire.
 	function compile () {
@@ -52,6 +56,40 @@
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
+
+		updateRssFeed (state);
+	}
+
+	function updateRssFeed (state) {
+		var feed, feedOptions, itemOptions;
+
+		feedOptions = {
+			title: 'Blog Title',
+			description: 'Blog description',
+			feed_url: 'http://example.com/rss.xml',
+			site_url: 'http://example.com',
+			copyright: '2014 Bob Sacamano',
+			langauge: 'en',
+			pubDate: new Date ()
+		};
+
+		feed = new rss (feedOptions);
+
+		state.posts.reverse ();
+
+		state.posts.forEach (function (post) {
+			itemOptions = {
+				title: post.title,
+				url: siteUrl + io.postsPath + post.path + post.filename + '.html',
+				date: post.date,
+				categories: post.tags,
+				author: post.author
+			};
+
+			feed.item (itemOptions);
+		});
+
+		io.writeFile (io.publicPath + 'rss.xml', feed.xml ());
 	}
 
 	module.exports.compile = compile;
