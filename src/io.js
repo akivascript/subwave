@@ -1,3 +1,5 @@
+// The gateway between subwave and the disk. All functions related to io are
+// gathered here to solemnly lay down tracts of 1s and 0s for great bloggery.
 (function () {
 	'use strict';
 
@@ -11,12 +13,16 @@
 	var postsPath = publicPath + 'posts/';
 	var templatesPath = resourcesPath + 'templates/';
 
+	// In subwave, posts are grouped by year and then by month; this function
+	// creates this year/month path based on the filename of the post itself.
 	function createPostDirectory (path) {
 		// mkdirp allows us to create directory structures in one go.
 		// e.g. '2014/12/'
 		md.mkdirp.sync (path);
 	}
 
+	// Examines the date (expected to be from a post) to generate the year/month
+	// path used as described in createPostDirectory above.
 	function getPostDirectoryPathname (date) {
 		var newPath, dateArray;
 
@@ -26,6 +32,9 @@
 		return newPath;
 	}
 
+	// Generates the filename of a post based on the the title and date of the post.
+	// For example, a post named 'I Like Broccoli Until...' dated '2015/01/15' becomes
+	// '2015-01-15-i-like-broccoli-until'.
 	function getPostFilename (title, date) {
 		var dateArray, day, month, newTitle, titleArray, year;
 
@@ -36,6 +45,7 @@
 		return (dateArray.join ('-') + '-' + newTitle).toLowerCase ();
 	}
 
+	// Return a list of all the markdown files from a given directory.
 	function getFileList (path) {
 		var fileList;
 
@@ -52,6 +62,7 @@
 		});
 	}
 
+	// Split a Date object into an array.
 	function splitDate (date) {
 		var day, month, year;
  
@@ -62,10 +73,13 @@
 		return [year, month, day];
 	}
 
+	// Reads the contents of a file.
 	function readFile (filename) {
 		return fs.readFileSync (filename, 'utf8');
 	}
 
+	// Reads the contents of a list of files and add them to an array. If a function
+	// is provided, process the file contents first.
 	function readFiles (path, fn) {
 		var filelist, files;
 
@@ -75,12 +89,18 @@
 		filelist.forEach (function (file) {
 			file = readFile (path + file);
 
-			files.push (fn (file));
+			if (fn) {
+				files.push (fn (file));
+			} else {
+				files.push (file);
+			}
 		});
 
 		return files;
 	}
 
+	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
+	// with a file written with an '.html' extension. Maybe you're into that.
 	function saveHtmlPage (page) {
 		var path;
 
@@ -104,6 +124,7 @@
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
 
+	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
 		fs.writeFileSync (filename, content);
 	}

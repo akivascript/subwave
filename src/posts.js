@@ -1,3 +1,4 @@
+// This collects all functions related to individual posts.
 (function () {
 	'use strict';
 
@@ -5,20 +6,6 @@
 
 	var io = require ('./io');
 	var pa = require ('./pages');
-
-	function comparePosts (postA, postB) {
-		if (!postA || !postB) {
-			return false;
-		}
-
-		if (postA.title === postB.title &&
-				postA.author === postB.author &&
-				postA.date === postB.date) {
-			return true;
-		}
-
-		return false;
-	}
 
 	// An indirector for clarity.
 	function getPosts () {
@@ -30,7 +17,7 @@
 	// 		2. Track all of the posts that have been added to the site (state.json).
 	// state.json is important when adding and updating posts as it is used to
 	// load and modify adjacent posts so that their individual navigation links point
-	// to the proper sibling post. For example, when adding a new post, the previous
+	// to their proper sibling posts. For example, when adding a new post, the previous
 	// most recent post needs to be loaded and have a 'next' link added to point to
 	// the new most recent post.
 	function handlePostsWithSiblings (state, posts) {
@@ -57,6 +44,7 @@
 		});
 	}
 
+	// Links navigation information between two posts
 	function linkSibling (sibling, post, direction)
 	{
 		var date;
@@ -71,6 +59,7 @@
 		post [direction].filename = sibling.filename;
 	}
 
+	// Loads and processes an existing post from resources/archives/..
 	function processSibling (post, direction) {
 		var path, sibling;
 
@@ -81,6 +70,9 @@
 		return sibling;
 	}
 
+	// Connect a new post's navigation with its existing sibling posts, saving the 
+	// existing sibling posts along the way. This allows us to add new posts and modify
+	// existing ones without having to rebuild every post from scratch.
 	function processSiblingPosts (post, sibling, state, index, direction) {
 		var oppDirection, nextSibling;
 
@@ -97,6 +89,9 @@
 
 		sibling = processSibling (post, direction);
 
+		// If a sibling has its own sibling, update the navigation of that post as well.
+		// This allows us to handle the case when more than one new post is added simultaneously
+		// and the previous most recent post is part of the sibling chain.
 		if (state.posts [index]) {
 			nextSibling = state.posts [index];
 
@@ -110,6 +105,7 @@
 		io.saveHtmlPage (sibling);
 	}
 
+	// Commit a post to disk.
 	function savePost (post) {
 		post.output = pa.compilePage (post);
 

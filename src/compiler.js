@@ -1,3 +1,5 @@
+// This is the 'heart' of subwave. It processes all incoming posts and pages from 
+// the inbox and generates necessary support pages such as archives.html.
 (function () {
 	'use strict';
 
