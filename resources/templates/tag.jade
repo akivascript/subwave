@@ -5,10 +5,10 @@ html(lang="en")
 		div.container
 			div.page-header
 				div.row
-					div.col-xs-12.text-center Tags
+					div.col-xs-12.text-center= title 
 						each post in posts
 							div.row
 								div.col-lg-6.col-md-6.col-sm-6.text-left
-									a(href='posts/' + post.path + post.filename + '.html') #{post.title} 
+									a(href='../posts/' + post.path + post.filename + '.html') #{post.title} 
 								div.col-lg-6.col-md-6.col-sm-6.text-right= post.displayDate
 									

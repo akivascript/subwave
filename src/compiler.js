@@ -10,6 +10,7 @@
 	var st = require ('./state');
 	var ta = require ('./tags');
 
+	// Ceci n'est pas un commentaire.
 	function compile () {
 		var archives, homePage, newEntries, posts, state;
 
@@ -21,7 +22,6 @@
 		}
 
 		newEntries = ar.createNewEntries (posts);
-		homePage = pa.createHomePage ([posts [posts.length - 1]]);
 
 		if (newEntries) {
 			state.posts = state.posts.concat (newEntries);
@@ -30,8 +30,6 @@
 				st.addPostToTagGroups (state, entry);
 			});
 		}
-
-		homePage.tags = state.tags;
 
 		st.saveState (state);
 
@@ -47,6 +45,11 @@
 		posts.forEach (function (post) {
 			po.savePost (post);
 		});
+
+		ta.createTagPages (state);
+		
+		homePage = pa.createHomePage ([posts [posts.length - 1]]);
+		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
 	}

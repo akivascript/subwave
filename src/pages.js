@@ -107,8 +107,6 @@
 	function processFile (source) {
 		var matches, pattern;
 
-		console.log (source);
-
 		// Matches '{key: value, key: value, ...} content ...'
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
 		matches = source.match (pattern);

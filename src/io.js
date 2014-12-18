@@ -107,6 +107,8 @@
 
 		if (page.type === 'post') {
 			path = postsPath;
+		} else if (page.type === 'tagpage') {
+			path = tagsPath;
 		} else if (page.type === 'page' || 
 							 page.type === 'archives' ||
 							 page.type === 'index') {

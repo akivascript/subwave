@@ -16,6 +16,9 @@ html(lang="en")
 						div.row
 							div.col-xs-7!= post.displayDate
 						div.row
-							div.col-xs-7!= post.tags
+							div.col-xs-7
+								each tag in post.tags
+									a(href='tags/' + tag + '.html') #{tag}
+									| 
 						div.row
 							div.col-xs-7!= post.content
