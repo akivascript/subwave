@@ -8,6 +8,11 @@ html(lang="en")
 			div.row
 				div.col-xs-12!= displayDate
 			div.row
+				div.col-xs-12 
+					each tag in tags
+						a(href='../../../tags/' + tag + '.html') #{tag}
+						| 
+			div.row
 				div.col-xs-12!= content
 					div.row
 						if previous

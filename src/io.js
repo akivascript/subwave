@@ -11,6 +11,7 @@
 	var archivePath = resourcesPath + 'archive/';
 	var publicPath = 'public/';
 	var postsPath = publicPath + 'posts/';
+	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
 
 	// In subwave, posts are grouped by year and then by month; this function
@@ -141,5 +142,6 @@
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
 	module.exports.resourcesPath = resourcesPath;
+	module.exports.tagsPath = tagsPath;
 	module.exports.templatesPath = templatesPath;
 } ());
