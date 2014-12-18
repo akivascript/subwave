@@ -107,13 +107,15 @@
 	function processFile (source) {
 		var matches, pattern;
 
+		console.log (source);
+
 		// Matches '{key: value, key: value, ...} content ...'
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
 		matches = source.match (pattern);
 
 		if (!matches || matches.length === 0) {
 			throw {
-				type: 'Error',
+				name: 'Error',
 				message: 'The file isn\'t the correct format.'
 			};
 		}
