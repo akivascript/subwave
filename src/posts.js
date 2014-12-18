@@ -58,15 +58,13 @@
 		return target;
 	}
 
+	// Loads and processes an existing post from resources/archives/..
 	function processSibling (sibling, direction) {
 		var file, filename, path;
 
 		path = sibling.path;
 		filename = sibling.filename;
-
-	// Loads and processes an existing post from resources/archives/..
-	function processSibling (post, direction) {
-		var path, sibling;
+		file = io.readFile (io.archivePath + path + filename + '.md');
 
 		sibling.type = 'post';
 		sibling.content = pa.getFileContent (file);

@@ -10,6 +10,7 @@
 	var st = require ('./state');
 	var ta = require ('./tags');
 
+	// Ceci n'est pas un commentaire.
 	function compile () {
 		var archives, homePage, newEntries, posts, state;
 
