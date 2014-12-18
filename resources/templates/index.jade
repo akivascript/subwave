@@ -8,8 +8,8 @@ include ./includes/head.jade
 						h4.taglist Tags
 						div.taglist
 							each tag in Object.keys (tags).sort ()
-								a(href='/tags/' + tag + '.html') #{tag}
-								br/
+								a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
+								| 
 					div.col-xs-9
 						each post in posts
 							div.row
