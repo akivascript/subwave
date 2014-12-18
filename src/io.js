@@ -21,7 +21,7 @@
 	function getPostDirectoryPathname (date) {
 		var newPath, dateArray;
 
-		dateArray = parseDate (date);
+		dateArray = splitDate (date);
 		newPath = dateArray [0] + '/' + dateArray [1] + '/';
 
 		return newPath;
@@ -32,7 +32,7 @@
 
 		titleArray = title.split (' ');
 		newTitle = titleArray.join ('-');
-		dateArray = parseDate (date);
+		dateArray = splitDate (date);
 
 		return (dateArray.join ('-') + '-' + newTitle).toLowerCase ();
 	}
@@ -53,7 +53,7 @@
 		});
 	}
 
-	function parseDate (date) {
+	function splitDate (date) {
 		var day, month, year;
  
 		year = date.getFullYear ();

@@ -42,7 +42,9 @@
 
 		ar.saveArchives (archives);
 
-		po.savePosts (posts);
+		posts.forEach (function (post) {
+			po.savePost (post);
+		});
 
 		pa.savePage (homePage);
 	}
