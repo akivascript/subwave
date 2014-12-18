@@ -1,24 +1,36 @@
-doctype html
-html(lang="en")
-	include ./includes/head.jade
+include ./includes/head.jade
 	body
-		div.container
-			div.row
-				div.col-xs-3 Sidebar!
-					each tag in Object.keys (tags)
-						div.row
-							div.col.xs.3
-								a(href='tags/' + tag + '.html') #{tag}
-				div.col-xs-7
-					each post in posts
-						div.row
-							div.col-xs-7!= post.title
-						div.row
-							div.col-xs-7!= post.displayDate
-						div.row
-							div.col-xs-7
-								each tag in post.tags
-									a(href='tags/' + tag + '.html') #{tag}
-									| 
-						div.row
-							div.col-xs-7!= post.content
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container(style='margin-top: 75px;')
+				div.row
+					div.col-xs-3 
+						h4.taglist Tags
+						div.taglist
+							each tag in Object.keys (tags).sort ()
+								a(href='/tags/' + tag + '.html') #{tag}
+								br/
+					div.col-xs-9
+						each post in posts
+							div.row
+								div.col-xs-12
+									div.post-matter
+										h5.post-date= post.displayDate
+										h2.post-title= post.title
+									div.tags.text-right
+										each tag in post.tags
+											a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
+											| 
+									div!= post.content
+									div.post-nav
+										div.col-md-6.text-right.post-nav-divider-l
+											if previous
+												h3
+													a(href='/posts/' + previous.path + previous.filename + '.html') #{previous.title}
+												h4.post-nav-label Previous
+										div.col-md-6.text-left.post-nav-divider-r
+											if next
+												h3
+													a(href='/posts/' + next.path + next.filename + '.html') #{next.title}
+												h4.post-nav-label Next
+			include ./includes/footer.jade

@@ -1,14 +1,17 @@
-doctype html
-html(lang="en")
-	include ./includes/head.jade
+include ./includes/head.jade
 	body
-		div.container
-			div.page-header
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container(style='margin-top: 30px;')
 				div.row
-					div.col-xs-12.text-center Archives
+					div.col-md-2
+					div.col-md-8
+						div.page-header
+							h1.text-center Archives
 						each post in posts
 							div.row
-								div.col-lg-6.col-md-6.col-sm-6.text-left
-									a(href='posts/' + post.path + post.filename + '.html') #{post.title} 
-								div.col-lg-6.col-md-6.col-sm-6.text-right= post.displayDate
-									
+								div.col-md-6.text-left
+									a(href='/posts/' + post.path + post.filename + '.html') #{post.title} 
+								div.col-md-6.text-right= post.displayDate
+					div.col-md-2
+		include ./includes/footer.jade

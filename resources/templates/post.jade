@@ -1,27 +1,29 @@
-doctype html
-html(lang="en")
-	include ./includes/head.jade
+include ./includes/head.jade
 	body
-		div.container
-			div.row
-				div.col-xs-12!= title
-			div.row
-				div.col-xs-12!= displayDate
-			div.row
-				div.col-xs-12 
-					each tag in tags
-						a(href='../../../tags/' + tag + '.html') #{tag}
-						| 
-			div.row
-				div.col-xs-12!= content
-					div.row
-						if previous
-							div.col-md-6.text-right
-								| Previous: 
-								// Temporary while using file://
-								a(href='../../' + previous.path + previous.filename + '.html') #{previous.title}
-						if next
-							div.col-md-6.text-left
-								| Next: 
-								// Temporary while using file://
-								a(href='../../' + next.path + next.filename + '.html') #{next.title}
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container(style='margin-top: 75px;')
+				div.row
+					div.col-md-1
+					div.col-xs-10
+						div.post-matter
+							h5.post-date= displayDate
+							h2.post-title= title
+						div.tags.text-right
+							each tag in tags
+								a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
+								| 
+						div.post-content!= content
+						div.post-nav
+							div.col-md-6.text-right.post-nav-divider-l
+								if previous
+									h3
+										a(href='/posts/' + previous.path + previous.filename + '.html') #{previous.title}
+									h4.post-nav-label Previous
+							div.col-md-6.text-left.post-nav-divider-r
+								if next
+									h3
+										a(href='/posts/' + next.path + next.filename + '.html') #{next.title}
+									h4.post-nav-label Next
+					div.col-md-1
+		include ./includes/footer.jade
