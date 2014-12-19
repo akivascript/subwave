@@ -9,6 +9,26 @@ body {
 	background-color: #efefef;
 }
 
+div.bq {
+	margin: 20px 0px 19px 0px;
+	text-align: center;
+}
+
+.green {
+	color: #7f887f;
+}
+
+div.bq span {
+	background-color: #a9b5a9;
+	color: #eee;
+	
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+
+	padding: 5px 10px 5px 10px;
+}
+
 .btn-tag {
 	padding: 2px 6px;
 	
