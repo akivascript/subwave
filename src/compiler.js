@@ -40,8 +40,8 @@
 
 				io.createPostDirectory (archivePath + post.path);
 
-//				io.renameFile (io.inboxPath + post.origFilename, 
-//											 archivePath + post.path + post.filename + '.md');
+				io.renameFile (io.inboxPath + post.origFilename, 
+											 archivePath + post.path + post.filename + '.md');
 			});
 		
 			// We handle appending the archives first (above) so we can more easily determine
