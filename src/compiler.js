@@ -3,7 +3,7 @@
 (function () {
 	'use strict';
 
-	var rss = require ('rss');
+	var Rss = require ('rss');
 
 	var ar = require ('./archives');
 	var io = require ('./io');
@@ -16,62 +16,69 @@
 
 	// Ceci n'est pas un commentaire.
 	function compile () {
-		var archives, archivePath, homePage, newEntries, posts, state;
+		var archives, archivePath, homePage, entries, pages, posts, state;
 
-		state = st.getState ();
-		posts = po.getNewPosts ();
+		pages = pa.getNewPages ();
 
-		if (!posts || posts.length === 0) {
-			console.log ('No new posts found');
+		if (pages.length === 0) {
+			console.log ('No new pages found');
 
 			return 1;
 		}
 
-		newEntries = ar.createNewEntries (posts);
+		state = st.getState ();
+		posts = po.getPosts (pages);
+		entries = ar.createNewArchiveEntries (posts);
 
-		if (newEntries) {
-			state.posts = state.posts.concat (newEntries);
+		if (posts.length !== 0) {
+			state.posts = state.posts.concat (entries);
 
-			newEntries.forEach (function (entry) {
-				st.addPostToTagGroups (state, entry);
+			posts.forEach (function (post) {
+				st.addPostToTagGroups (state, post);
+
+				archivePath = io.archivePath + 'posts/';
+
+				io.createPostDirectory (archivePath + post.path);
+
+//				io.renameFile (io.inboxPath + post.origFilename, 
+//											 archivePath + post.path + post.filename + '.md');
 			});
+		
+			// We handle appending the archives first (above) so we can more easily determine
+			// if a post has siblings that need to be handled.
+			po.handlePostsWithSiblings (state, posts);
+
+			archives = ar.createArchives (state.posts);
+			archives = pa.createPage (JSON.stringify (archives));
+
+			ar.saveArchives (archives);
+
+			posts.forEach (function (post) {
+				po.savePost (post);
+			});
+
+			ta.createTagPages (state);
+
+			updateRssFeed (state);
+
+			st.saveState (state);
 		}
 
-		st.saveState (state);
+		pages.forEach (function (page) {
+			if (page.type !== 'post') {
+				pa.savePage (page);
 
-		posts.forEach (function (post) {
-			archivePath = io.archivePath + 'posts/';
-
-			io.createPostDirectory (archivePath + post.path);
-
-			io.renameFile (io.inboxPath + post.origFilename, 
-										 archivePath + post.path + post.filename + '.md');
+				io.renameFile (io.inboxPath + page.origFilename, 
+											 io.archivePath + page.origFilename);
+			}
 		});
-
-		// We handle appending the archives first (above) so we can more easily determine
-		// if a post has siblings that need to be handled.
-		po.handlePostsWithSiblings (state, posts);
-
-		archives = ar.createArchives (state.posts);
-		archives = pa.createPage (JSON.stringify (archives));
-
-		ar.saveArchives (archives);
-
-		posts.forEach (function (post) {
-			po.savePost (post);
-		});
-
-		ta.createTagPages (state);
 		
 		homePage = pa.createHomePage ([posts [posts.length - 1]]);
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
 
-		io.copyFile (io.resourcesPath + 'css/screen.css',
-								 io.publicPath + 'css/screen.css');
-
-		updateRssFeed (state);
+		io.copyFile (io.resourcesPath + 'css/screen.css', io.publicPath + 'css/screen.css');
 	}
 
 	function updateRssFeed (state) {
@@ -87,7 +94,7 @@
 			pubDate: new Date ()
 		};
 
-		feed = new rss (feedOptions);
+		feed = new Rss (feedOptions);
 
 		state.posts.reverse ();
 

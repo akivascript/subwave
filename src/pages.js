@@ -2,11 +2,15 @@
 	'use strict';
 
 	var jade = require ('jade');
-	var mkdwn = require ('markdown').markdown;
+	var marked = require ('marked');
 	var moment = require ('moment');
 
 	var io = require ('./io');
 
+	marked.setOptions ({
+		smartypants: true
+	});
+	
 	function convertStringToDate (date) {
 		var pattern;
 
@@ -58,7 +62,7 @@
 			page [attr] = metadata [attr];
 		}
 
-		content = mkdwn.toHTML (matches [2]);
+		content = marked (matches [2]);
 
 		if (content) {
 			page.content = content;
@@ -71,6 +75,7 @@
 			page.path = io.getPostDirectoryPathname (page.date);
 		} else if (page.type === 'page') {
 			page.template = io.templatesPath + 'page.jade';
+			page.filename = page.title.toLowerCase ();
 		} else if (page.type === 'archives') {
 			page.template = io.templatesPath + 'archives.jade';
 			page.filename = 'archives';
@@ -99,7 +104,12 @@
 
 		matches = processFile (source);
 
-		return mkdwn.toHTML (matches [2]);
+		return marked (matches [2]);
+	}
+
+	// An indirector for clarity.
+	function getNewPages () {
+		return io.readFiles (io.inboxPath, createPage);
 	}
 
 	// Takes the contents of a file as a string and separates the metadata from the
@@ -133,5 +143,6 @@
 	module.exports.createPage = createPage;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getFileContent = getFileContent;
+	module.exports.getNewPages = getNewPages;
 	module.exports.savePage = savePage;
 } ());

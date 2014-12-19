@@ -39,7 +39,7 @@
 						});
 					}
 				}
-			};
+			}
 
 			pa.savePage (page);
 		}

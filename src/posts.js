@@ -7,9 +7,14 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 
-	// An indirector for clarity.
-	function getNewPosts () {
-		return io.readFiles (io.inboxPath, pa.createPage);
+	function getPosts (files) {
+		return files.filter (function (file) {
+			if (file.type === 'post') {
+				return true;
+			}
+
+			return false;
+		});
 	}
 
 	// This function adds new posts to the archives object which is used to:
@@ -117,7 +122,7 @@
 		io.saveHtmlPage (post);
 	}
 
-	module.exports.getNewPosts = getNewPosts;
+	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePost = savePost;
 } ());

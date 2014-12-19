@@ -57,16 +57,18 @@
 	}
 
 	// This... maybe unnecessary. Hold tight.
-	function createNewEntries (posts) {
-		var i, newEntries;
+	function createNewArchiveEntries (files) {
+		var i, entries;
 
-		newEntries = [];
+		entries = [];
 
-		for (i = 0; i < posts.length; i = i + 1) {
-			newEntries.push (copyPostData (posts [i]));
+		for (i = 0; i < files.length; i = i + 1) {
+			if (files [i].type === 'post') {
+				entries.push (copyPostData (files [i]));
+			}
 		}
 
-		return newEntries;
+		return entries;
 	}
 
 	// Compiles archives.html and commits it to disk.
@@ -77,6 +79,6 @@
 	}
 
 	module.exports.createArchives = createArchives;
-	module.exports.createNewEntries = createNewEntries;
+	module.exports.createNewArchiveEntries = createNewArchiveEntries;
 	module.exports.saveArchives = saveArchives;
 } ());
