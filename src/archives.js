@@ -4,6 +4,7 @@
 	'use strict';
 
 	var jade = require ('jade');
+	var marked = require ('marked');
 
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -18,6 +19,7 @@
 
 		archives.posts.forEach (function (post) {
 			post.displayDate = pa.formatDateForDisplay (post.date);
+			post.title = marked (post.title);
 		});
 
 		return compiler (archives);

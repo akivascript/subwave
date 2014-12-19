@@ -19,12 +19,12 @@ html(lang="en")
 									div.col-xs-12
 										div.post-matter
 											h5.post-date= post.displayDate
-											h2.post-title= post.title
+											h1.post-title!= post.title
 										div.tags.text-right
 											each tag in post.tags
 												a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
 												| 
-										div!= post.content
+										div.post-content!= post.content
 										div.post-nav
 											div.col-md-6.text-right.post-nav-divider-l
 												if previous
