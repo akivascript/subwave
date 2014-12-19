@@ -43,7 +43,15 @@ body {
 }
 
 .post-content {
-	margin: 10px 10px 25px 10px;
+	margin: 15px 10px 25px 10px;
+}
+
+.post-content img {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+
+	border: 1px solid #aaa;
 }
 
 .post-date {
