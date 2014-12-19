@@ -40,8 +40,8 @@
 
 				io.createPostDirectory (archivePath + post.path);
 
-				io.renameFile (io.inboxPath + post.origFilename, 
-											 archivePath + post.path + post.filename + '.md');
+//				io.renameFile (io.inboxPath + post.origFilename, 
+//											 archivePath + post.path + post.filename + '.md');
 			});
 		
 			// We handle appending the archives first (above) so we can more easily determine
@@ -78,7 +78,10 @@
 
 		pa.savePage (homePage);
 
-		io.copyFile (io.resourcesPath + 'css/screen.css', io.publicPath + 'css/screen.css');
+		// This will soon be part of the configuration options. This will be the default.
+		['css', 'js', 'img'].forEach (function (resource) {
+			io.copyFilesRecursively (io.resourcesPath + resource, io.publicPath + resource);
+		});
 	}
 
 	function updateRssFeed (state) {
