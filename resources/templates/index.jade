@@ -12,25 +12,26 @@ include ./includes/head.jade
 								br/
 					div.col-xs-9
 						each post in posts
-							div.row
-								div.col-xs-12
-									div.post-matter
-										h5.post-date= post.displayDate
-										h2.post-title= post.title
-									div.tags.text-right
-										each tag in post.tags
-											a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
-											| 
-									div!= post.content
-									div.post-nav
-										div.col-md-6.text-right.post-nav-divider-l
-											if previous
-												h3
-													a(href='/posts/' + previous.path + previous.filename + '.html') #{previous.title}
-												h4.post-nav-label Previous
-										div.col-md-6.text-left.post-nav-divider-r
-											if next
-												h3
-													a(href='/posts/' + next.path + next.filename + '.html') #{next.title}
-												h4.post-nav-label Next
+							if post
+								div.row
+									div.col-xs-12
+										div.post-matter
+											h5.post-date= post.displayDate
+											h2.post-title= post.title
+										div.tags.text-right
+											each tag in post.tags
+												a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
+												| 
+										div!= post.content
+										div.post-nav
+											div.col-md-6.text-right.post-nav-divider-l
+												if previous
+													h3
+														a(href='/posts/' + previous.path + previous.filename + '.html') #{previous.title}
+													h4.post-nav-label Previous
+											div.col-md-6.text-left.post-nav-divider-r
+												if next
+													h3
+														a(href='/posts/' + next.path + next.filename + '.html') #{next.title}
+													h4.post-nav-label Next
 			include ./includes/footer.jade
