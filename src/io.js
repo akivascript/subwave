@@ -5,6 +5,7 @@
 
 	var fs = require ('fs');
 	var md = require ('mkdirp');
+	var ncp = require ('ncp');
 
 	var resourcesPath = 'resources/';
 	var inboxPath	= resourcesPath + 'inbox/';
@@ -14,8 +15,20 @@
 	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
 
+	// Copies a file.
 	function copyFile (oldPath, newPath) {
 		fs.createReadStream (oldPath).pipe (fs.createWriteStream (newPath));
+	}
+
+	// Copies a directory structure recursively
+	function copyFilesRecursively (srcPath, destPath) {
+		ncp.limit = 16;
+
+		ncp (srcPath, destPath, function (err) {
+			if (err) {
+				return console.log (err);
+			}
+		});
 	}
 
 	// In subwave, posts are grouped by year and then by month; this function
@@ -144,6 +157,7 @@
 	}
 	
 	module.exports.copyFile = copyFile;
+	module.exports.copyFilesRecursively = copyFilesRecursively;
 	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
