@@ -63,17 +63,6 @@
 		});
 	}
 
-	// Split a Date object into an array.
-	function splitDate (date) {
-		var day, month, year;
- 
-		year = date.getFullYear ();
-		month = ('0' + (date.getMonth () + 1)).slice (-2);
-		day = ('0' + date.getDate ()).slice (-2);
-
-		return [year, month, day];
-	}
-
 	// Reads the contents of a file.
 	function readFile (filename) {
 		return fs.readFileSync (filename, 'utf8');
@@ -82,22 +71,29 @@
 	// Reads the contents of a list of files and add them to an array. If a function
 	// is provided, process the file contents first.
 	function readFiles (path, fn) {
-		var filelist, files;
+		var file, filelist, files;
 
 		files = [];
 		filelist = getFileList (path);
 
-		filelist.forEach (function (file) {
-			file = readFile (path + file);
+		filelist.forEach (function (filename) {
+			file = readFile (path + filename);
 
 			if (fn) {
-				files.push (fn (file));
-			} else {
-				files.push (file);
+				file = fn (file);
+				
+				file.origFilename = filename;
 			}
+
+			files.push (file);
 		});
 
 		return files;
+	}
+
+	// Renames and/or moves a file.
+	function renameFile (oldPath, newPath) {
+		fs.renameSync (oldPath, newPath);
 	}
 
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
@@ -127,6 +123,17 @@
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
 
+	// Split a Date object into an array.
+	function splitDate (date) {
+		var day, month, year;
+ 
+		year = date.getFullYear ();
+		month = ('0' + (date.getMonth () + 1)).slice (-2);
+		day = ('0' + date.getDate ()).slice (-2);
+
+		return [year, month, day];
+	}
+
 	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
 		fs.writeFileSync (filename, content);
@@ -137,6 +144,7 @@
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
+	module.exports.renameFile = renameFile;
 	module.exports.writeFile = writeFile;
 	module.exports.saveHtmlPage = saveHtmlPage;
 

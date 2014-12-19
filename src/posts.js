@@ -64,7 +64,7 @@
 
 		path = sibling.path;
 		filename = sibling.filename;
-		file = io.readFile (io.archivePath + path + filename + '.md');
+		file = io.readFile (io.archivePath + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
 		sibling.content = pa.getFileContent (file);
