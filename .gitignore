@@ -1,6 +1,5 @@
 node_modules/**/build
-public/*.html
-public/posts/
+public/
 resources/archive/
 resources/inbox/
 resources/public/
