@@ -1,0 +1,88 @@
+a {
+	color: #8798a7;
+}
+a:hover {
+	text-decoration: none;
+}
+
+body {
+	background-color: #efefef;
+}
+
+.btn-tag {
+	padding: 2px 6px;
+	
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+
+	background-color: #8798a7;
+	border-color: #8798a7;
+	font-size: 8pt;
+}
+
+.btn-tag:hover {
+	background-color: #6f7d8a;
+	border-color: #6f7d8a;
+}
+
+.footer {
+	margin-top: 50px;
+	margin-bottom: 25px;
+	padding-top: 15px;
+	border-top: 1px solid #ddd;
+}
+
+.navbar-default {
+	background-color: #8798a7;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+	background-color: #6f7d8a;
+}
+
+.post-content {
+	margin: 10px 10px 25px 10px;
+}
+
+.post-date {
+	color: #aaaaaa;
+}
+
+.post-title {
+	margin-top: -10px;
+}
+
+.post-matter {
+	border-bottom: 1px solid #ddd;
+}
+
+.post-nav {
+	margin-top: 40px;
+}
+
+.post-nav-divider-l {
+	border-right: 1px dotted #ddd;
+}
+
+.post-nav-divider-r {
+	border-left: 1px dotted #ddd;
+}
+
+.tags {
+	margin-top: 10.5px;
+}
+
+.post-nav-label {
+	margin-top: -10px;
+	color: #ccc;
+}
+
+h4.taglist {
+	margin-bottom: 5px;
+}
+
+div.taglist {
+	padding-left: 10px;
+}

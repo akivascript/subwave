@@ -68,6 +68,9 @@
 
 		pa.savePage (homePage);
 
+		io.copyFile (io.resourcesPath + 'css/screen.css',
+								 io.publicPath + 'css/screen.css');
+
 		updateRssFeed (state);
 	}
 

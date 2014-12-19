@@ -14,6 +14,10 @@
 	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
 
+	function copyFile (oldPath, newPath) {
+		fs.createReadStream (oldPath).pipe (fs.createWriteStream (newPath));
+	}
+
 	// In subwave, posts are grouped by year and then by month; this function
 	// creates this year/month path based on the filename of the post itself.
 	function createPostDirectory (path) {
@@ -139,6 +143,7 @@
 		fs.writeFileSync (filename, content);
 	}
 	
+	module.exports.copyFile = copyFile;
 	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
