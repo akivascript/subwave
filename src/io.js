@@ -56,7 +56,7 @@
 	function getPostFilename (title, date) {
 		var dateArray, day, month, newTitle, titleArray, year;
 
-		titleArray = title.split (' ');
+		titleArray = title.replace(/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
 		dateArray = splitDate (date);
 
