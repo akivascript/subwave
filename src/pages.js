@@ -26,6 +26,7 @@
 		compiler = jade.compileFile (page.template, { pretty: true });
 
 		page.displayDate = formatDateForDisplay (page.date);
+		page.headTitle = page.title
 		page.title = marked (page.title);
 
 		return compiler (page);
