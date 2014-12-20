@@ -14,11 +14,11 @@ Customize the site layout by editing the files in resources/templates and resour
 
 To upload the site to a remote server, I use the following:
 
-`rsync --verbose  --progress --stats --compress --rsh=/usr/bin/ssh --recursive --times --perms --links --delete public/* user@remote-site.com:remote-dir`
+	rsync --verbose  --progress --stats --compress --rsh=/usr/bin/ssh --recursive --times --perms --links --delete public/* user@remote-site.com:remote-dir
 
 ## What's Next?
 
-Make this more user-friendly. It's pretty close to being a decent OOBE experience but there are a few things missing like `subwave init`.
+Make this more user-friendly. It's pretty close to being a decent OOBE experience but there are a few things missing like an easily-modified configuration file, `subwave init` to get a new site up and running quickly, and I'd like to add something like `subwave deploy` so you don't need to run `rsync` by hand. Also, fewer lens flares.
 
 ## What's It Look Like in Action?
 
