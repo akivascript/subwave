@@ -127,7 +127,7 @@
 
 	// Converts a Date object into the string expected in a new post file.
 	function formatDateForMetadata (date) {
-		return moment (date).format ('YYYY-MM-DD HH:mm')
+		return moment (date).format ('YYYY-MM-DD HH:mm');
 	}
 
 	// Examines the date (expected to be from a post) to generate the year/month

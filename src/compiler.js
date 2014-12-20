@@ -73,7 +73,12 @@
 			}
 		});
 		
-		homePage = pa.createHomePage ([posts [posts.length - 1]]);
+		state.posts.forEach (function (post) {
+			post.excerpt = po.getExcerpt (post.content);
+		});
+
+		state.posts.reverse ();
+		homePage = pa.createHomePage (state.posts.slice (-3))
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);

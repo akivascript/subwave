@@ -7,6 +7,31 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 
+	function getExcerpt (content) {
+		var graf, paragraphs, count, total, excerpt;
+
+		count = 0;
+		total = 0;
+		excerpt = [];
+		paragraphs = content.split (/\n/);
+
+		for (var i = 0; i < paragraphs.length; i++) {
+			graf = paragraphs [i];
+
+			count = graf.split (' ').length;
+
+			if (total + count < 141) {
+				excerpt.push (graf);
+
+				total = total + count;
+			} else {
+				break;
+			}
+		}
+
+		return excerpt.join ('\n');
+	}
+
 	function getPosts (files) {
 		return files.filter (function (file) {
 			if (file.type === 'post') {
@@ -122,6 +147,7 @@
 		io.saveHtmlPage (post);
 	}
 
+	module.exports.getExcerpt = getExcerpt;
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePost = savePost;
