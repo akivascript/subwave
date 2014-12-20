@@ -56,6 +56,9 @@
 		// TODO: What did you do, Ray.
 		idx = state.posts.length - posts.length;
 
+		state.posts.reverse ();
+		posts.reverse ();
+
 		posts.forEach (function (post) {
 			var next, previous;
 		

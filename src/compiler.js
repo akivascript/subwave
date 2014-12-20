@@ -61,6 +61,7 @@
 
 			updateRssFeed (state);
 
+			state.posts.reverse ();
 			st.saveState (state);
 		}
 
@@ -73,11 +74,11 @@
 			}
 		});
 		
+		state.posts.reverse ();
 		state.posts.forEach (function (post) {
 			post.excerpt = po.getExcerpt (post.content);
 		});
 
-		state.posts.reverse ();
 		homePage = pa.createHomePage (state.posts.slice (-3))
 		homePage.tags = state.tags;
 

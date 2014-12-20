@@ -15,6 +15,8 @@
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
+		archives.posts.reverse ();
+
 		archives.posts.forEach (function (post) {
 			post.displayDate = pa.formatDateForDisplay (post.date);
 			post.title = marked (post.title);
