@@ -10,7 +10,7 @@ html(lang="en")
 					div.col-xs-10(style='padding-left: 40px; padding-right: 40px;')
 						div.post-matter
 							h5.post-date= displayDate
-							h2.post-title!= title
+							h1.post-title!= title
 						div.tags.text-right
 							each tag in tags
 								a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
