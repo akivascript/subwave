@@ -26,7 +26,7 @@
 		compiler = jade.compileFile (page.template, { pretty: true });
 
 		page.displayDate = formatDateForDisplay (page.date);
-		page.headTitle = page.title
+		page.headTitle = page.title;
 		page.title = marked (page.title);
 
 		return compiler (page);
@@ -53,14 +53,14 @@
 	// to JSON. This front matter is used to configure the page, determine its type,
 	// and so forth
 	function createPage (source) {
-		var content, compiler, filename, metadata, matches, page;
+		var attr, content, compiler, filename, i, metadata, matches, page;
 
 		matches = processFile (source);
 
 		metadata = JSON.parse (matches [1]);
 		page = {};
 
-		for (var attr in metadata) {
+		for (attr in metadata) {
 			page [attr] = metadata [attr];
 		}
 
@@ -83,8 +83,8 @@
 			page.filename = 'archives';
 		} else {
 			throw {
-				type: 'Error',
-				message: 'Unable to determine template type from page.'
+				name: 'Error',
+				message: 'Unable to determine template type from page: ' + page
 			};
 		}
 

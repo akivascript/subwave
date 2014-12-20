@@ -16,7 +16,7 @@
 
 	// Ceci n'est pas un commentaire.
 	function compile () {
-		var archives, archivePath, homePage, entries, pages, posts, state;
+		var archives, archivePath, homePage, i, entries, page, pages, post, posts, state;
 
 		pages = pa.getNewPages ();
 
@@ -33,7 +33,9 @@
 		if (posts.length !== 0) {
 			state.posts = state.posts.concat (entries);
 
-			posts.forEach (function (post) {
+			for (i = 0; i < posts.length; i++) {
+				post = posts [i];
+
 				st.addPostToTagGroups (state, post);
 
 				archivePath = io.archivePath + 'posts/';
@@ -42,7 +44,7 @@
 
 				io.renameFile (io.inboxPath + post.origFilename, 
 											 archivePath + post.path + post.filename + '.md');
-			});
+			}
 		
 			// We handle appending the archives first (above) so we can more easily determine
 			// if a post has siblings that need to be handled.
@@ -53,9 +55,11 @@
 
 			ar.saveArchives (archives);
 
-			posts.forEach (function (post) {
+			for (i = 0; i < posts.length; i++) {
+				post = posts [i];
+
 				po.savePost (post);
-			});
+			}
 
 			ta.createTagPages (state);
 
@@ -65,21 +69,25 @@
 			st.saveState (state);
 		}
 
-		pages.forEach (function (page) {
+		for (i = 0; i < pages.length; i++) {
+			page = pages [i];
+
 			if (page.type !== 'post') {
 				pa.savePage (page);
 
 				io.renameFile (io.inboxPath + page.origFilename, 
 											 io.archivePath + page.origFilename);
 			}
-		});
+		}
 		
-		state.posts.reverse ();
-		state.posts.forEach (function (post) {
-			post.excerpt = po.getExcerpt (post.content);
-		});
+		for (i = 0; i < posts.length; i++) {
+			post = posts [i];
 
-		homePage = pa.createHomePage (state.posts.slice (-3))
+			post.excerpt = po.getExcerpt (post.content);
+		}
+
+		posts.reverse ();
+		homePage = pa.createHomePage (posts.slice (-3));
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);

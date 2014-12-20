@@ -11,16 +11,18 @@
 
 	// Compile archives.html through Jade.
 	function compile (archives) {
-		var compiler;
+		var compiler, i, post;
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
 		archives.posts.reverse ();
 
-		archives.posts.forEach (function (post) {
+		for (i = 0; i < archives.posts.length; i++) {
+			post = archives.posts [i];
+
 			post.displayDate = pa.formatDateForDisplay (post.date);
 			post.title = marked (post.title);
-		});
+		}
 
 		return compiler (archives);
 	}
@@ -43,7 +45,7 @@
 	// Creates a new archives object. The archives.html file is recreated each time
 	// a post is added to the blog.
 	function createArchives (posts) {
-		var archives;
+		var archives, i, post;
 
 		archives = {
 			type: "archives",
@@ -51,9 +53,11 @@
 			posts: []
 		};
 
-		posts.forEach (function (post) {
+		for (i = 0; i < posts.length; i++) {
+			post = posts [i];
+
 			archives.posts.push (copyPostData (post));
-		});
+		}
 
 		return archives;
 	}

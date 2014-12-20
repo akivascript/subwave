@@ -9,7 +9,11 @@
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
 	// This is used for generation the tag index pages.
 	function addPostToTagGroups (state, post) {
-		post.tags.forEach (function (tag) {
+		var i, tag;
+
+		for (i = 0; i < post.tags.length; i++) {
+			tag = post.tags [i];
+
 			if (!state.tags [tag]) {
 				state.tags [tag] = {
 					posts: []
@@ -17,7 +21,7 @@
 			}
 
 			state.tags [tag].posts.push (post.filename);
-		});
+		}
 	}
 
 	// Returns a JSON object representing the current state of the blog

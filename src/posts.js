@@ -8,14 +8,14 @@
 	var pa = require ('./pages');
 
 	function getExcerpt (content) {
-		var graf, paragraphs, count, total, excerpt;
+		var count, excerpt, graf, i, paragraphs, total;
 
 		count = 0;
 		total = 0;
 		excerpt = [];
 		paragraphs = content.split (/\n/);
 
-		for (var i = 0; i < paragraphs.length; i++) {
+		for (i = 0; i < paragraphs.length; i++) {
 			graf = paragraphs [i];
 
 			count = graf.split (' ').length;
@@ -51,7 +51,7 @@
 	// most recent post needs to be loaded and have a 'next' link added to point to
 	// the new most recent post.
 	function handlePostsWithSiblings (state, posts) {
-		var idx;
+		var i, idx, next, post, previous;
 
 		// TODO: What did you do, Ray.
 		idx = state.posts.length - posts.length;
@@ -59,9 +59,8 @@
 		state.posts.reverse ();
 		posts.reverse ();
 
-		posts.forEach (function (post) {
-			var next, previous;
-		
+		for (i = 0; i < posts.length; i++) {
+			post = posts [i];
 			next = state.posts [idx + 1];
 			previous = state.posts [idx - 1];
 
@@ -74,7 +73,7 @@
 			}
 
 			idx = idx + 1;
-		});
+		}
 	}
 
 	// Links navigation information between two posts
