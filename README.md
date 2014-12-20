@@ -1,6 +1,6 @@
 # subwave
 
-A static blog generator using JavaScript ind Node n the spirit of Octopress/Jekyll and Cryogen.
+A static blog generator using JavaScript and Node in the spirit of Octopress/Jekyll and Cryogen.
 
 ## Installation
 
@@ -22,7 +22,19 @@ Make this more user-friendly. It's pretty close to being a decent OOBE experienc
 
 ## What's It Look Like in Action?
 
-My brand-new-still-has-the-fresh-bits-stank-on-it site is [here](http://www.backedupsomewhere.com). It's customized off of [Yeti](http://bootswatch.com/yeti/).
+My brand-new-still-has-the-fresh-bits-stank-on-it site is [here](http://www.backedupsomewhere.com). The layout is customized off of [Yeti](http://bootswatch.com/yeti/). It's currently designed to look like just about every other homebrewed tech blog out there so as not to frighten people off or cause things to burst into flames for no reason. I expect future sprucage. It's safe to say the caffeine has kicked in right as I was typing this paragraph.
+
+### Built With Joy Featuring
+
+* [Bootstrap](http://www.getbootstrap.com)
+* [Jade](http://jade-lang.com)
+* [commander](https://www.npmjs.com/package/commander)
+* [marked](https://www.npmjs.com/package/marked)
+* [rss](https://www.npmjs.com/package/rss)
+
+* [Grunt](http://gruntjs.com/)
+* [Mocha](http://mochajs.org/)
+* [Chai](http://chaijs.com)
 
 ## License
 
