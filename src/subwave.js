@@ -24,6 +24,37 @@
 		});
 
 	subwave
+		.command ('new [type] [title] [author] [tags...]')
+		.description ('Create a new post or page (defaults to a new post)')
+		.action (function (type, title, author, tags) {
+			var metadata;
+
+			metadata = {};
+
+			if (type) {
+				metadata.type = type;
+			} else {
+				metadata.type = 'post';
+			}
+
+			if (title) {
+				metadata.title = title;
+			}
+
+			if (author) {
+				metadata.author = author;
+			}
+
+			if (tags) {
+				metadata.tags = tags;
+			}
+
+			io.createNewFile (metadata);
+
+			process.exit ();
+		});
+
+	subwave
 		.version ('0.8')
 		.option ('-cp, --clean-public', 'Clean /public directories')
 		.option ('-ca, --clean-archive', 'Clean /resources/archive directories')

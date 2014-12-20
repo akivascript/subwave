@@ -5,6 +5,7 @@
 
 	var fs = require ('fs');
 	var md = require ('mkdirp');
+	var moment = require ('moment');
 	var ncp = require ('ncp');
 	var rm = require ('rimraf');
 
@@ -29,22 +30,27 @@
 		clean (deletes, prunes, verbose);
 	}
 
+	// Deletes and prunes files and directories.
 	function clean (deletes, prunes, verbose) {
-		deletes.forEach (function (path) {
-			processFiles (path, function (target, stats) {
-				if (stats.isFile ()) {
-					removeFile (target, verbose);
-				}
+		if (deletes.length > 0) {
+			deletes.forEach (function (path) {
+				processFiles (path, function (target, stats) {
+					if (stats.isFile ()) {
+						removeFile (target, verbose);
+					}
+				});
 			});
-		});
+		}
 
-		prunes.forEach (function (path) {
-			processFiles (path, function (target, stats) {
-				if (stats.isDirectory ()) {
-					removeDirectories (target, verbose);
-				}
+		if (prunes.length > 0) {
+			prunes.forEach (function (path) {
+				processFiles (path, function (target, stats) {
+					if (stats.isDirectory ()) {
+						removeDirectories (target, verbose);
+					}
+				});
 			});
-		});
+		}
 	}
 
 	// Resets the /public directory to its default state... empty.
@@ -82,12 +88,47 @@
 		});
 	}
 
+	// Creates a new, empty file in resources/inbox to ease with writing new posts and pages.
+	function createNewFile (metadata) {
+		var filename, content;
+		
+		if (!metadata.title) {
+			if (metadata.type === 'post') {
+				metadata.title = 'New Post';
+			} else {
+				metadata.title = 'New Page';
+			}
+		}
+
+		if (!metadata.author) {
+			metadata.author = 'John Doe';
+		}
+
+		metadata.date = formatDateForMetadata (new Date ());
+		content = JSON.stringify (metadata, null, '\t') + '\n\nWhat\'s up?';
+
+		if (metadata.type === 'post') {
+			filename = getPostFilename (metadata.title, new Date (metadata.date)) + '.md';
+		} else {
+			filename = getPostFilename (metadata.title) + '.md';
+		}
+
+		writeFile (inboxPath + filename, content);
+
+		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
+	}
+
 	// In subwave, posts are grouped by year and then by month; this function
 	// creates this year/month path based on the filename of the post itself.
 	function createPostDirectory (path) {
 		// mkdirp allows us to create directory structures in one go.
 		// e.g. '2014/12/'
 		md.mkdirp.sync (path);
+	}
+
+	// Converts a Date object into the string expected in a new post file.
+	function formatDateForMetadata (date) {
+		return moment (date).format ('YYYY-MM-DD HH:mm')
 	}
 
 	// Examines the date (expected to be from a post) to generate the year/month
@@ -105,13 +146,19 @@
 	// For example, a post named 'I Like Broccoli Until...' dated '2015/01/15' becomes
 	// '2015-01-15-i-like-broccoli-until'.
 	function getPostFilename (title, date) {
-		var dateArray, day, month, newTitle, titleArray, year;
+		var dateArray, day, filename, month, newTitle, titleArray, year;
 
 		titleArray = title.replace(/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
-		dateArray = splitDate (date);
 
-		return (dateArray.join ('-') + '-' + newTitle).toLowerCase ();
+		if (date) {
+			dateArray = splitDate (date);
+			filename = (dateArray.join ('-') + '-' + newTitle).toLowerCase ();
+		} else {
+			filename = newTitle.toLowerCase();
+		}
+
+		return filename;
 	}
 
 	// Return a list of all the markdown files from a given directory.
@@ -257,6 +304,7 @@
 	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
 	module.exports.copyFilesRecursively = copyFilesRecursively;
+	module.exports.createNewFile = createNewFile;
 	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
