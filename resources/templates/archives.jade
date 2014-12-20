@@ -11,7 +11,7 @@ html(lang="en")
 						div.page-header
 							h1.text-center Archives
 						each post in posts
-							div.row
+							div.row.archives
 								div.col-md-6.text-left
 									a(href='/posts/' + post.path + post.filename + '.html')!= post.title
 								div.col-md-6.text-right= post.displayDate

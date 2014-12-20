@@ -15,8 +15,6 @@
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
-		archives.posts.reverse (); // Reverse ordering so newest is at the top
-
 		archives.posts.forEach (function (post) {
 			post.displayDate = pa.formatDateForDisplay (post.date);
 			post.title = marked (post.title);
