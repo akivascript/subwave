@@ -88,7 +88,6 @@
 		});
 	}
 
-	// Creates a new, empty file in resources/inbox to ease with writing new posts and pages.
 	function createNewFile (metadata) {
 		var filename, content;
 		
