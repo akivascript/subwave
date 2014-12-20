@@ -6,6 +6,7 @@
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 	var ncp = require ('ncp');
+	var rm = require ('rimraf');
 
 	var resourcesPath = 'resources/';
 	var inboxPath	= resourcesPath + 'inbox/';
@@ -14,6 +15,56 @@
 	var postsPath = publicPath + 'posts/';
 	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
+
+	// Resets the /resources/archive to its default state... empty.
+	function cleanArchive (verbose) {
+		var deletes, prunes;
+
+		deletes = [];
+		prunes = [];
+
+		deletes.push (archivePath);
+		prunes.push (archivePath + 'posts/');
+
+		clean (deletes, prunes, verbose);
+	}
+
+	function clean (deletes, prunes, verbose) {
+		deletes.forEach (function (path) {
+			processFiles (path, function (target, stats) {
+				if (stats.isFile ()) {
+					removeFile (target, verbose);
+				}
+			});
+		});
+
+		prunes.forEach (function (path) {
+			processFiles (path, function (target, stats) {
+				if (stats.isDirectory ()) {
+					removeDirectories (target, verbose);
+				}
+			});
+		});
+	}
+
+	// Resets the /public directory to its default state... empty.
+	function cleanPublic (verbose) {
+		var deletes, prunes;
+
+		deletes = [];
+		prunes = [];
+
+		deletes.push (publicPath);
+		deletes.push (publicPath + 'css/');
+		deletes.push (publicPath + 'img/');
+		deletes.push (publicPath + 'js/');
+		deletes.push (tagsPath);
+		prunes.push (postsPath);
+
+		clean (deletes, prunes, verbose);
+
+		removeFile (resourcesPath + 'state.json', verbose);
+	}
 
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
@@ -80,6 +131,24 @@
 		});
 	}
 
+	function processFiles (path, callback) {
+		fs.readdir (path, function (err, files) {
+			if (err) {
+				throw err;
+			}
+
+			files.forEach (function (file) {
+				fs.stat (path + file, function (error, stats) {
+					if (error) {
+						throw error;
+					}
+
+					callback (path + file, stats);
+				});
+			});
+		});
+	}
+	
 	// Reads the contents of a file.
 	function readFile (filename) {
 		return fs.readFileSync (filename, 'utf8');
@@ -106,6 +175,34 @@
 		});
 
 		return files;
+	}
+
+	// Deletes a directory recursively from disk.
+	function removeDirectories (path, verbose) {
+		rm (path, function (error) {
+			if (error) {
+				throw error;
+			}
+
+			if (verbose) {
+				console.log ('Deleted ' + path + '...');
+			}
+		});
+	}
+			
+	// Deletes a file from disk.
+	function removeFile (file, verbose) {
+		fs.unlink (file, function (error) {
+			if (error) {
+				console.log ('Could not find ' + file + '...');
+
+				return; 
+			}
+
+			if (verbose) {
+				console.log ('Deleted ' + file + '...');
+			}
+		});
 	}
 
 	// Renames and/or moves a file.
@@ -156,6 +253,8 @@
 		fs.writeFileSync (filename, content);
 	}
 	
+	module.exports.cleanArchive = cleanArchive; 
+	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
 	module.exports.copyFilesRecursively = copyFilesRecursively;
 	module.exports.createPostDirectory = createPostDirectory;

@@ -1,8 +1,8 @@
 node_modules/**/build
 public/
 resources/archive/
+resources/drafts/
 resources/inbox/
 resources/public/
-resources/tmp/
 test/files/
 *.json

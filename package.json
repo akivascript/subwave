@@ -23,11 +23,13 @@
     "sinon": "^1.12.1"
   },
   "dependencies": {
+    "commander": "^2.5.1",
     "jade": "^1.8.1",
     "marked": "^0.3.2",
     "mkdirp": "^0.5.0",
     "moment": "^2.8.4",
     "ncp": "^1.0.1",
+    "rimraf": "^2.2.8",
     "rss": "^1.0.1"
   }
 }
