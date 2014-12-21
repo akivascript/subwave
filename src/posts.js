@@ -61,6 +61,9 @@
 		// TODO: What did you do, Ray.
 		idx = state.posts.length - posts.length;
 
+		state.posts.reverse ();
+		posts.reverse ();
+
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 			next = state.posts [idx + 1];
