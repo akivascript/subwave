@@ -8,6 +8,20 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 
+	
+	// Allows sorting of posts by date.
+	function comparePosts (postA, postB) {
+		if (postA.date < postB.date) {
+			return -1;
+		}
+
+		if (postB.date < postA.date) {
+			return 1;
+		}
+
+		return 0;
+	}
+
 	// Create an excerpt for a post.
 	//
 	// The excerpt is 140 words or less but it is drawn against <p></p> content
@@ -112,8 +126,6 @@
 
 		tmpSibling = pa.copyAttributes (sibling);
 
-		console.log (tmpSibling);
-
 		if (direction === 'previous') {
 			oppDirection = 'next';
 			index = index - 2;
@@ -148,6 +160,7 @@
 		io.saveHtmlPage (post);
 	}
 
+	module.exports.comparePosts = comparePosts;
 	module.exports.getExcerpt = getExcerpt;
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;

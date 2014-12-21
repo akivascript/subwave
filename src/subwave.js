@@ -12,7 +12,7 @@
 	var co = require ('./compiler');
 	var io = require ('./io');
 
-	var verbose = false;
+	var verbose = true;
 
 	subwave
 		.command ('build')

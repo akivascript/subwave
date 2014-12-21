@@ -90,6 +90,8 @@
 
 		state.posts = state.posts.concat (entries);
 
+		state.posts.sort (po.comparePosts);
+
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 
@@ -167,8 +169,6 @@
 		};
 
 		feed = new Rss (feedOptions);
-
-		state.posts.reverse ();
 
 		state.posts.forEach (function (post) {
 			itemOptions = {
