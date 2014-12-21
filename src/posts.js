@@ -8,9 +8,8 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 
-	
 	// Allows sorting of posts by date.
-	function comparePosts (postA, postB) {
+	function comparePostsByDate (postA, postB) {
 		if (postA.date < postB.date) {
 			return -1;
 		}
@@ -20,39 +19,6 @@
 		}
 
 		return 0;
-	}
-
-	// Create an excerpt for a post.
-	//
-	// The excerpt is 140 words or less but it is drawn against <p></p> content
-	// only. It skips any other tags, such as <h3> or <img>.
-	function getExcerpt (content) {
-		var count, excerpt, graf, i, paragraphs, total;
-
-		count = 0;
-		total = 0;
-		excerpt = [];
-		paragraphs = content.split (/\n/);
-
-		for (i = 0; i < paragraphs.length; i++) {
-			graf = paragraphs [i];
-
-			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
-				count = graf.split (' ').length;
-				
-				if (total + count < 141) {
-					excerpt.push (graf);
-
-					total = total + count;
-				} else {
-					break;
-				}
-			} else {
-				excerpt.push (graf);
-			}
-		}
-
-		return excerpt.join ('\n');
 	}
 
 	// Filters out any pages that aren't posts.
@@ -78,11 +44,11 @@
 			previous = state.posts [idx - 1];
 
 			if (previous) {
-				processSiblingPosts (post, previous, state, idx, 'previous');
+				processSiblingPosts (post, previous, state, posts, idx, 'previous');
 			}
 
 			if (next) {
-				processSiblingPosts (post, next, state, idx, 'next');
+				processSiblingPosts (post, next, state, posts, idx, 'next');
 			}
 
 			idx = idx + 1;
@@ -126,7 +92,7 @@
 	// Connect a new post's navigation with its existing sibling posts, saving the 
 	// existing sibling posts along the way. This allows us to add new posts and modify
 	// existing ones without having to rebuild every post from scratch.
-	function processSiblingPosts (post, sibling, state, index, direction) {
+	function processSiblingPosts (post, sibling, state, posts, index, direction) {
 		var oppDirection, nextSibling, tmpSibling;
 
 		tmpSibling = pa.copyAttributes (sibling);
@@ -155,8 +121,6 @@
 		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
 
 		savePost (tmpSibling);
-
-		return tmpSibling;
 	}
 
 	// Commit a post to disk.
@@ -168,8 +132,7 @@
 		io.saveHtmlPage (post);
 	}
 
-	module.exports.comparePosts = comparePosts;
-	module.exports.getExcerpt = getExcerpt;
+	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePost = savePost;

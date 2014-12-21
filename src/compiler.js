@@ -52,8 +52,7 @@
 		}
 
 		// Creates the index.html page.
-		console.log (posts);
-		homePage = pa.createHomePage (posts.slice (-3));
+		homePage = pa.createHomePage (state.posts.slice (-3), posts);
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
@@ -91,7 +90,7 @@
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 
-			post.excerpt = po.getExcerpt (post.content);
+			post.excerpt = pa.getExcerpt (post.content);
 
 			st.addPostToTagGroups (state, post);
 

@@ -48,13 +48,27 @@
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
 	// to the site.
 	function createHomePage (posts) {
-		var homePage;
+		var entries, entry, homePage, file, filename, homePath, path;
+
+		entries = [];
+
+		// TODO: Refactor this (with processSibling in posts?): readPost?
+		for (var i = 0; i < posts.length; i++) {
+			entry = copyAttributes (posts [i]);
+			entry.path = io.getPostDirectoryPathname (entry.date);
+			file = io.readFile (io.archivePath + 'posts/' + entry.path + entry.filename + '.md');
+			entry.content = getFileContent (file);
+			entry.displayTitle = marked (entry.title);
+			entry.excerpt = getExcerpt (entry.content);
+
+			entries.push (entry);
+		}
 
 		homePage = {
 			type: 'index',
 			title: 'Blog Title',
 			filename: 'index',
-			posts: posts,
+			posts: entries,
 			tags: [],
 			template: io.templatesPath + 'index.jade'
 		};
@@ -108,6 +122,39 @@
 		return postDate.format ('MMMM DD, YYYY');
 	}
 
+	// Create an excerpt for a post.
+	//
+	// The excerpt is 140 words or less but it is drawn against <p></p> content
+	// only. It skips any other tags, such as <h3> or <img>.
+	function getExcerpt (content) {
+		var count, excerpt, graf, i, paragraphs, total;
+
+		count = 0;
+		total = 0;
+		excerpt = [];
+		paragraphs = content.split (/\n/);
+
+		for (i = 0; i < paragraphs.length; i++) {
+			graf = paragraphs [i];
+
+			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
+				count = graf.split (' ').length;
+				
+				if (total + count < 141) {
+					excerpt.push (graf);
+
+					total = total + count;
+				} else {
+					break;
+				}
+			} else {
+				excerpt.push (graf);
+			}
+		}
+
+		return excerpt.join ('\n');
+	}
+
 	// Processes a file and returns only its content (e.g., the body of a post).
 	function getFileContent (source) {
 		var matches;
@@ -153,6 +200,7 @@
 	module.exports.createPage = createPage;
 	module.exports.copyAttributes = copyAttributes;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
+	module.exports.getExcerpt = getExcerpt;
 	module.exports.getFileContent = getFileContent;
 	module.exports.getNewPages = getNewPages;
 	module.exports.savePage = savePage;
