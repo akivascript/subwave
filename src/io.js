@@ -79,9 +79,12 @@
 
 	// Copies a directory structure recursively
 	function copyFilesRecursively (srcPath, destPath) {
+		var fileglob;
+
+		fileglob = '*';
 		ncp.limit = 16;
 
-		ncp (srcPath, destPath, function (err) {
+		ncp (srcPath + fileglob, destPath + fileglob, function (err) {
 			if (err) {
 				return console.log (err);
 			}
