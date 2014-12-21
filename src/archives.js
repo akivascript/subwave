@@ -15,8 +15,6 @@
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
-		archives.posts.reverse ();
-
 		for (i = 0; i < archives.posts.length; i++) {
 			post = archives.posts [i];
 
