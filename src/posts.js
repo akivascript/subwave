@@ -3,6 +3,7 @@
 	'use strict';
 
 	var jade = require ('jade');
+	var marked = require ('marked');
 
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -20,7 +21,7 @@
 
 			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
 				count = graf.split (' ').length;
-
+				
 				if (total + count < 141) {
 					excerpt.push (graf);
 
@@ -59,9 +60,6 @@
 
 		// TODO: What did you do, Ray.
 		idx = state.posts.length - posts.length;
-
-		state.posts.reverse ();
-		posts.reverse ();
 
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
@@ -105,6 +103,7 @@
 		sibling.type = 'post';
 		sibling.content = pa.getFileContent (file);
 		sibling.template = io.templatesPath + 'post.jade';
+		sibling.title = marked (sibling.title);
 
 		return sibling;
 	}
@@ -137,11 +136,7 @@
 
 		sibling = processSibling (sibling, oppDirection);
 
-		sibling.output = pa.compilePage (sibling);
-
-		io.createPostDirectory (io.postsPath + sibling.path);
-
-		io.saveHtmlPage (sibling);
+		savePost (sibling);
 	}
 
 	// Commit a post to disk.
