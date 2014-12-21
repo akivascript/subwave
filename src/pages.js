@@ -32,6 +32,19 @@
 		return compiler (page);
 	}
 	
+	// Duplicates a page's attributes.
+	function copyAttributes (source) {
+		var target;
+
+		target = {};
+
+		for (var attr in source) {
+			target [attr] = source [attr];
+		}
+
+		return target;
+	}
+
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
 	// to the site.
 	function createHomePage (posts) {
@@ -57,12 +70,7 @@
 
 		matches = processFile (source);
 
-		metadata = JSON.parse (matches [1]);
-		page = {};
-
-		for (attr in metadata) {
-			page [attr] = metadata [attr];
-		}
+		page = copyAttributes (JSON.parse (matches [1]));
 
 		content = marked (matches [2]);
 
@@ -90,7 +98,7 @@
 
 		return page;
 	}
-	
+
 	// This is the display format for archives.html and individual posts.
 	function formatDateForDisplay (date) {
 		var postDate;
@@ -143,6 +151,7 @@
 	module.exports.compilePage = compilePage;
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
+	module.exports.copyAttributes = copyAttributes;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getFileContent = getFileContent;
 	module.exports.getNewPages = getNewPages;

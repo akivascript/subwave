@@ -34,7 +34,6 @@
 		target.date = source.date;
 		target.author = source.author;
 		target.filename = source.filename;
-		target.path = source.path;
 		target.tags = source.tags;
 
 		return target;
