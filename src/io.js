@@ -16,6 +16,7 @@
 	var tagsPath = publicPath + 'tags/';
 	var templatesPath = resourcesPath + 'templates/';
 
+
 	// Resets the /resources/archive to its default state... empty.
 	function cleanArchive (verbose) {
 		var deletes, prunes;
@@ -32,6 +33,7 @@
 
 		clean (deletes, prunes, verbose);
 	}
+
 
 	// Deletes and prunes files and directories.
 	function clean (deletes, prunes, verbose) {
@@ -56,6 +58,7 @@
 		}
 	}
 
+
 	// Resets the /public directory to its default state... empty.
 	function cleanPublic (verbose) {
 		var deletes, prunes;
@@ -79,6 +82,7 @@
 		removeFile (resourcesPath + 'state.json', verbose);
 	}
 
+
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
 		var content;
@@ -86,6 +90,7 @@
 		content = readFile (oldPath);
 		writeFile (newPath, readFile (oldPath));
 	}
+
 
 	function createNewFile (metadata) {
 		var filename, content;
@@ -116,6 +121,7 @@
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
 
+
 	// In subwave, posts are grouped by year and then by month; this function
 	// creates this year/month path based on the filename of the post itself.
 	function createPostDirectory (path) {
@@ -124,10 +130,12 @@
 		md.mkdirp.sync (path);
 	}
 
+
 	// Converts a Date object into the string expected in a new post file.
 	function formatDateForMetadata (date) {
 		return moment (date).format ('YYYY-MM-DD HH:mm');
 	}
+
 
 	// Returns an array of the contents of a recursed path.
 	function getFiles (path, filelist) {
@@ -154,6 +162,7 @@
 		return filelist;
 	}
 
+
 	// Examines the date (expected to be from a post) to generate the year/month
 	// path used as described in createPostDirectory above.
 	function getPostDirectoryPathname (date) {
@@ -164,6 +173,7 @@
 
 		return newPath;
 	}
+
 
 	// Generates the filename of a post based on the the title and date of the post.
 	// For example, a post named 'I Like Broccoli Until...' dated '2015/01/15' becomes
@@ -184,6 +194,7 @@
 		return filename;
 	}
 
+
 	// Return a list of all the markdown files from a given directory.
 	function getFileList (path) {
 		var fileList;
@@ -200,6 +211,7 @@
 			return true;
 		});
 	}
+
 
 	function processFiles (path, callback) {
 		fs.readdir (path, function (err, files) {
@@ -218,11 +230,13 @@
 			});
 		});
 	}
+
 	
 	// Reads the contents of a file.
 	function readFile (filename) {
 		return fs.readFileSync (filename, 'utf8');
 	}
+
 
 	// Reads the contents of a list of files and add them to an array. If a function
 	// is provided, process the file contents first.
@@ -242,10 +256,11 @@
 			}
 
 			files.push (file);
-		};
+		}
 
 		return files;
 	}
+
 
 	// Deletes a directory recursively from disk.
 	function removeDirectories (path, verbose) {
@@ -259,6 +274,7 @@
 			}
 		});
 	}
+
 			
 	// Deletes a file from disk.
 	function removeFile (file, verbose) {
@@ -273,10 +289,12 @@
 		});
 	}
 
+
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
 		fs.renameSync (oldPath, newPath);
 	}
+	
 
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
 	// with a file written with an '.html' extension. Maybe you're into that.
@@ -304,6 +322,7 @@
 
 		writeFile (path + '/' + page.filename + '.html', page.output);
 	}
+	
 
 	// Split a Date object into an array.
 	function splitDate (date) {
@@ -316,10 +335,12 @@
 		return [year, month, day];
 	}
 
+
 	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
 		fs.writeFileSync (filename, content);
 	}
+
 	
 	module.exports.cleanArchive = cleanArchive; 
 	module.exports.cleanPublic = cleanPublic; 

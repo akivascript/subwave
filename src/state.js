@@ -50,6 +50,8 @@
 	function saveState (state) {
 		var filename;
 
+		state.posts.reverse ();
+
 		filename = io.resourcesPath + 'state.json';
 		state.lastUpdated = new Date ();
 

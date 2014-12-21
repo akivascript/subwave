@@ -14,9 +14,10 @@
 
 	var siteUrl = 'http://www.example.com/';
 
+
 	// Ceci n'est pas un commentaire.
 	function compile (verbose) {
-		var archives, archivePath, homePage, i, entries, files, page, pages, path, post, posts, resources, state;
+		var homePage, i, entries, files, page, pages, path, posts, resources, state;
 
 		if (verbose) {
 			console.log ('Compiling the site...');
@@ -35,44 +36,11 @@
 		entries = ar.createNewArchiveEntries (posts);
 
 		if (posts.length !== 0) {
-			state.posts = state.posts.concat (entries);
-
-			for (i = 0; i < posts.length; i++) {
-				post = posts [i];
-
-				st.addPostToTagGroups (state, post);
-
-				archivePath = io.archivePath + 'posts/';
-
-				io.createPostDirectory (archivePath + post.path);
-
-				io.renameFile (io.inboxPath + post.origFilename, 
-											 archivePath + post.path + post.filename + '.md');
-			}
-		
-			// We handle appending the archives first (above) so we can more easily determine
-			// if a post has siblings that need to be handled.
-			po.handlePostsWithSiblings (state, posts);
-
-			archives = ar.createArchives (state.posts);
-			archives = pa.createPage (JSON.stringify (archives));
-
-			ar.saveArchives (archives);
-
-			for (i = 0; i < posts.length; i++) {
-				post = posts [i];
-
-				po.savePost (post);
-			}
-
-			ta.createTagPages (state);
-
-			updateRssFeed (state);
-
-			state.posts.reverse ();
-			st.saveState (state);
+			handlePosts (state, posts, entries);
 		}
 
+
+		// Processes and saves any page files in inbox.
 		for (i = 0; i < pages.length; i++) {
 			page = pages [i];
 
@@ -83,18 +51,16 @@
 											 io.archivePath + page.origFilename);
 			}
 		}
-		
-		for (i = 0; i < posts.length; i++) {
-			post = posts [i];
 
-			post.excerpt = po.getExcerpt (post.content);
-		}
 
+		// Creates the index.html page.
 		homePage = pa.createHomePage (posts.slice (-3));
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
 
+
+		// Copies any custom resources to public.
 		resources = ['css/', 'js/', 'img/'];
 
 		resources.forEach (function (resource) {
@@ -107,6 +73,59 @@
 			}
 		});
 	}
+
+
+	function handleArchives (posts) {
+		var archives;
+
+		archives = ar.createArchives (posts);
+		archives = pa.createPage (JSON.stringify (archives));
+
+		ar.saveArchives (archives);
+	}
+
+
+	function handlePosts (state, posts, entries, archives) {
+		var archivePath, i, post;
+
+		state.posts = state.posts.concat (entries);
+
+		for (i = 0; i < posts.length; i++) {
+			post = posts [i];
+
+			post.excerpt = po.getExcerpt (post.content);
+
+			st.addPostToTagGroups (state, post);
+
+			archivePath = io.archivePath + 'posts/';
+
+			io.createPostDirectory (archivePath + post.path);
+
+			io.renameFile (io.inboxPath + post.origFilename, 
+										 archivePath + post.path + post.filename + '.md');
+		}
+	
+		// We handle appending the archives first (above) so we can more easily determine
+		// if a post has siblings that need to be handled.
+		po.handlePostsWithSiblings (state, posts);
+
+		for (i = 0; i < posts.length; i++) {
+			post = posts [i];
+
+			po.savePost (post);
+		}
+
+		// Create archives.html.
+		handleArchives (state.posts);
+
+		// Create tag index files in tags directory.
+		ta.createTagPages (state);
+
+		updateRssFeed (state);
+
+		st.saveState (state);
+	}
+
 
 	// Clears out the public directory, copies everything from resource/archives
 	// then builds the site again. Useful for when changing templates that affect the
@@ -132,6 +151,7 @@
 
 		compile ();
 	}
+	
 
 	function updateRssFeed (state) {
 		var feed, feedOptions, itemOptions;
