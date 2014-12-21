@@ -18,14 +18,18 @@
 		for (i = 0; i < paragraphs.length; i++) {
 			graf = paragraphs [i];
 
-			count = graf.split (' ').length;
+			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
+				count = graf.split (' ').length;
 
-			if (total + count < 141) {
-				excerpt.push (graf);
+				if (total + count < 141) {
+					excerpt.push (graf);
 
-				total = total + count;
+					total = total + count;
+				} else {
+					break;
+				}
 			} else {
-				break;
+				excerpt.push (graf);
 			}
 		}
 
