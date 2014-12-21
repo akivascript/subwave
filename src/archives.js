@@ -18,6 +18,7 @@
 		for (i = 0; i < archives.posts.length; i++) {
 			post = archives.posts [i];
 
+			post.path = io.getPostDirectoryPathname (new Date (post.date));
 			post.displayDate = pa.formatDateForDisplay (post.date);
 			post.title = marked (post.title);
 		}

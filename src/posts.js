@@ -96,8 +96,13 @@
 		target = {};
 		target.title = source.title;
 		target.date = source.date;
-		target.path = source.path;
 		target.filename = source.filename;
+
+		if (!source.path) {
+			target.path = io.getPostDirectoryPathname (source.date);
+		} else {
+			target.path = source.path;
+		}	
 		
 		return target;
 	}

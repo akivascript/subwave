@@ -35,7 +35,7 @@
 						page.posts.push ({
 							title: spost.title,
 							filename: spost.filename,
-							path: spost.path
+							path: io.getPostDirectoryPathname (spost.date)
 						});
 					}
 				}
