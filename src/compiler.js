@@ -54,8 +54,6 @@
 			// if a post has siblings that need to be handled.
 			po.handlePostsWithSiblings (state, posts);
 
-			state.posts.reverse ();
-
 			archives = ar.createArchives (state.posts);
 			archives = pa.createPage (JSON.stringify (archives));
 
@@ -92,7 +90,7 @@
 			post.excerpt = po.getExcerpt (post.content);
 		}
 
-		homePage = pa.createHomePage (posts.reverse ().slice (-3));
+		homePage = pa.createHomePage (posts.slice (-3));
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);

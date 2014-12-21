@@ -13,7 +13,7 @@ html(lang="en")
 								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 								| 
 					div.col-xs-9
-						each post, index in posts
+						each post, index in posts.reverse ()
 							if post
 								div.row
 									div.col-xs-12
