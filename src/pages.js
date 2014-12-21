@@ -126,7 +126,7 @@
 		if (!matches || matches.length === 0) {
 			throw {
 				name: 'Error',
-				message: 'The file isn\'t the correct format.'
+				message: 'The source isn\'t the correct format: ' + source
 			};
 		}
 

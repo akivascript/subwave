@@ -15,8 +15,12 @@
 	var siteUrl = 'http://www.example.com/';
 
 	// Ceci n'est pas un commentaire.
-	function compile () {
-		var archives, archivePath, homePage, i, entries, page, pages, post, posts, state;
+	function compile (verbose) {
+		var archives, archivePath, homePage, i, entries, files, page, pages, path, post, posts, resources, state;
+
+		if (verbose) {
+			console.log ('Compiling the site...');
+		}
 
 		pages = pa.getNewPages ();
 
@@ -92,10 +96,42 @@
 
 		pa.savePage (homePage);
 
-		// This will soon be part of the configuration options. This will be the default.
-		['css', 'js', 'img'].forEach (function (resource) {
-			io.copyFilesRecursively (io.resourcesPath + resource, io.publicPath + resource);
+		resources = ['css/', 'js/', 'img/'];
+
+		resources.forEach (function (resource) {
+			files = io.getFiles (io.resourcesPath + resource);
+
+			for (var file in files) {
+				path = files [file];
+
+				io.copyFile (path + file, io.publicPath + resource + file);
+			}
 		});
+	}
+
+	// Clears out the public directory, copies everything from resource/archives
+	// then builds the site again. Useful for when changing templates that affect the
+	// entire site.
+	function rebuild (verbose) {
+		var files, path;
+
+		files = [];
+
+		if (verbose) {
+			console.log ('Rebuilding the site...');
+		}
+
+		io.cleanPublic (false);
+
+		files = io.getFiles (io.archivePath);
+
+		for (var file in files) {
+			path = files [file];
+
+			io.copyFile (path + file, io.inboxPath + file);
+		}
+
+		compile ();
 	}
 
 	function updateRssFeed (state) {
@@ -131,4 +167,5 @@
 	}
 
 	module.exports.compile = compile;
+	module.exports.rebuild = rebuild;
 } ());

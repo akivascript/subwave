@@ -6,7 +6,6 @@
 	var fs = require ('fs');
 	var md = require ('mkdirp');
 	var moment = require ('moment');
-	var ncp = require ('ncp');
 	var rm = require ('rimraf');
 
 	var resourcesPath = 'resources/';
@@ -20,6 +19,10 @@
 	// Resets the /resources/archive to its default state... empty.
 	function cleanArchive (verbose) {
 		var deletes, prunes;
+
+		if (verbose) {
+			console.log ('Cleaning archive...');
+		}
 
 		deletes = [];
 		prunes = [];
@@ -60,6 +63,10 @@
 		deletes = [];
 		prunes = [];
 
+		if (verbose) {
+			console.log ('Cleaning public...');
+		}
+
 		deletes.push (publicPath);
 		deletes.push (publicPath + 'css/');
 		deletes.push (publicPath + 'img/');
@@ -74,21 +81,10 @@
 
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
-		fs.createReadStream (oldPath).pipe (fs.createWriteStream (newPath));
-	}
+		var content;
 
-	// Copies a directory structure recursively
-	function copyFilesRecursively (srcPath, destPath) {
-		var fileglob;
-
-		fileglob = '*';
-		ncp.limit = 16;
-
-		ncp (srcPath + fileglob, destPath + fileglob, function (err) {
-			if (err) {
-				return console.log (err);
-			}
-		});
+		content = readFile (oldPath);
+		writeFile (newPath, readFile (oldPath));
 	}
 
 	function createNewFile (metadata) {
@@ -131,6 +127,31 @@
 	// Converts a Date object into the string expected in a new post file.
 	function formatDateForMetadata (date) {
 		return moment (date).format ('YYYY-MM-DD HH:mm');
+	}
+
+	// Returns an array of the contents of a recursed path.
+	function getFiles (path, filelist) {
+		var i, node, nodes, stats;
+
+		if (!filelist) {
+			filelist = {};
+		}
+
+		nodes = fs.readdirSync (path);
+
+		for (i = 0; i < nodes.length; i++) {
+			node = nodes [i];
+
+			stats = fs.statSync (path + node);
+
+			if (stats.isDirectory ()) {
+				getFiles (path + node + '/', filelist);
+			} else if (stats.isFile ()) {
+				filelist [node] = path;
+			} 
+		}
+
+		return filelist;
 	}
 
 	// Examines the date (expected to be from a post) to generate the year/month
@@ -211,17 +232,17 @@
 		files = [];
 		filelist = getFileList (path);
 
-		filelist.forEach (function (filename) {
-			file = readFile (path + filename);
+		for (var i = 0; i < filelist.length; i++) {
+			file = readFile (path + filelist [i]);
 
 			if (fn) {
 				file = fn (file);
 				
-				file.origFilename = filename;
+				file.origFilename = filelist [i];
 			}
 
 			files.push (file);
-		});
+		};
 
 		return files;
 	}
@@ -243,8 +264,6 @@
 	function removeFile (file, verbose) {
 		fs.unlink (file, function (error) {
 			if (error) {
-				console.log ('Could not find ' + file + '...');
-
 				return; 
 			}
 
@@ -305,9 +324,9 @@
 	module.exports.cleanArchive = cleanArchive; 
 	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
-	module.exports.copyFilesRecursively = copyFilesRecursively;
 	module.exports.createNewFile = createNewFile;
 	module.exports.createPostDirectory = createPostDirectory;
+	module.exports.getFiles = getFiles;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;

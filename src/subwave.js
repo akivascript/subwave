@@ -18,7 +18,7 @@
 		.command ('build')
 		.description ('Build a new iteration of the site')
 		.action (function () {
-			co.compile ();
+			co.compile (verbose);
 
 			process.exit ();
 		});
@@ -49,14 +49,23 @@
 				metadata.tags = tags;
 			}
 
-			io.createNewFile (metadata);
+			io.createNewFile ();
+
+			process.exit ();
+		});
+
+	subwave
+		.command ('rebuild')
+		.description ('Cleans and rebuilds entire site')
+		.action (function () {
+			co.rebuild (verbose);
 
 			process.exit ();
 		});
 
 	subwave
 		.version ('0.8')
-		.option ('-cp, --clean-public', 'Clean /public directories')
+		.option ('-cp, --clean', 'Clean /public directories')
 		.option ('-ca, --clean-archive', 'Clean /resources/archive directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
@@ -66,7 +75,7 @@
 		verbose = true;
 	}
 		
-	if (subwave.cleanPublic) {
+	if (subwave.clean) {
 		io.cleanPublic (verbose);
 	}
 
