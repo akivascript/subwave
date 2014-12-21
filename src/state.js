@@ -29,12 +29,16 @@
 	// occur when a blog is new and has no posts yet or when the entire site
 	// is being rebuilt from scratch).
 	function getState () {
-		var state, file;
+		var file, state;
 
 		file = io.resourcesPath + 'state.json';
 
 		try {
 			state = JSON.parse (io.readFile (file));
+
+			for (var post in state.posts) {
+				post.date = post.date;
+			}
 		} catch (e) {
 			state = {
 				lastUpdated: '',

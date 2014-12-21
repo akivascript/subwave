@@ -14,7 +14,6 @@
 
 	var siteUrl = 'http://www.example.com/';
 
-
 	// Ceci n'est pas un commentaire.
 	function compile (verbose) {
 		var homePage, i, entries, files, page, pages, path, posts, resources, state;
@@ -52,13 +51,12 @@
 			}
 		}
 
-
 		// Creates the index.html page.
+		console.log (posts);
 		homePage = pa.createHomePage (posts.slice (-3));
 		homePage.tags = state.tags;
 
 		pa.savePage (homePage);
-
 
 		// Copies any custom resources to public.
 		resources = ['css/', 'js/', 'img/'];
@@ -74,7 +72,6 @@
 		});
 	}
 
-
 	function handleArchives (posts) {
 		var archives;
 
@@ -83,7 +80,6 @@
 
 		ar.saveArchives (archives);
 	}
-
 
 	function handlePosts (state, posts, entries, archives) {
 		var archivePath, i, post;
@@ -128,7 +124,6 @@
 		st.saveState (state);
 	}
 
-
 	// Clears out the public directory, copies everything from resource/archives
 	// then builds the site again. Useful for when changing templates that affect the
 	// entire site.
@@ -153,7 +148,6 @@
 
 		compile ();
 	}
-	
 
 	function updateRssFeed (state) {
 		var feed, feedOptions, itemOptions;

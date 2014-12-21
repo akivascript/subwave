@@ -152,8 +152,11 @@
 		}
 
 		tmpSibling = processSibling (tmpSibling, oppDirection);
+		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
 
 		savePost (tmpSibling);
+
+		return tmpSibling;
 	}
 
 	// Commit a post to disk.

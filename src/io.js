@@ -328,6 +328,7 @@
 	function splitDate (date) {
 		var day, month, year;
  
+		date = new Date (date);
 		year = date.getFullYear ();
 		month = ('0' + (date.getMonth () + 1)).slice (-2);
 		day = ('0' + date.getDate ()).slice (-2);
