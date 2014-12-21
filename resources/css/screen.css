@@ -9,6 +9,10 @@ body {
 	background-color: #efefef;
 }
 
+code, kbd, pre, samp {
+  font-family: 'source code pro';
+}
+
 div.bq {
 	margin: 20px 0px 19px 0px;
 	text-align: center;
