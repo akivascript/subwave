@@ -13,7 +13,7 @@ html(lang="en")
 							h1.post-title!= title
 						div.tags.text-right
 							each tag in tags
-								a(href='/tags/' + tag + '.html', class='btn btn-info btn-tag') #{tag}
+								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 								| 
 						div.post-content!= content
 						div.post-nav
