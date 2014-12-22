@@ -32,6 +32,7 @@
 		var target;
 
 		target = {};
+		target.index = source.index;
 		target.title = source.title;
 		target.date = source.date;
 		target.author = source.author;

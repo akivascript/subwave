@@ -29,6 +29,10 @@
 		page.displayDate = formatDateForDisplay (page.date);
 		page.headTitle = page.title;
 		page.title = marked (page.title);
+		
+		if (page.content) {
+			page.content = marked (page.content);
+		}
 
 		return compiler (page);
 	}
@@ -55,10 +59,7 @@
 			post = st.getPostByIndex (index, state.posts);
 
 			if (!post) {
-				throw {
-					name: 'Error',
-					message: 'Unable to find post with index ' + index + '.'
-				}
+				throw new Error ('Unable to find post with index ' + index + '.');
 			}
 
 			date = formatDateForDisplay (post.date);
@@ -69,15 +70,12 @@
 									 ' to ' +	io.inboxPath + post.filename + '.md');
 			}
 			
-//				io.copyFile (io.archivePath + 'posts/' + path + post.filename + '.md',
-//										 io.inboxPath + post.filename + '.md');
+				io.copyFile (io.archivePath + 'posts/' + path + post.filename + '.md',
+										 io.inboxPath + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
-			throw {
-				name: 'ArgumentError',
-				message: 'Please provide an index.'
-			}
+			throw new Error ('Please provide an index.');
 		}
 	}
 
@@ -93,9 +91,9 @@
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (io.archivePath + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getContent (file);
+			entry.content = getContent (file, false);
 			entry.displayTitle = marked (entry.title);
-			entry.excerpt = getExcerpt (entry.content);
+			entry.excerpt = getExcerpt (marked (entry.content));
 
 			entries.push (entry);
 		}
@@ -115,14 +113,14 @@
 	// Converts a file into a page. A file has some front matter which is converted
 	// to JSON. This front matter is used to configure the page, determine its type,
 	// and so forth
-	function createPage (source) {
+	function createPage (file) {
 		var attr, content, compiler, filename, i, metadata, matches, page;
 
-		matches = parseFile (source);
+		matches = parseFile (file);
 
 		page = copyAttributes (JSON.parse (matches [1]));
 
-		content = marked (matches [2]);
+		content = matches [2];
 
 		if (content) {
 			page.content = content;
@@ -140,16 +138,12 @@
 			page.template = io.templatesPath + 'archives.jade';
 			page.filename = 'archives';
 		} else {
-			throw {
-				name: 'Error',
-				message: 'Unable to determine template type from page: ' + page
-			};
+			throw new Error ('Unable to determine template type from page: ' + page);
 		}
 
 		return page;
 	}
 
-	// This is the display format for archives.html and individual posts.
 	function formatDateForDisplay (date) {
 		var postDate;
 
@@ -192,8 +186,12 @@
 	}
 
 	// Parses a file and returns only its content (e.g., the body of a post).
-	function getContent (file) {
-		return marked (parseFile (file) [2]);
+	function getContent (file, marked) {
+		if (marked) {
+			return marked (parseFile (file)) [2];
+		}
+		
+		return parseFile (file) [2];
 	}
 
 	// Parses a file and returns only its metadata.
@@ -216,10 +214,7 @@
 		matches = file.match (pattern);
 
 		if (!matches || matches.length === 0) {
-			throw {
-				name: 'Error',
-				message: 'The file isn\'t the correct format: ' + file
-			};
+			throw new Error ('The file isn\'t the correct format: ' + file);
 		}
 
 		return matches;
@@ -244,7 +239,7 @@
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = getExcerpt;
 	module.exports.getContent = getContent;
-	module.exports.getMetadata = getMetadata
+	module.exports.getMetadata = getMetadata;
 	module.exports.getNewPages = getNewPages;
 	module.exports.savePage = savePage;
 } ());

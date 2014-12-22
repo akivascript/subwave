@@ -161,7 +161,6 @@
 		file = io.readFile (io.archivePath + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
-		sibling.content = pa.getContent (file);
 		sibling.template = io.templatesPath + 'post.jade';
 		sibling.title = marked (sibling.title);
 

@@ -313,10 +313,7 @@
 							 page.type === 'index') {
 			path = publicPath;
 		} else {
-			throw {
-				name: 'Error',
-				message: 'Unable to determine page type.'
-			};
+			throw new Error ('Unable to determine page type.');
 		}
 
 		if (page.path) {
@@ -364,6 +361,7 @@
 	module.exports.archivePath = archivePath;
 	module.exports.postsPath = postsPath;
 	module.exports.publicPath = publicPath;
+	module.exports.removeFile = removeFile;
 	module.exports.resourcesPath = resourcesPath;
 	module.exports.tagsPath = tagsPath;
 	module.exports.templatesPath = templatesPath;

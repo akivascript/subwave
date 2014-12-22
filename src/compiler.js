@@ -83,7 +83,7 @@
 	// Take [currently only] new posts, add them to the site's state, process them,
 	// fold them, spindle them, mutilate them...
 	function handlePosts (state, posts, entries, archives) {
-		var archivePostsPath, entry, i, lastIndex, post;
+		var archivePostsPath, entry, file, i, lastIndex, output, post;
 
 		lastIndex = 0;
 
@@ -99,6 +99,7 @@
 			lastIndex = lastIndex + 1;
 
 			entry.index = lastIndex;
+			posts [i].index = lastIndex;
 		}
 
 		state.posts = state.posts.concat (entries);
@@ -116,8 +117,21 @@
 
 			io.createPostDirectory (archivePostsPath + post.path);
 
-			io.renameFile (io.inboxPath + post.origFilename, 
-										 archivePostsPath + post.path + post.filename + '.md');
+			output = JSON.stringify ({
+				type: 'post',
+				index: post.index,
+				title: post.title,
+				author: post.author,
+				date: post.date,
+				tags: post.tags}, null, '  ');
+
+
+			file = io.readFile (io.inboxPath + post.origFilename);
+			output = output + '\n\n' + pa.getContent (file, false);
+
+			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
+			
+			io.removeFile (io.inboxPath + post.origFilename);
 		}
 	
 		// We handle appending the archives first (above) so we can more easily determine
@@ -163,7 +177,7 @@
 			io.copyFile (path + file, io.inboxPath + file);
 		}
 
-		compile ();
+		compile (verbose);
 	}
 
 	function updateRssFeed (state) {
