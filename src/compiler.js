@@ -83,27 +83,36 @@
 	// Take [currently only] new posts, add them to the site's state, process them,
 	// fold them, spindle them, mutilate them...
 	function handlePosts (state, posts, entries, archives) {
-		var archivePostsPath, entry, file, i, lastIndex, output, post;
-
-		lastIndex = 0;
+		var archivePostsPath, entry, file, i, index, postCount, output, post;
 
 		// Each post gets a unique index number which is later used 
 		// for 
 		if (state.posts && state.posts.length > 0) {
-			lastIndex = st.getLastIndex (state.posts);
+			postCount = st.getLastIndex (state.posts);
+
+			index = postCount + 1;
+		} else {
+			index = 1;
 		}
 
 		for (i = 0; i < entries.length; i++) {
 			entry = entries [i];
+			
+			if (!entry.index) {
+				entry.index = index;
 
-			lastIndex = lastIndex + 1;
+				posts [i].index = index;
+			}
 
-			entry.index = lastIndex;
-			posts [i].index = lastIndex;
+			if (entry.index < postCount) {
+				state.posts [entry.index - 1] = entry;
+			} else {
+				state.posts.push (entry);
+			}
+				
+			index = index + 1;
 		}
-
-		state.posts = state.posts.concat (entries);
-
+		
 		// Some last prepatory work on new posts including moving the now loaded
 		// files into the archive.
 		for (i = 0; i < posts.length; i++) {
