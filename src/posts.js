@@ -4,9 +4,12 @@
 
 	var jade = require ('jade');
 	var marked = require ('marked');
+	var _ = require ('underscore');
 
 	var io = require ('./io');
 	var pa = require ('./pages');
+	var st = require ('./state');
+
 
 	// Allows sorting of posts by date.
 	function comparePostsByDate (postA, postB) {
@@ -20,6 +23,82 @@
 
 		return 0;
 	}
+
+	
+	// Finds a post from the archive and copies it to the inbox for updating.
+	function copyPostFromArchive (index, verbose) {
+		var filename, date, post, path, state;
+
+		if (index) {
+			state = st.getState ();
+			post = st.getPostByIndex (index, state.posts);
+
+			if (!post) {
+				throw new Error ('Unable to find post with index ' + index + '.');
+			}
+
+			date = pa.formatDateForDisplay (post.date);
+			path = io.getPostDirectoryPathname (post.date);
+
+			if (verbose) {
+				console.log ('Copying from ' + io.archivePath + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	io.inboxPath + post.filename + '.md');
+			}
+			
+			io.copyFile (io.archivePath + 'posts/' + path + post.filename + '.md',
+									 io.inboxPath + post.filename + '.md');
+
+			console.log (post.title + ' from ' + date + ' ready for editing.');
+		} else {
+			throw new Error ('Please provide an index.');
+		}
+	}
+
+	
+	function findPosts (criterion) {
+		var compare, date, matches, post, state;
+
+		matches = [];
+
+		compare = function (valueA, valueB) {
+			var result;
+
+			valueA = valueA.toLowerCase ();
+			valueB = valueB.toLowerCase ();
+			result = valueA.search (valueB);
+
+			if (result === -1) {
+				return false;
+			}
+
+			return true;
+		};
+
+		state = st.getState ();
+
+		_.each (state.posts, function (post) {
+			_.each (post, function (value, key) {
+				if (typeof value === 'string') {
+					if (key === 'date') {
+						value = pa.formatDateForDisplay (value);
+					}
+
+					if (compare (value, criterion)) {
+						matches.push (post);
+					}
+				} else if (typeof value === 'object') {
+					_.each (value, function (val) {
+						if (compare (val, criterion)) {
+							matches.push (post);
+						}
+					});
+			 	}
+			});
+		});
+
+		return _.uniq (matches);
+	}
+
 
 	// Filters out any pages that aren't posts.
 	function getPosts (files) {
@@ -133,6 +212,8 @@
 	}
 
 	module.exports.comparePostsByDate = comparePostsByDate;
+	module.exports.copyPostFromArchive = copyPostFromArchive ;
+	module.exports.findPosts = findPosts;
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePost = savePost;

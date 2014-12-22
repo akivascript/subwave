@@ -92,28 +92,31 @@
 	}
 
 
-	function createNewFile (metadata) {
-		var filename, content;
+	function createNewFile (type) {
+		var content, filename, metadata;
 		
-		if (!metadata.title) {
-			if (metadata.type === 'post') {
-				metadata.title = 'New Post';
-			} else {
-				metadata.title = 'New Page';
-			}
+		if (type === 'post') {
+			metadata = {
+				type: type,
+				title: 'Untitled',
+				author: 'John Doe',
+				date: formatDateForMetadata (Date.now ()),
+				tags: []
+			};
+		} else {
+			metadata = {
+				type: type,
+				title: 'Untitled',
+				author: 'John Doe'
+			};
 		}
-
-		if (!metadata.author) {
-			metadata.author = 'John Doe';
-		}
-
-		metadata.date = formatDateForMetadata (new Date ());
+			
 		content = JSON.stringify (metadata, null, '\t') + '\n\nWhat\'s up?';
 
-		if (metadata.type === 'post') {
-			filename = getPostFilename (metadata.title, new Date (metadata.date)) + '.md';
+		if (type === 'post') {
+			filename = getPostFilename ('untitled', Date.now ()) + '.md';
 		} else {
-			filename = getPostFilename (metadata.title) + '.md';
+			filename = 'untitled.md';
 		}
 
 		writeFile (inboxPath + filename, content);

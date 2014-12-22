@@ -12,6 +12,7 @@
 	var co = require ('./compiler');
 	var io = require ('./io');
 	var pa = require ('./pages');
+	var po = require ('./posts');
 
 	var verbose = false;
 
@@ -26,32 +27,19 @@
 		});
 
 	subwave
-		.command ('new [type] [title] [author] [tags...]')
-		.description ('Create a new post or page (defaults to a new post)')
-		.action (function (type, title, author, tags) {
-			var metadata;
+		.command ('new-post')
+		.description ('Create a new post')
+		.action (function () {
+			io.createNewFile ('post');
 
-			metadata = {};
+			process.exit ();
+		});
 
-			if (type) {
-				metadata.type = type;
-			} else {
-				metadata.type = 'post';
-			}
-
-			if (title) {
-				metadata.title = title;
-			}
-
-			if (author) {
-				metadata.author = author;
-			}
-
-			if (tags) {
-				metadata.tags = tags;
-			}
-
-			io.createNewFile ();
+	subwave
+		.command ('new-page')
+		.description ('Create a new page')
+		.action (function () {
+			io.createNewFile ('page');
 
 			process.exit ();
 		});
@@ -66,14 +54,34 @@
 		});
 
 	subwave
-		.command ('update-post [index]')
-		.description ('Returns a post to the inbox for updating')
+		.command ('get-post [index]')
+		.description ('Copies a post to the inbox for updating')
 		.action (function (index) {
-			pa.copyPageFromArchive (index, verbose);
+			po.copyPostFromArchive (index, verbose);
 
 			process.exit ();
 		});
 
+	subwave
+		.command ('find-post [criterion]')
+		.description ('Returns a list of qualifying posts (does NOT search post content)') 
+		.action (function (criterion) {
+			var post, posts;
+
+			posts = po.findPosts (criterion);
+
+			console.log ('Found:');
+
+			for (var i = 0; i < posts.length; i++) {
+				post = posts [i];
+
+				console.log (post.title + ' from ' + pa.formatDateForDisplay (post.date) +
+										 ' at index ' + post.index + '.');
+			}
+			
+			process.exit ();
+		});
+			
 	subwave
 		.version ('0.8')
 		.option ('-cp, --clean', 'Clean /public directories')
@@ -83,7 +91,7 @@
 	try {
 		subwave.parse (process.argv);
 	} catch (e) {
-		console.log (e.message);
+		console.log (e.stack);
 
 		process.exit ();
 	}
