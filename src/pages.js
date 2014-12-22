@@ -93,6 +93,7 @@
 			file = io.readFile (io.archivePath + 'posts/' + entry.path + entry.filename + '.md');
 			entry.content = getContent (file, false);
 			entry.displayTitle = marked (entry.title);
+			entry.displayDate = formatDateForDisplay (entry.date);
 			entry.excerpt = getExcerpt (marked (entry.content));
 
 			entries.push (entry);
