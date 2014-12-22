@@ -11,8 +11,10 @@
 
 	var co = require ('./compiler');
 	var io = require ('./io');
+	var pa = require ('./pages');
 
-	var verbose = true;
+	var verbose = false;
+
 
 	subwave
 		.command ('build')
@@ -64,12 +66,27 @@
 		});
 
 	subwave
+		.command ('update-post [index]')
+		.description ('Returns a post to the inbox for updating')
+		.action (function (index) {
+			pa.copyPageFromArchive (index, verbose);
+
+			process.exit ();
+		});
+
+	subwave
 		.version ('0.8')
 		.option ('-cp, --clean', 'Clean /public directories')
 		.option ('-ca, --clean-archive', 'Clean /resources/archive directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
-	subwave.parse (process.argv);
+	try {
+		subwave.parse (process.argv);
+	} catch (e) {
+		console.log (e.message);
+
+		process.exit ();
+	}
 
 	if (subwave.verbose) {
 		verbose = true;

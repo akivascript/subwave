@@ -25,6 +25,18 @@
 		}
 	}
 
+	// Returns a post by its index. 
+	function getPostByIndex (index, posts) {
+		var post;
+		for (var i = 0; i < posts.length; i++) {
+			post = posts [i];
+
+			if (post.index == index) {
+				return post;
+			}
+		}
+	}
+
 	// Gets the index of the most recently added post in state.
 	function getLastIndex (posts) {
 		var lastPost;
@@ -71,6 +83,7 @@
 	}
 
 	module.exports.addPostToTagGroups = addPostToTagGroups; 
+	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getLastIndex = getLastIndex;
 	module.exports.getState = getState;
 	module.exports.saveState = saveState;
