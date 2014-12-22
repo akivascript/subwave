@@ -6,6 +6,7 @@
 	var moment = require ('moment');
 
 	var io = require ('./io');
+	var st = require ('./state');
 
 	marked.setOptions ({
 		smartypants: true
@@ -43,6 +44,41 @@
 		}
 
 		return target;
+	}
+
+	function copyPageFromArchive (index, verbose) {
+		var filename, date, post, path, state;
+
+		if (index) {
+
+			state = st.getState ();
+			post = st.getPostByIndex (index, state.posts);
+
+			if (!post) {
+				throw {
+					name: 'Error',
+					message: 'Unable to find post with index ' + index + '.'
+				}
+			}
+
+			date = formatDateForDisplay (post.date);
+			path = io.getPostDirectoryPathname (post.date);
+
+			if (verbose) {
+				console.log ('Copying from ' + io.archivePath + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	io.inboxPath + post.filename + '.md');
+			}
+			
+//				io.copyFile (io.archivePath + 'posts/' + path + post.filename + '.md',
+//										 io.inboxPath + post.filename + '.md');
+
+			console.log (post.title + ' from ' + date + ' ready for editing.');
+		} else {
+			throw {
+				name: 'ArgumentError',
+				message: 'Please provide an index.'
+			}
+		}
 	}
 
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
@@ -189,6 +225,10 @@
 		return matches;
 	}
 
+	function copyPage (index) {
+
+	}
+
 	// Compile and commit HTML file to disk.
 	function savePage (page) {
 		page.output = compilePage (page);
@@ -200,6 +240,7 @@
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.copyAttributes = copyAttributes;
+	module.exports.copyPageFromArchive = copyPageFromArchive;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = getExcerpt;
 	module.exports.getContent = getContent;
