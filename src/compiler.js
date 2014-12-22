@@ -32,12 +32,12 @@
 
 		state = st.getState ();
 		posts = po.getPosts (pages);
-		entries = ar.createNewArchiveEntries (posts);
 
 		if (posts.length !== 0) {
+			entries = ar.createNewArchiveEntries (posts);
+
 			handlePosts (state, posts, entries);
 		}
-
 
 		// Processes and saves any page files in inbox.
 		for (i = 0; i < pages.length; i++) {
@@ -80,13 +80,31 @@
 		ar.saveArchives (archives);
 	}
 
+	// Take [currently only] new posts, add them to the site's state, process them,
+	// fold them, spindle them, mutilate them...
 	function handlePosts (state, posts, entries, archives) {
-		var archivePath, i, post;
+		var archivePostsPath, entry, i, lastIndex, post;
+
+		lastIndex = 0;
+
+		// Each post gets a unique index number which is later used 
+		// for 
+		if (state.posts && state.posts.length > 0) {
+			lastIndex = st.getLastIndex (state.posts);
+		}
+
+		for (i = 0; i < entries.length; i++) {
+			entry = entries [i];
+
+			lastIndex = lastIndex + 1;
+
+			entry.index = lastIndex;
+		}
 
 		state.posts = state.posts.concat (entries);
 
-		state.posts.sort (po.comparePosts);
-
+		// Some last prepatory work on new posts including moving the now loaded
+		// files into the archive.
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 
@@ -94,12 +112,12 @@
 
 			st.addPostToTagGroups (state, post);
 
-			archivePath = io.archivePath + 'posts/';
+			archivePostsPath = io.archivePath + 'posts/';
 
-			io.createPostDirectory (archivePath + post.path);
+			io.createPostDirectory (archivePostsPath + post.path);
 
 			io.renameFile (io.inboxPath + post.origFilename, 
-										 archivePath + post.path + post.filename + '.md');
+										 archivePostsPath + post.path + post.filename + '.md');
 		}
 	
 		// We handle appending the archives first (above) so we can more easily determine

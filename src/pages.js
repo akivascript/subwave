@@ -57,7 +57,7 @@
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (io.archivePath + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getFileContent (file);
+			entry.content = getContent (file);
 			entry.displayTitle = marked (entry.title);
 			entry.excerpt = getExcerpt (entry.content);
 
@@ -82,7 +82,7 @@
 	function createPage (source) {
 		var attr, content, compiler, filename, i, metadata, matches, page;
 
-		matches = processFile (source);
+		matches = parseFile (source);
 
 		page = copyAttributes (JSON.parse (matches [1]));
 
@@ -155,13 +155,14 @@
 		return excerpt.join ('\n');
 	}
 
-	// Processes a file and returns only its content (e.g., the body of a post).
-	function getFileContent (source) {
-		var matches;
+	// Parses a file and returns only its content (e.g., the body of a post).
+	function getContent (file) {
+		return marked (parseFile (file) [2]);
+	}
 
-		matches = processFile (source);
-
-		return marked (matches [2]);
+	// Parses a file and returns only its metadata.
+	function getMetadata (file) {
+		return parseFile (file) [1];
 	}
 
 	// An indirector for clarity.
@@ -171,17 +172,17 @@
 
 	// Takes the contents of a file as a string and separates the metadata from the
 	// content of the page. 
-	function processFile (source) {
+	function parseFile (file) {
 		var matches, pattern;
 
 		// Matches '{key: value, key: value, ...} content ...'
 		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
-		matches = source.match (pattern);
+		matches = file.match (pattern);
 
 		if (!matches || matches.length === 0) {
 			throw {
 				name: 'Error',
-				message: 'The source isn\'t the correct format: ' + source
+				message: 'The file isn\'t the correct format: ' + file
 			};
 		}
 
@@ -201,7 +202,8 @@
 	module.exports.copyAttributes = copyAttributes;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = getExcerpt;
-	module.exports.getFileContent = getFileContent;
+	module.exports.getContent = getContent;
+	module.exports.getMetadata = getMetadata
 	module.exports.getNewPages = getNewPages;
 	module.exports.savePage = savePage;
 } ());

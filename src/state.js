@@ -4,6 +4,7 @@
 	'use strict';
 
 	var io = require ('./io');
+	var pa = require ('./pages');
 	var ta = require ('./tags');
 
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
@@ -22,6 +23,15 @@
 
 			state.tags [tag].posts.push (post.filename);
 		}
+	}
+
+	// Gets the index of the most recently added post in state.
+	function getLastIndex (posts) {
+		var lastPost;
+
+		lastPost = posts [posts.length - 1];
+
+		return lastPost.index;
 	}
 
 	// Returns a JSON object representing the current state of the blog
@@ -61,6 +71,7 @@
 	}
 
 	module.exports.addPostToTagGroups = addPostToTagGroups; 
+	module.exports.getLastIndex = getLastIndex;
 	module.exports.getState = getState;
 	module.exports.saveState = saveState;
 } ());

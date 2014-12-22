@@ -8,6 +8,7 @@
 
 	var io = require ('./io');
 	var pa = require ('./pages');
+	var po = require ('./posts');
 
 	// Compile archives.html through Jade.
 	function compile (archives) {
@@ -72,7 +73,7 @@
 			}
 		}
 
-		return entries;
+		return entries.sort (po.comparePosts);
 	}
 
 	// Compiles archives.html and commits it to disk.
