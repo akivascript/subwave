@@ -13,6 +13,6 @@ html(lang="en")
 						each post in posts.sort ()
 							div.row
 								div.col-md-6.text-left
-									a(href='/posts/' + post.path + post.filename + '.html')!= post.title 
+									a(href='/posts/' + post.path + post.filename + '.html')!= post.displayTitle 
 					div.col-md-2
 		include ./includes/footer.jade

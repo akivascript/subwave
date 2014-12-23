@@ -10,6 +10,10 @@
 	var pa = require ('./pages');
 	var st = require ('./state');
 
+	marked.setOptions ({
+		smartypants: true
+	});
+
 
 	// Allows sorting of posts by date.
 	function comparePostsByDate (postA, postB) {

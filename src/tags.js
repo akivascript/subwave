@@ -2,8 +2,15 @@
 (function () {
 	'use strict';
 
+	var marked = require ('marked');
+
 	var pa = require ('./pages');
 	var io = require ('./io');
+
+	marked.setOptions ({
+		smartypants: true
+	});
+
 
 	function addTags (tags, taglist) {
 		tags.forEach (function (tag) {
@@ -17,6 +24,7 @@
 			}
 		});
 	}
+
 
 	function createTagPages (state) {
 		for (var t in state.tags) {
@@ -34,6 +42,7 @@
 					if (spost.filename === tpost) {
 						page.posts.push ({
 							title: spost.title,
+							displayTitle: marked (spost.title),
 							filename: spost.filename,
 							path: io.getPostDirectoryPathname (spost.date)
 						});
