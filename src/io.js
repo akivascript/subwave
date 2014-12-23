@@ -85,7 +85,7 @@
 
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
-		fs.copySync (oldPath, new Path);
+		fs.copySync (oldPath, newPath);
 	}
 
 
