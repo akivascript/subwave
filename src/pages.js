@@ -94,7 +94,10 @@
 			entry.content = getContent (file, false);
 			entry.displayTitle = marked (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
-			entry.excerpt = getExcerpt (marked (entry.content));
+
+			if (entry.content) {
+				entry.excerpt = getExcerpt (marked (entry.content));
+			}
 
 			entries.push (entry);
 		}
@@ -211,7 +214,8 @@
 		var matches, pattern;
 
 		// Matches '{key: value, key: value, ...} content ...'
-		pattern = /(\{(?:.|\n)+\})(?:\n)*((.|\n)*)/;
+		pattern = /({[\s\w",: \-\[\]\{\}\.\n]*})?\n*((.|[\n\r])*)/;
+
 		matches = file.match (pattern);
 
 		if (!matches || matches.length === 0) {
