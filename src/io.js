@@ -3,7 +3,7 @@
 (function () {
 	'use strict';
 
-	var fs = require ('fs');
+	var fs = require ('fs-extra');
 	var md = require ('mkdirp');
 	var moment = require ('moment');
 	var rm = require ('rimraf');
@@ -85,10 +85,7 @@
 
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
-		var content;
-
-		content = readFile (oldPath);
-		writeFile (newPath, readFile (oldPath));
+		fs.copySync (oldPath, new Path);
 	}
 
 
