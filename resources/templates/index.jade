@@ -20,10 +20,10 @@ html(lang="en")
 										div.post-matter
 											if index === 0
 												h5.post-date= post.displayDate
-												h1.post-title!= post.title
+												h1.post-title!= post.displayTitle
 											else 
 												h6.post-date= post.displayDate
-												h2.post-title!= post.title
+												h2.post-title!= post.displayTitle
 										div.tags.text-right
 											each tag in post.tags
 												a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
