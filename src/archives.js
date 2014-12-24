@@ -11,8 +11,8 @@
 	var po = require ('./posts');
 
 	// Compile archives.html through Jade.
-	function compile (archives) {
-		var compiler, i, post;
+	function compile (archives, tags) {
+		var compiler, i, locals, post;
 
 		compiler = jade.compileFile (archives.template, { pretty: true });
 
@@ -24,7 +24,12 @@
 			post.title = marked (post.title);
 		}
 
-		return compiler (archives);
+		locals = {
+			page: archives,
+			tags: Object.keys (tags)
+		};
+
+		return compiler (locals);
 	}
 
 	// Copies relevant metadata from one page to another.
@@ -78,8 +83,8 @@
 	}
 
 	// Compiles archives.html and commits it to disk.
-	function saveArchives (archives) {
-		archives.output = compile (archives);
+	function saveArchives (archives, tags) {
+		archives.output = compile (archives, tags);
 
 		io.saveHtmlPage (archives);
 	}

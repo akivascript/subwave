@@ -44,7 +44,7 @@
 			page = pages [i];
 
 			if (page.type !== 'post') {
-				pa.savePage (page);
+				pa.savePage (page, state.tags);
 
 				io.renameFile (io.inboxPath + page.origFilename, 
 											 io.archivePath + page.origFilename);
@@ -53,9 +53,8 @@
 
 		// Creates the index.html page.
 		homePage = pa.createHomePage (state.posts.slice (-3), posts);
-		homePage.tags = state.tags;
 
-		pa.savePage (homePage);
+		pa.savePage (homePage, state.tags);
 
 		// Copies any custom resources to public.
 		resources = ['css/', 'js/', 'img/'];
@@ -71,13 +70,13 @@
 		});
 	}
 
-	function handleArchives (posts) {
+	function handleArchives (posts, tags) {
 		var archives;
 
 		archives = ar.createArchives (posts);
 		archives = pa.createPage (JSON.stringify (archives));
 
-		ar.saveArchives (archives);
+		ar.saveArchives (archives, tags);
 	}
 
 	// Take [currently only] new posts, add them to the site's state, process them,
@@ -150,11 +149,11 @@
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 
-			po.savePost (post);
+			po.savePost (post, state.tags);
 		}
 
 		// Create archives.html.
-		handleArchives (state.posts);
+		handleArchives (state.posts, state.tags);
 
 		// Create tag index files in tags directory.
 		ta.createTagPages (state);

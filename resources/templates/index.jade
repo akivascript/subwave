@@ -9,11 +9,11 @@ html(lang="en")
 					div.col-xs-3 
 						h4.taglist Tags
 						div.taglist
-							each tag in Object.keys (tags).sort ()
+							each tag in tags.sort ()
 								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 								| 
 					div.col-xs-9
-						each post, index in posts.reverse ()
+						each post, index in page.posts.reverse ()
 							if post
 								div.row
 									div.col-xs-12

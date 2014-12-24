@@ -9,23 +9,23 @@ html(lang="en")
 					div.col-md-1
 					div.col-xs-10(style='padding-left: 40px; padding-right: 40px;')
 						div.post-matter
-							h5.post-date= displayDate
-							h1.post-title!= title
+							h5.post-date= page.displayDate
+							h1.post-title!= page.title
 						div.tags.text-right
-							each tag in tags.sort ()
+							each tag in page.tags.sort ()
 								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 								| 
-						div.post-content!= content
+						div.post-content!= page.content
 						div.post-nav
 							div.col-md-6.text-right.post-nav-divider-l
-								if previous
+								if page.previous
 									h3
-										a(href='/posts/' + previous.path + previous.filename + '.html') #{previous.title}
+										a(href='/posts/' + page.previous.path + page.previous.filename + '.html') #{page.previous.title}
 									h4.post-nav-label Previous
 							div.col-md-6.text-left.post-nav-divider-r
-								if next
+								if page.next
 									h3
-										a(href='/posts/' + next.path + next.filename + '.html') #{next.title}
+										a(href='/posts/' + page.next.path + page.next.filename + '.html') #{page.next.title}
 									h4.post-nav-label Next
 					div.col-md-1
 		include ./includes/footer.jade

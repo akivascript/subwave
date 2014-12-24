@@ -21,8 +21,8 @@
 	}
 
 	// Runs a page through Jade so that it is formatted for display.
-	function compilePage (page) {
-		var compiler;
+	function compilePage (page, tags) {
+		var compiler, locals;
 
 		compiler = jade.compileFile (page.template, { pretty: true });
 
@@ -34,7 +34,12 @@
 			page.content = marked (page.content);
 		}
 
-		return compiler (page);
+		locals = {
+			page: page,
+			tags: Object.keys (tags)
+		};
+
+		return compiler (locals);
 	}
 	
 	// Duplicates a page's attributes.
@@ -230,8 +235,8 @@
 	}
 
 	// Compile and commit HTML file to disk.
-	function savePage (page) {
-		page.output = compilePage (page);
+	function savePage (page, tags) {
+		page.output = compilePage (page, tags);
 
 		io.saveHtmlPage (page);
 	}

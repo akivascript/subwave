@@ -50,7 +50,7 @@
 				}
 			}
 
-			pa.savePage (page);
+			pa.savePage (page, state.tags);
 		}
 	}
 

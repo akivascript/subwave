@@ -202,12 +202,12 @@
 		tmpSibling = processSibling (tmpSibling, oppDirection);
 		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
 
-		savePost (tmpSibling);
+		savePost (tmpSibling, state.tags);
 	}
 
 	// Commit a post to disk.
-	function savePost (post) {
-		post.output = pa.compilePage (post);
+	function savePost (post, tags) {
+		post.output = pa.compilePage (post, tags);
 
 		io.createPostDirectory (io.postsPath + post.path);
 

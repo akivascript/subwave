@@ -65,8 +65,29 @@ div.bq span {
 	background-color: #8798a7;
 }
 
+.navbar-default .dropdown-menu {
+	background-color: #6f7d8a;
+}
+
+.navbar .dropdown-menu > li > a {
+	background-color: #6f7d8a;
+	border-radius: 0px;
+	border: 0px;
+}
+
+.navbar .dropdown-menu > li > a:hover {
+	background-color: #475059;
+	border: 0px;
+}
+
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
+	background-color: #6f7d8a;
+}
+
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus {
 	background-color: #6f7d8a;
 }
 
@@ -122,3 +143,5 @@ h4.taglist {
 div.taglist {
 	padding-left: 10px;
 }
+
+
