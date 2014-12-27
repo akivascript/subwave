@@ -6,6 +6,7 @@
 	var jade = require ('jade');
 	var marked = require ('marked');
 
+	var config = require ('./config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var st = require ('./state');
@@ -45,12 +46,12 @@
 			path = io.getPostDirectoryPathname (post.date);
 
 			if (verbose) {
-				console.log ('Copying from ' + io.archivePath + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	io.inboxPath + post.filename + '.md');
+				console.log ('Copying from ' + config.path.archive + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	config.path.inbox + post.filename + '.md');
 			}
 			
-			io.copyFile (io.archivePath + 'posts/' + path + post.filename + '.md',
-									 io.inboxPath + post.filename + '.md');
+			io.copyFile (config.path.archive + 'posts/' + path + post.filename + '.md',
+									 config.path.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
@@ -167,10 +168,10 @@
 
 		path = io.getPostDirectoryPathname (sibling.date);
 		filename = sibling.filename;
-		file = io.readFile (io.archivePath + 'posts/' + path + filename + '.md');
+		file = io.readFile (config.path.archive + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
-		sibling.template = io.templatesPath + 'post.jade';
+		sibling.template = config.path.templates + 'post.jade';
 		sibling.title = marked (sibling.title);
 
 		return sibling;
@@ -216,7 +217,7 @@
 	function savePost (post, tags) {
 		post.output = pa.compilePage (post, tags);
 
-		io.createPostDirectory (io.postsPath + post.path);
+		io.createPostDirectory (config.path.posts + post.path);
 
 		io.saveHtmlPage (post);
 	}

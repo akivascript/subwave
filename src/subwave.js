@@ -9,6 +9,7 @@
 
 	var subwave = require ('commander');
 
+	var config = require ('./config');
 	var co = require ('./compiler');
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -97,14 +98,14 @@
 	}
 
 	if (subwave.verbose) {
-		verbose = true;
+		config.verbose = true;
 	}
 		
 	if (subwave.clean) {
-		io.cleanPublic (verbose);
+		io.cleanPublic ();
 	}
 
 	if (subwave.cleanArchive) {
-		io.cleanArchive (verbose);
+		io.cleanArchive ();
 	}
 } ());
