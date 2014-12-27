@@ -2,9 +2,9 @@
 (function () {
 	'use strict';
 
+	var _ = require ('underscore');
 	var jade = require ('jade');
 	var marked = require ('marked');
-	var _ = require ('underscore');
 
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -80,6 +80,8 @@
 
 		state = st.getState ();
 
+		// Goes through each post in the site and looks through each attribute it has,
+		// searching for matches.
 		_.each (state.posts, function (post) {
 			_.each (post, function (value, key) {
 				if (typeof value === 'string') {
@@ -115,6 +117,7 @@
 		});
 	}
 
+
 	function handlePostsWithSiblings (state, posts) {
 		var i, idx, next, post, previous;
 
@@ -138,6 +141,7 @@
 		}
 	}
 
+
 	// Links navigation information between two posts
 	function linkSibling (source) {
 		var target;
@@ -156,6 +160,7 @@
 		return target;
 	}
 
+
 	// Loads and processes an existing post from resources/archives/..
 	function processSibling (sibling, direction) {
 		var file, filename, path;
@@ -170,6 +175,7 @@
 
 		return sibling;
 	}
+
 
 	// Connect a new post's navigation with its existing sibling posts, saving the 
 	// existing sibling posts along the way. This allows us to add new posts and modify
@@ -204,6 +210,7 @@
 
 		savePost (tmpSibling, state.tags);
 	}
+	
 
 	// Commit a post to disk.
 	function savePost (post, tags) {
@@ -213,6 +220,7 @@
 
 		io.saveHtmlPage (post);
 	}
+
 
 	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.copyPostFromArchive = copyPostFromArchive ;
