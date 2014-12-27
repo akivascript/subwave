@@ -10,6 +10,7 @@
 	var pa = require ('./pages');
 	var po = require ('./posts');
 
+	
 	// Compile archives.html through Jade.
 	function compile (archives, tags) {
 		var compiler, i, locals, post;
@@ -32,6 +33,7 @@
 		return compiler (locals);
 	}
 
+
 	// Copies relevant metadata from one page to another.
 	function copyPostData (source) {
 		var target;
@@ -46,6 +48,7 @@
 
 		return target;
 	}
+
 
 	// Creates a new archives object. The archives.html file is recreated each time
 	// a post is added to the blog.
@@ -67,6 +70,7 @@
 		return archives;
 	}
 
+
 	// This... maybe unnecessary. Hold tight.
 	function createNewArchiveEntries (files) {
 		var i, entries;
@@ -82,12 +86,14 @@
 		return entries.sort (po.comparePosts);
 	}
 
+
 	// Compiles archives.html and commits it to disk.
 	function saveArchives (archives, tags) {
 		archives.output = compile (archives, tags);
 
 		io.saveHtmlPage (archives);
 	}
+
 
 	module.exports.createArchives = createArchives;
 	module.exports.createNewArchiveEntries = createNewArchiveEntries;

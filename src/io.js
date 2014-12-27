@@ -8,40 +8,34 @@
 	var moment = require ('moment');
 	var rm = require ('rimraf');
 
-	var resourcesPath = 'resources/';
-	var inboxPath	= resourcesPath + 'inbox/';
-	var archivePath = resourcesPath + 'archive/';
-	var publicPath = 'public/';
-	var postsPath = publicPath + 'posts/';
-	var tagsPath = publicPath + 'tags/';
-	var templatesPath = resourcesPath + 'templates/';
+	var config = require ('./config');
 
 
 	// Resets the /resources/archive to its default state... empty.
-	function cleanArchive (verbose) {
+	function cleanArchive () {
 		var deletes, prunes;
 
-		if (verbose) {
+		if (config.verbose) {
 			console.log ('Cleaning archive...');
 		}
 
 		deletes = [];
 		prunes = [];
 
-		deletes.push (archivePath);
-		prunes.push (archivePath + 'posts/');
+		deletes.push (config.path.archive);
+		prunes.push (config.path.archive + 'posts/');
 
-		clean (deletes, prunes, verbose);
+		clean (deletes, prunes, config.verbose);
 	}
 
 
 	// Deletes and prunes files and directories.
-	function clean (deletes, prunes, verbose) {
+	function clean (deletes, prunes) {
 		if (deletes.length > 0) {
 			deletes.forEach (function (path) {
 				processFiles (path, function (target, stats) {
 					if (stats.isFile ()) {
-						removeFile (target, verbose);
+						removeFile (target);
 					}
 				});
 			});
@@ -51,7 +45,7 @@
 			prunes.forEach (function (path) {
 				processFiles (path, function (target, stats) {
 					if (stats.isDirectory ()) {
-						removeDirectories (target, verbose);
+						removeDirectories (target);
 					}
 				});
 			});
@@ -60,26 +54,26 @@
 
 
 	// Resets the /public directory to its default state... empty.
-	function cleanPublic (verbose) {
+	function cleanPublic () {
 		var deletes, prunes;
 
 		deletes = [];
 		prunes = [];
 
-		if (verbose) {
+		if (config.verbose) {
 			console.log ('Cleaning public...');
 		}
 
-		deletes.push (publicPath);
-		deletes.push (publicPath + 'css/');
-		deletes.push (publicPath + 'img/');
-		deletes.push (publicPath + 'js/');
-		deletes.push (tagsPath);
-		prunes.push (postsPath);
+		deletes.push (config.path.pub);
+		deletes.push (config.path.pub + 'css/');
+		deletes.push (config.path.pub + 'img/');
+		deletes.push (config.path.pub + 'js/');
+		deletes.push (config.path.tags);
+		prunes.push (config.path.posts);
 
-		clean (deletes, prunes, verbose);
+		clean (deletes, prunes, config.verbose);
 
-		removeFile (resourcesPath + 'state.json', verbose);
+		removeFile (config.path.resources + 'state.json');
 	}
 
 
@@ -116,7 +110,7 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (inboxPath + filename, content);
+		writeFile (config.path.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
@@ -181,7 +175,7 @@
 	function getPostFilename (title, date) {
 		var dateArray, day, filename, month, newTitle, titleArray, year;
 
-		titleArray = title.replace(/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
+		titleArray = title.replace (/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
 
 		if (date) {
@@ -263,13 +257,13 @@
 
 
 	// Deletes a directory recursively from disk.
-	function removeDirectories (path, verbose) {
+	function removeDirectories (path) {
 		rm (path, function (error) {
 			if (error) {
 				throw error;
 			}
 
-			if (verbose) {
+			if (config.verbose) {
 				console.log ('Deleted ' + path + '...');
 			}
 		});
@@ -277,13 +271,13 @@
 
 			
 	// Deletes a file from disk.
-	function removeFile (file, verbose) {
+	function removeFile (file) {
 		fs.unlink (file, function (error) {
 			if (error) {
 				return; 
 			}
 
-			if (verbose) {
+			if (config.verbose) {
 				console.log ('Deleted ' + file + '...');
 			}
 		});
@@ -302,13 +296,13 @@
 		var path;
 
 		if (page.type === 'post') {
-			path = postsPath;
+			path = config.path.posts;
 		} else if (page.type === 'tagpage') {
-			path = tagsPath;
+			path = config.path.tags;
 		} else if (page.type === 'page' || 
 							 page.type === 'archives' ||
 							 page.type === 'index') {
-			path = publicPath;
+			path = config.path.pub;
 		} else {
 			throw new Error ('Unable to determine page type.');
 		}
@@ -350,16 +344,8 @@
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
+	module.exports.removeFile = removeFile;
 	module.exports.renameFile = renameFile;
 	module.exports.writeFile = writeFile;
 	module.exports.saveHtmlPage = saveHtmlPage;
-
-	module.exports.inboxPath = inboxPath;
-	module.exports.archivePath = archivePath;
-	module.exports.postsPath = postsPath;
-	module.exports.publicPath = publicPath;
-	module.exports.removeFile = removeFile;
-	module.exports.resourcesPath = resourcesPath;
-	module.exports.tagsPath = tagsPath;
-	module.exports.templatesPath = templatesPath;
 } ());

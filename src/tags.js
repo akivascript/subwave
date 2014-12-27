@@ -4,6 +4,7 @@
 
 	var marked = require ('marked');
 
+	var config = require ('./config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 
@@ -64,7 +65,7 @@
 			title: name,
 			filename: name.toLowerCase (),
 			posts: [],
-			template: io.templatesPath + 'tag.jade'
+			template: config.path.templates + 'tag.jade'
 		};
 
 		return tagPage;

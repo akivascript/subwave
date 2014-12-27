@@ -6,6 +6,7 @@
 	var Rss = require ('rss');
 
 	var ar = require ('./archives');
+	var config = require ('./config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
@@ -15,10 +16,10 @@
 	var siteUrl = 'http://www.example.com/';
 
 	// Ceci n'est pas un commentaire.
-	function compile (verbose) {
+	function compile () {
 		var homePage, i, entries, files, page, pages, path, posts, resources, state;
 
-		if (verbose) {
+		if (config.verbose) {
 			console.log ('Compiling the site...');
 		}
 
@@ -46,8 +47,8 @@
 			if (page.type !== 'post') {
 				pa.savePage (page, state.tags);
 
-				io.renameFile (io.inboxPath + page.origFilename, 
-											 io.archivePath + page.origFilename);
+				io.renameFile (config.path.inbox + page.origFilename, 
+											 config.path.archive + page.origFilename);
 			}
 		}
 
@@ -56,16 +57,13 @@
 
 		pa.savePage (homePage, state.tags);
 
-		// Copies any custom resources to public.
-		resources = ['css/', 'js/', 'img/'];
-
-		resources.forEach (function (resource) {
-			files = io.getFiles (io.resourcesPath + resource);
+		config.resources.forEach (function (resource) {
+			files = io.getFiles (config.path.resources + resource);
 
 			for (var file in files) {
 				path = files [file];
 
-				io.copyFile (path + file, io.publicPath + resource + file);
+				io.copyFile (path + file, config.path.pub + resource + file);
 			}
 		});
 	}
@@ -85,7 +83,7 @@
 		var archivePostsPath, entry, file, i, index, postCount, output, post;
 
 		// Each post gets a unique index number which is later used 
-		// for 
+		// for updates.
 		if (state.posts && state.posts.length > 0) {
 			postCount = st.getLastIndex (state.posts);
 
@@ -121,7 +119,7 @@
 
 			st.addPostToTagGroups (state, post);
 
-			archivePostsPath = io.archivePath + 'posts/';
+			archivePostsPath = config.path.archive + 'posts/';
 
 			io.createPostDirectory (archivePostsPath + post.path);
 
@@ -134,12 +132,12 @@
 				tags: post.tags}, null, '  ');
 
 
-			file = io.readFile (io.inboxPath + post.origFilename);
+			file = io.readFile (config.path.inbox + post.origFilename);
 			output = output + '\n\n' + pa.getContent (file, false);
 
 			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
 			
-			io.removeFile (io.inboxPath + post.origFilename);
+			io.removeFile (config.path.inbox + post.origFilename);
 		}
 	
 		// We handle appending the archives first (above) so we can more easily determine
@@ -166,37 +164,39 @@
 	// Clears out the public directory, copies everything from resource/archives
 	// then builds the site again. Useful for when changing templates that affect the
 	// entire site.
-	function rebuild (verbose) {
+	function rebuild () {
 		var files, path;
 
 		files = [];
 
-		if (verbose) {
+		if (config.verbose) {
 			console.log ('Rebuilding the site...');
 		}
 
 		io.cleanPublic (false);
 
-		files = io.getFiles (io.archivePath);
+		files = io.getFiles (config.path.archive);
 
 		for (var file in files) {
 			path = files [file];
 
-			io.copyFile (path + file, io.inboxPath + file);
+			io.copyFile (path + file, config.path.inbox + file);
 		}
 
-		compile (verbose);
+		compile ();
 	}
 
 	function updateRssFeed (state) {
-		var feed, feedOptions, itemOptions;
+		var feed, feedName, feedOptions, itemOptions;
+
+		feedName = 'rss.xml';
 
 		feedOptions = {
-			title: 'Blog Title',
-			description: 'Blog description',
-			feed_url: 'http://example.com/rss.xml',
-			site_url: 'http://example.com',
-			copyright: '2014 Bob Sacamano',
+			title: config.blog.title,
+			description: config.blog.description,
+			feed_url: config.blog.url + '/' + feedName,
+			site_url: config.blog.url,
+			copyright: config.blog.copyright,
 			langauge: 'en',
 			pubDate: new Date ()
 		};
@@ -206,7 +206,7 @@
 		state.posts.forEach (function (post) {
 			itemOptions = {
 				title: post.title,
-				url: siteUrl + io.postsPath + post.path + post.filename + '.html',
+				url: siteUrl + config.path.posts + post.path + post.filename + '.html',
 				date: post.date,
 				categories: post.tags,
 				author: post.author
@@ -215,7 +215,7 @@
 			feed.item (itemOptions);
 		});
 
-		io.writeFile (io.publicPath + 'rss.xml', feed.xml ());
+		io.writeFile (config.path.pub + feedName, feed.xml ());
 	}
 
 	module.exports.compile = compile;

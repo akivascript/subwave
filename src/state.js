@@ -3,9 +3,11 @@
 (function () {
 	'use strict';
 
+	var config = require ('./config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var ta = require ('./tags');
+
 
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
 	// This is used for generation the tag index pages.
@@ -25,6 +27,7 @@
 		}
 	}
 
+
 	// Returns a post by its index. 
 	function getPostByIndex (index, posts) {
 		var post;
@@ -37,6 +40,7 @@
 		}
 	}
 
+
 	// Gets the index of the most recently added post in state.
 	function getLastIndex (posts) {
 		var lastPost;
@@ -46,6 +50,7 @@
 		return lastPost.index;
 	}
 
+
 	// Returns a JSON object representing the current state of the blog
 	// or returns a fresh one if no state currently exists (this should only
 	// occur when a blog is new and has no posts yet or when the entire site
@@ -53,7 +58,7 @@
 	function getState () {
 		var file, state;
 
-		file = io.resourcesPath + 'state.json';
+		file = config.path.resources + 'state.json';
 
 		try {
 			state = JSON.parse (io.readFile (file));
@@ -72,15 +77,17 @@
 		return state;
 	}
 
+
 	// Commits the current blog state to disk.
 	function saveState (state) {
 		var filename;
 
-		filename = io.resourcesPath + 'state.json';
+		filename = config.path.resources + 'state.json';
 		state.lastUpdated = new Date ();
 
 		io.writeFile (filename, JSON.stringify (state, null, '\t'));
 	}
+
 
 	module.exports.addPostToTagGroups = addPostToTagGroups; 
 	module.exports.getPostByIndex = getPostByIndex;
