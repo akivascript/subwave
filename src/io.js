@@ -22,8 +22,8 @@
 		deletes = [];
 		prunes = [];
 
-		deletes.push (config.path.archive);
-		prunes.push (config.path.archive + 'posts/');
+		deletes.push (config.paths.archive);
+		prunes.push (config.paths.archive + 'posts/');
 
 		clean (deletes, prunes, config.verbose);
 	}
@@ -64,16 +64,16 @@
 			console.log ('Cleaning public...');
 		}
 
-		deletes.push (config.path.pub);
-		deletes.push (config.path.pub + 'css/');
-		deletes.push (config.path.pub + 'img/');
-		deletes.push (config.path.pub + 'js/');
-		deletes.push (config.path.tags);
-		prunes.push (config.path.posts);
+		deletes.push (config.paths.output);
+		deletes.push (config.paths.output + 'css/');
+		deletes.push (config.paths.output + 'img/');
+		deletes.push (config.paths.output + 'js/');
+		deletes.push (config.paths.tags);
+		prunes.push (config.paths.posts);
 
 		clean (deletes, prunes, config.verbose);
 
-		removeFile (config.path.resources + 'state.json');
+		removeFile (config.paths.resources + 'state.json');
 	}
 
 
@@ -110,7 +110,7 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (config.path.inbox + filename, content);
+		writeFile (config.paths.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
@@ -296,13 +296,13 @@
 		var path;
 
 		if (page.type === 'post') {
-			path = config.path.posts;
+			path = config.paths.posts;
 		} else if (page.type === 'tagpage') {
-			path = config.path.tags;
+			path = config.paths.tags;
 		} else if (page.type === 'page' || 
 							 page.type === 'archives' ||
 							 page.type === 'index') {
-			path = config.path.pub;
+			path = config.paths.output;
 		} else {
 			throw new Error ('Unable to determine page type.');
 		}

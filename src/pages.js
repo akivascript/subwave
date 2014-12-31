@@ -73,12 +73,12 @@
 			path = io.getPostDirectoryPathname (post.date);
 
 			if (verbose) {
-				console.log ('Copying from ' + config.path.archive + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	config.path.inbox + post.filename + '.md');
+				console.log ('Copying from ' + config.paths.archive + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	config.paths.inbox + post.filename + '.md');
 			}
 			
-				io.copyFile (config.path.archive + 'posts/' + path + post.filename + '.md',
-										 config.path.inbox + post.filename + '.md');
+				io.copyFile (config.paths.archive + 'posts/' + path + post.filename + '.md',
+										 config.paths.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
@@ -97,7 +97,7 @@
 		for (var i = 0; i < posts.length; i++) {
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
-			file = io.readFile (config.path.archive + 'posts/' + entry.path + entry.filename + '.md');
+			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
 			entry.content = getContent (file, false);
 			entry.displayTitle = marked (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
@@ -115,7 +115,7 @@
 			filename: 'index',
 			posts: entries,
 			tags: [],
-			template: config.path.templates + 'index.jade'
+			template: config.paths.templates + 'index.jade'
 		};
 
 		return homePage;
@@ -138,15 +138,15 @@
 		}
 
 		if (page.type === 'post') {
-			page.template = config.path.templates + 'post.jade';
+			page.template = config.paths.templates + 'post.jade';
 			page.date = convertStringToDate (page.date);
 			page.filename = io.getPostFilename (page.title, page.date);
 			page.path = io.getPostDirectoryPathname (page.date);
 		} else if (page.type === 'page') {
-			page.template = config.path.templates + 'page.jade';
+			page.template = config.paths.templates + 'page.jade';
 			page.filename = page.title.toLowerCase ();
 		} else if (page.type === 'archives') {
-			page.template = config.path.templates + 'archives.jade';
+			page.template = config.paths.templates + 'archives.jade';
 			page.filename = 'archives';
 		} else {
 			throw new Error ('Unable to determine template type from page: ' + page);
@@ -212,7 +212,7 @@
 
 	// An indirector for clarity.
 	function getNewPages () {
-		return io.readFiles (config.path.inbox, createPage);
+		return io.readFiles (config.paths.inbox, createPage);
 	}
 
 	// Takes the contents of a file as a string and separates the metadata from the

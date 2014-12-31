@@ -8,6 +8,7 @@
 	var pa = require ('./pages');
 	var io = require ('./io');
 
+
 	marked.setOptions ({
 		smartypants: true
 	});
@@ -55,6 +56,7 @@
 		}
 	}
 
+
 	function createTagPage (t, tag) {
 		var name, tagPage;
  
@@ -65,11 +67,12 @@
 			title: name,
 			filename: name.toLowerCase (),
 			posts: [],
-			template: config.path.templates + 'tag.jade'
+			template: config.paths.templates + 'tag.jade'
 		};
 
 		return tagPage;
 	}
+
 
 	module.exports.createTagPages = createTagPages;
 } ());

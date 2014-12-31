@@ -13,7 +13,6 @@
 	var st = require ('./state');
 	var ta = require ('./tags');
 
-	var siteUrl = 'http://www.example.com/';
 
 	// Ceci n'est pas un commentaire.
 	function compile () {
@@ -47,8 +46,8 @@
 			if (page.type !== 'post') {
 				pa.savePage (page, state.tags);
 
-				io.renameFile (config.path.inbox + page.origFilename, 
-											 config.path.archive + page.origFilename);
+				io.renameFile (config.paths.inbox + page.origFilename, 
+											 config.paths.archive + page.origFilename);
 			}
 		}
 
@@ -58,15 +57,16 @@
 		pa.savePage (homePage, state.tags);
 
 		config.resources.forEach (function (resource) {
-			files = io.getFiles (config.path.resources + resource);
+			files = io.getFiles (config.paths.resources + resource);
 
 			for (var file in files) {
 				path = files [file];
 
-				io.copyFile (path + file, config.path.pub + resource + file);
+				io.copyFile (path + file, config.paths.output + resource + file);
 			}
 		});
 	}
+
 
 	function handleArchives (posts, tags) {
 		var archives;
@@ -76,6 +76,7 @@
 
 		ar.saveArchives (archives, tags);
 	}
+
 
 	// Take [currently only] new posts, add them to the site's state, process them,
 	// fold them, spindle them, mutilate them...
@@ -119,7 +120,7 @@
 
 			st.addPostToTagGroups (state, post);
 
-			archivePostsPath = config.path.archive + 'posts/';
+			archivePostsPath = config.paths.archive + 'posts/';
 
 			io.createPostDirectory (archivePostsPath + post.path);
 
@@ -132,12 +133,12 @@
 				tags: post.tags}, null, '  ');
 
 
-			file = io.readFile (config.path.inbox + post.origFilename);
+			file = io.readFile (config.paths.inbox + post.origFilename);
 			output = output + '\n\n' + pa.getContent (file, false);
 
 			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
 			
-			io.removeFile (config.path.inbox + post.origFilename);
+			io.removeFile (config.paths.inbox + post.origFilename);
 		}
 	
 		// We handle appending the archives first (above) so we can more easily determine
@@ -161,6 +162,7 @@
 		st.saveState (state);
 	}
 
+
 	// Clears out the public directory, copies everything from resource/archives
 	// then builds the site again. Useful for when changing templates that affect the
 	// entire site.
@@ -175,16 +177,17 @@
 
 		io.cleanPublic (false);
 
-		files = io.getFiles (config.path.archive);
+		files = io.getFiles (config.paths.archive);
 
 		for (var file in files) {
 			path = files [file];
 
-			io.copyFile (path + file, config.path.inbox + file);
+			io.copyFile (path + file, config.paths.inbox + file);
 		}
 
 		compile ();
 	}
+
 
 	function updateRssFeed (state) {
 		var feed, feedName, feedOptions, itemOptions;
@@ -206,7 +209,7 @@
 		state.posts.forEach (function (post) {
 			itemOptions = {
 				title: post.title,
-				url: siteUrl + config.path.posts + post.path + post.filename + '.html',
+				url: config.blog.url + config.paths.posts + post.path + post.filename + '.html',
 				date: post.date,
 				categories: post.tags,
 				author: post.author
@@ -215,7 +218,7 @@
 			feed.item (itemOptions);
 		});
 
-		io.writeFile (config.path.pub + feedName, feed.xml ());
+		io.writeFile (config.paths.output + feedName, feed.xml ());
 	}
 
 	module.exports.compile = compile;

@@ -58,7 +58,7 @@
 	function getState () {
 		var file, state;
 
-		file = config.path.resources + 'state.json';
+		file = config.paths.resources + 'state.json';
 
 		try {
 			state = JSON.parse (io.readFile (file));
@@ -82,7 +82,7 @@
 	function saveState (state) {
 		var filename;
 
-		filename = config.path.resources + 'state.json';
+		filename = config.paths.resources + 'state.json';
 		state.lastUpdated = new Date ();
 
 		io.writeFile (filename, JSON.stringify (state, null, '\t'));
