@@ -31,7 +31,7 @@
 
 	
 	// Finds a post from the archive and copies it to the inbox for updating.
-	function copyPostFromArchive (index, verbose) {
+	function copyPostFromArchive (index) {
 		var filename, date, post, path, state;
 
 		if (index) {
@@ -45,7 +45,7 @@
 			date = pa.formatDateForDisplay (post.date);
 			path = io.getPostDirectoryPathname (post.date);
 
-			if (verbose) {
+			if (config.verbose) {
 				console.log ('Copying from ' + config.paths.archive + 'posts/' + path + post.filename + '.md' +
 									 ' to ' +	config.paths.inbox + post.filename + '.md');
 			}

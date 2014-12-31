@@ -63,35 +63,6 @@
 	}
 
 
-	function copyPageFromArchive (index) {
-		var filename, date, post, path, state;
-
-		if (index) {
-			state = st.getState ();
-			post = st.getPostByIndex (index, state.posts);
-
-			if (!post) {
-				throw new Error ('Unable to find post with index ' + index + '.');
-			}
-
-			date = formatDateForDisplay (post.date);
-			path = io.getPostDirectoryPathname (post.date);
-
-			if (config.verbose) {
-				console.log ('Copying from ' + config.paths.archive + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	config.paths.inbox + post.filename + '.md');
-			}
-			
-				io.copyFile (config.paths.archive + 'posts/' + path + post.filename + '.md',
-										 config.paths.inbox + post.filename + '.md');
-
-			console.log (post.title + ' from ' + date + ' ready for editing.');
-		} else {
-			throw new Error ('Please provide an index.');
-		}
-	}
-
-
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
 	// to the site.
 	function createHomePage (posts) {
@@ -254,7 +225,6 @@
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.copyAttributes = copyAttributes;
-	module.exports.copyPageFromArchive = copyPageFromArchive;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = getExcerpt;
 	module.exports.getContent = getContent;
