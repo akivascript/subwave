@@ -206,6 +206,8 @@
 
 		feed = new Rss (feedOptions);
 
+		state.posts.reverse ();
+
 		state.posts.forEach (function (post) {
 			date = io.getPostDirectoryPathname (post.date);
 			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
@@ -221,6 +223,8 @@
 
 			feed.item (itemOptions);
 		});
+
+		state.posts.reverse ();
 
 		io.writeFile (config.paths.output + feedName, feed.xml ());
 	}
