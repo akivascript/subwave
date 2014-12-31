@@ -14,6 +14,8 @@
 	});
 	
 
+	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
+	// Date object.
 	function convertStringToDate (date) {
 		var pattern;
 
@@ -21,6 +23,7 @@
 
 		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
+
 
 	// Runs a page through Jade so that it is formatted for display.
 	function compilePage (page, tags) {
@@ -36,6 +39,7 @@
 			page.content = marked (page.content);
 		}
 
+		// Use a local object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
 			tags: Object.keys (tags)
@@ -43,6 +47,7 @@
 
 		return compiler (locals);
 	}
+
 	
 	// Duplicates a page's attributes.
 	function copyAttributes (source) {
@@ -57,11 +62,11 @@
 		return target;
 	}
 
+
 	function copyPageFromArchive (index) {
 		var filename, date, post, path, state;
 
 		if (index) {
-
 			state = st.getState ();
 			post = st.getPostByIndex (index, state.posts);
 
@@ -85,6 +90,7 @@
 			throw new Error ('Please provide an index.');
 		}
 	}
+
 
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
 	// to the site.
@@ -121,9 +127,10 @@
 		return homePage;
 	}
 
+
 	// Converts a file into a page. A file has some front matter which is converted
 	// to JSON. This front matter is used to configure the page, determine its type,
-	// and so forth
+	// and so forth.
 	function createPage (file) {
 		var attr, content, compiler, filename, i, metadata, matches, page;
 
@@ -155,6 +162,9 @@
 		return page;
 	}
 
+
+	// Takes a date object and converts it to the specified date format for display
+	// on both the index and individual post pages.
 	function formatDateForDisplay (date) {
 		var postDate;
 
@@ -163,15 +173,14 @@
 		return postDate.format (config.blog.dateFormat);
 	}
 
+
 	// Create an excerpt for a post.
 	//
-	// The excerpt is 140 words or less but it is drawn against <p></p> content
-	// only. It skips any other tags, such as <h3> or <img>.
+	// The excerpt is three paragraphs.
 	function getExcerpt (content) {
-		var count, excerpt, graf, i, paragraphs, total;
+		var excerpt, graf, i, paragraphs, total;
 
-		count = 0;
-		total = 0;
+		total = 1;
 		excerpt = [];
 		paragraphs = content.split (/\n/);
 
@@ -179,22 +188,19 @@
 			graf = paragraphs [i];
 
 			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
-				count = graf.split (' ').length;
-				
-				if (total + count < 141) {
-					excerpt.push (graf);
-
-					total = total + count;
+				if (total <= 3) {
+					total = total + 1;
 				} else {
 					break;
 				}
-			} else {
-				excerpt.push (graf);
 			}
+
+			excerpt.push (graf);
 		}
 
 		return excerpt.join ('\n');
 	}
+
 
 	// Parses a file and returns only its content (e.g., the body of a post).
 	function getContent (file, marked) {
@@ -205,15 +211,18 @@
 		return parseFile (file) [2];
 	}
 
+
 	// Parses a file and returns only its metadata.
 	function getMetadata (file) {
 		return parseFile (file) [1];
 	}
 
+
 	// An indirector for clarity.
 	function getNewPages () {
 		return io.readFiles (config.paths.inbox, createPage);
 	}
+
 
 	// Takes the contents of a file as a string and separates the metadata from the
 	// content of the page. 
@@ -231,6 +240,7 @@
 
 		return matches;
 	}
+
 
 	// Compile and commit HTML file to disk.
 	function savePage (page, tags) {
