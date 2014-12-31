@@ -57,7 +57,7 @@
 		return target;
 	}
 
-	function copyPageFromArchive (index, verbose) {
+	function copyPageFromArchive (index) {
 		var filename, date, post, path, state;
 
 		if (index) {
@@ -72,7 +72,7 @@
 			date = formatDateForDisplay (post.date);
 			path = io.getPostDirectoryPathname (post.date);
 
-			if (verbose) {
+			if (config.verbose) {
 				console.log ('Copying from ' + config.paths.archive + 'posts/' + path + post.filename + '.md' +
 									 ' to ' +	config.paths.inbox + post.filename + '.md');
 			}
@@ -111,7 +111,7 @@
 
 		homePage = {
 			type: 'index',
-			title: 'Blog Title',
+			title: config.blog.title,
 			filename: 'index',
 			posts: entries,
 			tags: [],
@@ -160,7 +160,7 @@
 
 		postDate = moment (date);
 
-		return postDate.format ('MMMM DD, YYYY');
+		return postDate.format (config.blog.dateFormat);
 	}
 
 	// Create an excerpt for a post.
@@ -232,16 +232,13 @@
 		return matches;
 	}
 
-	function copyPage (index) {
-
-	}
-
 	// Compile and commit HTML file to disk.
 	function savePage (page, tags) {
 		page.output = compilePage (page, tags);
 
 		io.saveHtmlPage (page);
 	}
+
 
 	module.exports.compilePage = compilePage;
 	module.exports.createHomePage = createHomePage;

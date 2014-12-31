@@ -9,6 +9,7 @@
 		description: 'Blog description',
 		url: 'http://www.example.com',
 		copyright: '&copy; 2014 Bob Sacamano',
+		dateFormat: 'MMMM DD, YYYY'
 	};
 	config.paths = {
 		resources: 'resources/',
