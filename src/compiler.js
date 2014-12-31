@@ -190,7 +190,7 @@
 
 
 	function updateRssFeed (state) {
-		var feed, feedName, feedOptions, itemOptions;
+		var date, feed, feedName, feedOptions, file, itemOptions;
 
 		feedName = 'rss.xml';
 
@@ -207,10 +207,14 @@
 		feed = new Rss (feedOptions);
 
 		state.posts.forEach (function (post) {
+			date = io.getPostDirectoryPathname (post.date);
+			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
+
 			itemOptions = {
 				title: post.title,
-				url: config.blog.url + config.paths.posts + post.path + post.filename + '.html',
+				url: config.blog.url + '/' + config.paths.posts + date  + post.filename + '.html',
 				date: post.date,
+				description: pa.getContent (file, true),
 				categories: post.tags,
 				author: post.author
 			};
