@@ -6,6 +6,7 @@
 	var jade = require ('jade');
 	var marked = require ('marked');
 
+	var config = require ('./config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
@@ -27,7 +28,8 @@
 
 		locals = {
 			page: archives,
-			tags: Object.keys (tags)
+			tags: Object.keys (tags),
+			config: config
 		};
 
 		return compiler (locals);

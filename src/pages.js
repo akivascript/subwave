@@ -42,7 +42,8 @@
 		// Use a local object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
-			tags: Object.keys (tags)
+			tags: Object.keys (tags),
+			config: config
 		};
 
 		return compiler (locals);
