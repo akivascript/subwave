@@ -11,7 +11,7 @@
 		dateFormat: 'MMMM DD, YYYY'
 	};
 	config.index = {
-		useExcerpts: false,
+		useExcerpts: true,
 		excerptParagraphs: 3,
 		postCount: 3
 	};

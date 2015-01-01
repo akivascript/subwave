@@ -84,7 +84,7 @@
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getContent (file);
+			entry.content = convertToHtml (getContent (file));
 			entry.displayTitle = convertToHtml (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
 
