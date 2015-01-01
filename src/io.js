@@ -4,9 +4,7 @@
 	'use strict';
 
 	var fs = require ('fs-extra');
-	var md = require ('mkdirp');
 	var moment = require ('moment');
-	var rm = require ('rimraf');
 
 	var config = require ('./config');
 
@@ -119,9 +117,7 @@
 	// In subwave, posts are grouped by year and then by month; this function
 	// creates this year/month path based on the filename of the post itself.
 	function createPostDirectory (path) {
-		// mkdirp allows us to create directory structures in one go.
-		// e.g. '2014/12/'
-		md.mkdirp.sync (path);
+		fs.mkdirsSync (path);
 	}
 
 
@@ -256,31 +252,29 @@
 	}
 
 
-	// Deletes a directory recursively from disk.
-	function removeDirectories (path) {
-		rm (path, function (error) {
+	// Deletes a file or directory (recursively) from disk.
+	function remove (target) {
+		fs.remove (target, function (error) {
 			if (error) {
 				throw error;
 			}
 
 			if (config.verbose) {
-				console.log ('Deleted ' + path + '...');
+				console.log ('Deleted ' + target + '...');
 			}
 		});
+	}
+
+
+	// Deletes a directory recursively from disk.
+	function removeDirectories (path) {
+		remove (path);
 	}
 
 			
 	// Deletes a file from disk.
 	function removeFile (file) {
-		fs.unlink (file, function (error) {
-			if (error) {
-				return; 
-			}
-
-			if (config.verbose) {
-				console.log ('Deleted ' + file + '...');
-			}
-		});
+		remove (file);
 	}
 
 
