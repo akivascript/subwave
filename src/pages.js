@@ -12,17 +12,6 @@
 	marked.setOptions ({
 		smartypants: true
 	});
-	
-
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
-	}
 
 
 	// Runs a page through Jade so that it is formatted for display.
@@ -33,10 +22,11 @@
 
 		page.displayDate = formatDateForDisplay (page.date);
 		page.headTitle = page.title;
-		page.title = marked (page.title);
+		page.displayTitle = convertToHtml (page.title);
+		page.title = convertToHtml (page.title);
 		
 		if (page.content) {
-			page.content = marked (page.content);
+			page.content = convertToHtml (page.content);
 		}
 
 		// Use a local object so multiple objects can be passed to Jade.
@@ -47,6 +37,24 @@
 		};
 
 		return compiler (locals);
+	}
+	
+
+	// Takes a string and processes it through marked to prepare it
+	// for display.
+	function convertToHtml (input) {
+		return marked (input);
+	}
+
+
+	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
+	// Date object.
+	function convertStringToDate (date) {
+		var pattern;
+
+		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
+
+		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
 	
@@ -76,12 +84,12 @@
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getContent (file, false);
-			entry.displayTitle = marked (entry.title);
+			entry.content = getContent (file);
+			entry.displayTitle = convertToHtml (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
 
 			if (entry.content && config.index.useExcerpts) {
-				entry.excerpt = getExcerpt (entry.content);
+				entry.excerpt = getExcerpt (entry.content, config.index.excerptParagraphs);
 			}
 
 			entries.push (entry);
@@ -156,7 +164,7 @@
 		paragraphs = content.split (/\n/);
 
 		while (count < total && i < paragraphs.length) {
-			graf = marked (paragraphs [i]);
+			graf = convertToHtml (paragraphs [i]);
 
 			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
 				count = count + 1;
@@ -172,16 +180,8 @@
 
 
 	// Parses a file and returns only its content (e.g., the body of a post).
-	function getContent (file, processContent) {
-		var parsed;
-
-		parsed = parseFile (file);
-
-		if (processContent) {
-			return marked (parsed [2]);
-		}
-
-		return parsed [2];
+	function getContent (file) {
+		return parseFile (file) [2];
 	}
 
 
@@ -224,9 +224,10 @@
 
 
 	module.exports.compilePage = compilePage;
+	module.exports.convertToHtml = convertToHtml;
+	module.exports.copyAttributes = copyAttributes;
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
-	module.exports.copyAttributes = copyAttributes;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = getExcerpt;
 	module.exports.getContent = getContent;

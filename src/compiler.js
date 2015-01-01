@@ -117,7 +117,7 @@
 			post = posts [i];
 
 			if (config.index.useExcerpts) {
-				post.excerpt = pa.getExcerpt (post.content, true);
+				post.excerpt = pa.getExcerpt (post.content, config.index.excerptParagraphs);
 			}
 
 			st.addPostToTagGroups (state, post);
@@ -135,7 +135,7 @@
 				tags: post.tags}, null, '  ');
 
 			file = io.readFile (config.paths.inbox + post.origFilename);
-			output = output + '\n\n' + pa.getContent (file, false);
+			output = output + '\n\n' + pa.getContent (file);
 
 			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
 			
@@ -191,7 +191,7 @@
 
 
 	function updateRssFeed (state) {
-		var date, description, feed, feedName, feedOptions, file, i, itemOptions, post, total;
+		var content, date, description, feed, feedName, feedOptions, file, i, itemOptions, post, total;
 
 		i = 0;
 		total = 0;
@@ -216,11 +216,12 @@
 			post = state.posts [i];
 			date = io.getPostDirectoryPathname (post.date);
 			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
+			content = pa.convertToHtml (pa.getContent (file));
 
 			if (config.rss.useExcerpts) {
-				description = pa.getExcerpt (pa.getContent (file, true), config.rss.excerptParagraphs);
+				description = pa.getExcerpt (content, config.rss.excerptParagraphs);
 			} else {
-				description = pa.getContent (file, true);
+				description = content;
 			}
 
 			itemOptions = {
