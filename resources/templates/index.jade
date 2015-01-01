@@ -28,7 +28,10 @@ html(lang="en")
 											each tag in post.tags.sort ()
 												a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 												| 
-										div.post-content!= post.excerpt
+										if config.index.useExcerpts
+											div.post-content!= post.excerpt
+										else
+											div.post-content!= post.content
 										div.small.text-right
 											| &raquo; 
 											a(href='/posts/' + post.path + post.filename + '.html') Read more

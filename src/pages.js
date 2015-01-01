@@ -80,8 +80,8 @@
 			entry.displayTitle = marked (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
 
-			if (entry.content) {
-				entry.excerpt = getExcerpt (marked (entry.content));
+			if (entry.content && config.index.useExcerpts) {
+				entry.excerpt = getExcerpt (entry.content);
 			}
 
 			entries.push (entry);
@@ -147,27 +147,24 @@
 
 
 	// Create an excerpt for a post.
-	//
-	// The excerpt is three paragraphs.
-	function getExcerpt (content) {
-		var excerpt, graf, i, paragraphs, total;
+	function getExcerpt (content, total) {
+		var count, excerpt, graf, i, paragraphs;
 
-		total = 1;
+		i = 0;
+		count = 0;
 		excerpt = [];
 		paragraphs = content.split (/\n/);
 
-		for (i = 0; i < paragraphs.length; i++) {
-			graf = paragraphs [i];
+		while (count < total && i < paragraphs.length) {
+			graf = marked (paragraphs [i]);
 
 			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
-				if (total <= 3) {
-					total = total + 1;
-				} else {
-					break;
-				}
+				count = count + 1;
 			}
 
 			excerpt.push (graf);
+
+			i = i + 1;
 		}
 
 		return excerpt.join ('\n');
@@ -175,12 +172,16 @@
 
 
 	// Parses a file and returns only its content (e.g., the body of a post).
-	function getContent (file, marked) {
-		if (marked) {
-			return marked (parseFile (file)) [2];
+	function getContent (file, processContent) {
+		var parsed;
+
+		parsed = parseFile (file);
+
+		if (processContent) {
+			return marked (parsed [2]);
 		}
-		
-		return parseFile (file) [2];
+
+		return parsed [2];
 	}
 
 

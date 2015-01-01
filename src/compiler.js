@@ -52,7 +52,7 @@
 		}
 
 		// Creates the index.html page.
-		homePage = pa.createHomePage (state.posts.slice (-3), posts);
+		homePage = pa.createHomePage (state.posts.slice (-config.index.postCount), posts);
 
 		pa.savePage (homePage, state.tags);
 
@@ -116,7 +116,9 @@
 		for (i = 0; i < posts.length; i++) {
 			post = posts [i];
 
-			post.excerpt = pa.getExcerpt (post.content);
+			if (config.index.useExcerpts) {
+				post.excerpt = pa.getExcerpt (post.content, true);
+			}
 
 			st.addPostToTagGroups (state, post);
 
@@ -131,7 +133,6 @@
 				author: post.author,
 				date: post.date,
 				tags: post.tags}, null, '  ');
-
 
 			file = io.readFile (config.paths.inbox + post.origFilename);
 			output = output + '\n\n' + pa.getContent (file, false);
@@ -190,8 +191,10 @@
 
 
 	function updateRssFeed (state) {
-		var date, feed, feedName, feedOptions, file, itemOptions;
+		var date, description, feed, feedName, feedOptions, file, i, itemOptions, post, total;
 
+		i = 0;
+		total = 0;
 		feedName = 'rss.xml';
 
 		feedOptions = {
@@ -208,21 +211,32 @@
 
 		state.posts.reverse ();
 
-		state.posts.forEach (function (post) {
+		while (total < config.rss.postCount &&
+					i < state.posts.length) {
+			post = state.posts [i];
 			date = io.getPostDirectoryPathname (post.date);
 			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
 
+			if (config.rss.useExcerpts) {
+				description = pa.getExcerpt (pa.getContent (file, true), config.rss.excerptParagraphs);
+			} else {
+				description = pa.getContent (file, true);
+			}
+
 			itemOptions = {
 				title: post.title,
-				url: config.blog.url + '/' + config.paths.posts + date  + post.filename + '.html',
+				url: config.blog.url + '/' + config.paths.posts + date + post.filename + '.html',
 				date: post.date,
-				description: pa.getContent (file, true),
+				description: description,
 				categories: post.tags,
 				author: post.author
 			};
 
 			feed.item (itemOptions);
-		});
+
+			i = i + 1;
+			total = total + 1;
+		}
 
 		state.posts.reverse ();
 
