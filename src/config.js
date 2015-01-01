@@ -13,8 +13,12 @@
 	config.index = {
 		useExcerpts: true,
 		excerptParagraphs: 3,
+<<<<<<< HEAD
 		postCount: 3,
 		recentPostsCount: 5
+=======
+		postCount: 3
+>>>>>>> configuration
 	};
 	config.paths = {
 		resources: 'resources/',
