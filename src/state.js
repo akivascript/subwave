@@ -3,7 +3,7 @@
 (function () {
 	'use strict';
 
-	var config = require ('./config');
+	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var ta = require ('./tags');

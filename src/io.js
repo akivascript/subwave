@@ -6,7 +6,7 @@
 	var fs = require ('fs-extra');
 	var moment = require ('moment');
 
-	var config = require ('./config');
+	var config = require ('../resources/config');
 
 
 	// Resets the /resources/archive to its default state... empty.

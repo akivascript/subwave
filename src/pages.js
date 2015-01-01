@@ -6,7 +6,7 @@
 	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('./config');
+	var config = require ('../resources/config');
 	var io = require ('./io');
 	var st = require ('./state');
 

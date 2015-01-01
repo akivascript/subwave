@@ -2,7 +2,7 @@
 (function () {
 	'use strict';
 
-	var config = require ('./config');
+	var config = require ('../resources/config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 

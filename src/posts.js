@@ -5,7 +5,7 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('./config');
+	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var st = require ('./state');
