@@ -4,6 +4,7 @@
 	'use strict';
 
 	var Rss = require ('rss');
+	var _ = require ('underscore-contrib');
 
 	var ar = require ('./archives');
 	var config = require ('./config');
@@ -117,7 +118,7 @@
 			post = posts [i];
 
 			if (config.index.useExcerpts) {
-				post.excerpt = pa.getExcerpt (post.content, config.index.excerptParagraphs);
+				post.excerpt = pa.getExcerpt (post.content);
 			}
 
 			st.addPostToTagGroups (state, post);
@@ -216,12 +217,12 @@
 			post = state.posts [i];
 			date = io.getPostDirectoryPathname (post.date);
 			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
-			content = pa.convertToHtml (pa.getContent (file));
+			content = pa.getContent (file);
 
 			if (config.rss.useExcerpts) {
-				description = pa.getExcerpt (content, config.rss.excerptParagraphs);
+				description = _.pipeline (pa.getExcerpt, pa.prepareForDisplay) (content);
 			} else {
-				description = content;
+				description = pa.prepareForDisplay (content);
 			}
 
 			itemOptions = {

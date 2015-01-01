@@ -12,7 +12,6 @@
 	};
 	config.index = {
 		useExcerpts: true,
-		excerptParagraphs: 3,
 		postCount: 3
 	};
 	config.paths = {
@@ -27,7 +26,6 @@
 	config.resources = ['css/', 'js/', 'img/'];
 	config.rss = { 
 		useExcerpts: true,
-		excerptParagraphs: 3,
 		postCount: 5
 	};
 	config.verbose = false;

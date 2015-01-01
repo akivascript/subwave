@@ -2,9 +2,9 @@
 (function () {
 	'use strict';
 
-	var _ = require ('underscore');
 	var jade = require ('jade');
 	var marked = require ('marked');
+	var _ = require ('underscore-contrib');
 
 	var config = require ('./config');
 	var io = require ('./io');
@@ -211,7 +211,7 @@
 
 		savePost (tmpSibling, state.tags);
 	}
-	
+
 
 	// Commit a post to disk.
 	function savePost (post, tags) {

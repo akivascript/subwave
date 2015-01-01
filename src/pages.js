@@ -4,6 +4,7 @@
 	var jade = require ('jade');
 	var marked = require ('marked');
 	var moment = require ('moment');
+	var _ = require ('underscore-contrib');
 
 	var config = require ('./config');
 	var io = require ('./io');
@@ -26,7 +27,7 @@
 		page.title = convertToHtml (page.title);
 		
 		if (page.content) {
-			page.content = convertToHtml (page.content);
+			page.content = prepareForDisplay (page.content);
 		}
 
 		// Use a local object so multiple objects can be passed to Jade.
@@ -84,12 +85,18 @@
 			entry = copyAttributes (posts [i]);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = convertToHtml (getContent (file));
+			entry.content = getContent (file);
 			entry.displayTitle = convertToHtml (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
 
-			if (entry.content && config.index.useExcerpts) {
-				entry.excerpt = getExcerpt (entry.content, config.index.excerptParagraphs);
+			if (entry.content) {
+				entry.excerpt = getExcerpt (entry.content);
+
+				if (entry.excerpt) {
+					entry.excerpt = prepareForDisplay (entry.excerpt);
+				}
+
+				entry.content = prepareForDisplay (entry.content);
 			}
 
 			entries.push (entry);
@@ -155,27 +162,18 @@
 
 
 	// Create an excerpt for a post.
-	function getExcerpt (content, total) {
-		var count, excerpt, graf, i, paragraphs;
+	function getExcerpt (postBody) {
+		var excerpt, output;
 
-		i = 0;
-		count = 0;
-		excerpt = [];
-		paragraphs = content.split (/\n/);
+		excerpt = postBody.match (/<excerpt>((.|\s)+?)<\/excerpt>/);
 
-		while (count < total && i < paragraphs.length) {
-			graf = convertToHtml (paragraphs [i]);
-
-			if (graf.search (/(<p>.+<\/p>)+/) !== -1) {
-				count = count + 1;
-			}
-
-			excerpt.push (graf);
-
-			i = i + 1;
+		if (excerpt) {
+			output = excerpt [1];
+		} else {
+			output = postBody;
 		}
 
-		return excerpt.join ('\n');
+		return output;
 	}
 
 
@@ -213,6 +211,28 @@
 
 		return matches;
 	}
+	
+
+	// Prepares the content for display in a browser.
+	function prepareForDisplay (pageBody) {
+		return _.pipeline (scrubPage, convertToHtml) (pageBody);
+	}
+
+
+	// Removes any faux mark-up tags from a page's body.
+	function scrubPage (pageBody) {
+		var output, regexp, tags;
+
+		tags = ['excerpt'];
+
+		tags.forEach (function (tag) {
+			regexp = new RegExp ('(<' + tag + '>)|(<\/' + tag + '>)', 'gi');
+
+			output = pageBody.replace (regexp, '');
+		});
+
+		return output;
+	}
 
 
 	// Compile and commit HTML file to disk.
@@ -233,5 +253,7 @@
 	module.exports.getContent = getContent;
 	module.exports.getMetadata = getMetadata;
 	module.exports.getNewPages = getNewPages;
+	module.exports.prepareForDisplay = prepareForDisplay;
 	module.exports.savePage = savePage;
+	module.exports.scrubPage = scrubPage;
 } ());

@@ -28,7 +28,7 @@ html(lang="en")
 											each tag in post.tags.sort ()
 												a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 												| 
-										if config.index.useExcerpts
+										if post.excerpt
 											div.post-content!= post.excerpt
 										else
 											div.post-content!= post.content
