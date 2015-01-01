@@ -4,7 +4,6 @@
 	'use strict';
 
 	var jade = require ('jade');
-	var marked = require ('marked');
 
 	var config = require ('./config');
 	var io = require ('./io');
@@ -23,7 +22,7 @@
 
 			post.path = io.getPostDirectoryPathname (new Date (post.date));
 			post.displayDate = pa.formatDateForDisplay (post.date);
-			post.title = marked (post.title);
+			post.title = pa.convertToHtml (post.title);
 		}
 
 		locals = {

@@ -3,17 +3,12 @@
 	'use strict';
 
 	var jade = require ('jade');
-	var marked = require ('marked');
 	var _ = require ('underscore-contrib');
 
 	var config = require ('./config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var st = require ('./state');
-
-	marked.setOptions ({
-		smartypants: true
-	});
 
 
 	// Allows sorting of posts by date.
@@ -172,7 +167,7 @@
 
 		sibling.type = 'post';
 		sibling.template = config.paths.templates + 'post.jade';
-		sibling.title = marked (sibling.title);
+		sibling.title = pa.convertToHtml (sibling.title);
 
 		return sibling;
 	}

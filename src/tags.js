@@ -2,16 +2,9 @@
 (function () {
 	'use strict';
 
-	var marked = require ('marked');
-
 	var config = require ('./config');
 	var pa = require ('./pages');
 	var io = require ('./io');
-
-
-	marked.setOptions ({
-		smartypants: true
-	});
 
 
 	function addTags (tags, taglist) {
@@ -44,7 +37,7 @@
 					if (spost.filename === tpost) {
 						page.posts.push ({
 							title: spost.title,
-							displayTitle: marked (spost.title),
+							displayTitle: pa.convertToHtml (spost.title),
 							filename: spost.filename,
 							path: io.getPostDirectoryPathname (spost.date)
 						});
