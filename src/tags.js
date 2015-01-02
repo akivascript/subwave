@@ -7,19 +7,30 @@
 	var config = require ('../resources/config');
 	var pa = require ('./pages');
 	var io = require ('./io');
+	
+
+	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
+	// This is used for generation the tag index pages.
+	function addPostToTagGroup (tagGroup, filename) {
+		var key, posts;
+
+		key = _.compose (_.first, _.keys) (tagGroup);
+		tagGroup [key].posts = _.uniq (tagGroup [key].posts.concat (filename));
+		
+		return tagGroup;
+	}
 
 
-	function addTags (tags, taglist) {
-		_.each (tags, function (tag) {
-			if (!taglist.some (function (t) {
-				return t === tag;
-			})) {
-				taglist.push ({
-					tag: tag,
-					posts: []
-				});
-			}
-		});
+	// Creates a new, empty tag group
+	function createTagGroup (tagName) {
+		var tagGroup;
+
+		tagGroup = {};
+		tagGroup [tagName] = {
+			posts: []
+		};
+
+		return tagGroup;
 	}
 
 
@@ -28,7 +39,7 @@
 			var page, spost, tag, tpost;
 
 			tag = state.tags [t];
-			page = createTagPage (t, tag);
+			page = createTagPage (tag);
 
 			for (var tp in tag.posts) {
 				tpost = tag.posts [tp];
@@ -52,15 +63,13 @@
 	}
 
 
-	function createTagPage (t, tag) {
-		var name, tagPage;
+	function createTagPage (tag) {
+		var tagPage;
  
-		name = t;
-		
 		tagPage = {
 			type: 'tagpage',
-			title: name,
-			filename: name.toLowerCase (),
+			title: tag,
+			filename: tag.toLowerCase (),
 			posts: [],
 			template: config.paths.templates + 'tag.jade'
 		};
@@ -69,5 +78,7 @@
 	}
 
 
+	module.exports.addPostToTagGroup = addPostToTagGroup;
+	module.exports.createTagGroup = createTagGroup;
 	module.exports.createTagPages = createTagPages;
 } ());

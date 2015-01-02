@@ -11,24 +11,19 @@
 	var ta = require ('./tags');
 
 
-	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
-	// This is used for generation the tag index pages.
-	function addPostToTagGroups (state, post) {
-		_.each (post.tags, function (tag) {
-			if (!state.tags [tag]) {
-				state.tags [tag] = {
-					posts: []
-				};
-			}
-
-			state.tags [tag].posts.push (post.filename);
-		});
+	// Returns a fresh and empty state map.
+	function createState () {
+		return {
+			lastUpdated: '',
+			posts: [],
+			tags: {}
+		};
 	}
 
 
 	// Returns a post by its index. 
 	function getPostByIndex (index, posts) {
-		_.find (posts, function (post) {
+		return _.find (posts, function (post) {
 			return post.index == index;
 		});
 	}
@@ -48,27 +43,34 @@
 	// or returns a fresh one if no state currently exists (this should only
 	// occur when a blog is new and has no posts yet or when the entire site
 	// is being rebuilt from scratch).
-	function getState () {
-		var file, state;
-
-		file = config.paths.resources + 'state.json';
+	function getState (file) {
+		var state;
 
 		try {
-			state = JSON.parse (io.readFile (file));
-
-			for (var post in state.posts) {
-				// ... What?
-				post.date = post.date;
-			}
+			state = JSON.parse (file);
 		} catch (e) {
-			state = {
-				lastUpdated: '',
-				posts: [],
-				tags: {}
-			};
+			state = createState ();
+		}
+
+		if (verifyState (state) === false) {
+			throw new Error ('state.json is not in the expected format.');
 		}
 
 		return state;
+	}
+
+
+	// Reads the state.json file from disk.
+	function loadStateFromDisk () {
+		var file;
+
+		try {
+			file = io.readFile (config.paths.resources + 'state.json');
+		} catch (e) {
+			// Do nothing here, we want to return null if state.json isn't present.
+		}
+
+		return file;
 	}
 
 
@@ -79,13 +81,24 @@
 		filename = config.paths.resources + 'state.json';
 		state.lastUpdated = new Date ();
 
-		io.writeFile (filename, JSON.stringify (state, null, '\t'));
+		io.writeFile (filename, JSON.stringify (state, null, '  '));
 	}
 
 
-	module.exports.addPostToTagGroups = addPostToTagGroups; 
+	function verifyState (state) {
+		var keys, result;
+
+		keys = ['lastUpdated', 'posts', 'tags'];
+
+		return _.reduce (keys, 
+										 function (result, key) { return _.has (state, key); },
+										 true);
+	}
+
+
 	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getLastIndex = getLastIndex;
 	module.exports.getState = getState;
+	module.exports.loadStateFromDisk = loadStateFromDisk;
 	module.exports.saveState = saveState;
 } ());

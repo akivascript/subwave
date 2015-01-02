@@ -81,9 +81,7 @@
 	function copyPageData (source, attributes) {
 		var target;
 
-		target = {};
-
-		_.each (attributes, function (attr) {
+		target = _.map (attributes, function (attr) {
 			target [attr] = source [attr];
 		});
 

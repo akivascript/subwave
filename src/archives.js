@@ -14,13 +14,17 @@
 	
 	// Compile archives.html through Jade.
 	function compileArchives (page, tags) {
-		return pa.compilePage (page, tags,  function (page) {
+		var compileFn;
+
+		compileFn = function (page) {
 			_.map (page.posts, function (post) {
 				post.path = io.getPostDirectoryPathname (new Date (post.date));
 				post.displayDate = pa.formatDateForDisplay (post.date);
 				post.title = pa.convertToHtml (post.title);
 			});
-		});
+		};
+
+		return pa.compilePage (page, tags, compileFn);
 	}
 
 
@@ -45,8 +49,8 @@
 			posts: []
 		};
 
-		_.each (posts, function (post) {
-			archives.posts.push (copyPostData (post));
+		archives.posts = _.map (posts, function (post) {
+			return copyPostData (post);
 		});
 
 		return archives;

@@ -31,7 +31,7 @@
 			return 1;
 		}
 
-		state = st.getState ();
+		state = _.compose (st.getState, st.loadStateFromDisk);
 		posts = po.getPosts (pages);
 
 		if (posts.length !== 0) {
