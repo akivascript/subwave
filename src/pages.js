@@ -63,27 +63,21 @@
 	}
 
 	
-	// Duplicates a page's attributes.
-	function copyAttributes (source) {
+	// Copies an object. If attributes are specified, only
+	// those attributes are copied. Otherwise, the source object
+	// is simply cloned (shallow).
+	function copyObject (source, attributes) {
 		var target;
 
-		target = {};
+		if (attributes && attributes.length > 0) {
+			target = _.reduce (attributes, function (res, attr) {
+				res [attr] = source [attr];
 
-		for (var attr in source) {
-			target [attr] = source [attr];
+				return res;
+			}, {});
+		} else {
+			target = _.clone (source);
 		}
-
-		return target;
-	}
-
-
-	// Copies relevant metadata from one page to another.
-	function copyPageData (source, attributes) {
-		var target;
-
-		target = _.map (attributes, function (attr) {
-			target [attr] = source [attr];
-		});
 
 		return target;
 	}
@@ -134,7 +128,7 @@
 
 		matches = parseFile (file);
 
-		page = copyAttributes (JSON.parse (matches [1]));
+		page = copyPageData (JSON.parse (matches [1]));
 
 		content = matches [2];
 
@@ -231,16 +225,16 @@
 
 
 	// Removes any faux mark-up tags from a page's body.
-	function scrubPage (pageBody) {
-		var output, regexp, tags;
+	function scrubPage (pageBody, tags) {
+		var output, regexp;
 
-		tags = ['excerpt'];
+		if (tags && tags.length > 0) {
+			output = _.reduce (tags, function (res, tag) {
+				regexp = new RegExp ('(<' + tag + '>)|(<\/' + tag + '>)', 'gi');
 
-		_.each (tags, function (tag) {
-			regexp = new RegExp ('(<' + tag + '>)|(<\/' + tag + '>)', 'gi');
-
-			output = pageBody.replace (regexp, '');
-		});
+				res = pageBody.replace (regexp, '');
+			});
+		}
 
 		return output;
 	}
@@ -256,8 +250,7 @@
 
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
-	module.exports.copyAttributes = copyAttributes;
-	module.exports.copyPageData = copyPageData;
+	module.exports.copyObject = copyObject;
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.formatDateForDisplay = formatDateForDisplay;

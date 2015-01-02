@@ -2,9 +2,9 @@
 	'use strict';
 
 	var expect = require ('chai').expect;
+
 	var io = require ('../src/io.js');
 
-	var testFilePath = 'test/files/';
 
 	describe ('IO', function () {
 		describe ('createPostFilename', function () {
