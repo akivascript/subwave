@@ -16,30 +16,34 @@
 
 
 	// Runs a page through Jade so that it is formatted for display.
-	function compilePage (page, tags) {
+	function compilePage (page, tags, callback) {
 		var compiler, locals;
 
 		compiler = jade.compileFile (page.template, { pretty: true });
 
-		page.displayDate = formatDateForDisplay (page.date);
-		page.headTitle = page.title;
-		page.displayTitle = convertToHtml (page.title);
-		page.title = convertToHtml (page.title);
+		if (callback) {
+			callback (page);
+		} else {
+			page.displayDate = formatDateForDisplay (page.date);
+			page.headTitle = page.title;
+			page.displayTitle = convertToHtml (page.title);
+			page.title = convertToHtml (page.title);
 		
-		if (page.content) {
-			page.content = prepareForDisplay (page.content);
+			if (page.content) {
+				page.content = prepareForDisplay (page.content);
+			}
 		}
 
 		// Use a local object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
-			tags: Object.keys (tags),
+			tags: _.keys (tags),
 			config: config
 		};
 
 		return compiler (locals);
 	}
-	
+
 
 	// Takes a string and processes it through marked to prepare it
 	// for display.
@@ -73,6 +77,20 @@
 	}
 
 
+	// Copies relevant metadata from one page to another.
+	function copyPageData (source, attributes) {
+		var target;
+
+		target = {};
+
+		_.each (attributes, function (attr) {
+			target [attr] = source [attr];
+		});
+
+		return target;
+	}
+
+
 	// Creates a new index homepage. This gets rebuilt each time a new post is added
 	// to the site.
 	function createHomePage (posts) {
@@ -81,8 +99,8 @@
 		entries = [];
 
 		// TODO: Refactor this (with processSibling in posts?): readPost?
-		for (var i = 0; i < posts.length; i++) {
-			entry = copyAttributes (posts [i]);
+		_.each (posts, function (post) {
+			entry = copyAttributes (post);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
 			entry.content = getContent (file);
@@ -90,17 +108,12 @@
 			entry.displayDate = formatDateForDisplay (entry.date);
 
 			if (entry.content) {
-				entry.excerpt = getExcerpt (entry.content);
-
-				if (entry.excerpt) {
-					entry.excerpt = prepareForDisplay (entry.excerpt);
-				}
-
+				entry.excerpt = _.pipeline (getExcerpt, prepareForDisplay) (entry.content);
 				entry.content = prepareForDisplay (entry.content);
 			}
 
 			entries.push (entry);
-		}
+		});
 
 		homePage = {
 			type: 'index',
@@ -225,7 +238,7 @@
 
 		tags = ['excerpt'];
 
-		tags.forEach (function (tag) {
+		_.each (tags, function (tag) {
 			regexp = new RegExp ('(<' + tag + '>)|(<\/' + tag + '>)', 'gi');
 
 			output = pageBody.replace (regexp, '');
@@ -246,6 +259,7 @@
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyAttributes = copyAttributes;
+	module.exports.copyPageData = copyPageData;
 	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.formatDateForDisplay = formatDateForDisplay;

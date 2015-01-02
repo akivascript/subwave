@@ -16,8 +16,8 @@
 
 
 	// Ceci n'est pas un commentaire.
-	function compile () {
-		var homePage, i, entries, files, page, pages, path, posts, resources, state;
+	function buildSite () {
+		var homePage, entries, files, pages, path, posts, resources, state;
 
 		if (config.verbose) {
 			console.log ('Compiling the site...');
@@ -41,25 +41,24 @@
 		}
 
 		// Processes and saves any page files in inbox.
-		for (i = 0; i < pages.length; i++) {
-			page = pages [i];
-
+		_.each (pages, function (page) {
 			if (page.type !== 'post') {
 				pa.savePage (page, state.tags);
 
 				io.renameFile (config.paths.inbox + page.origFilename, 
 											 config.paths.archive + page.origFilename);
 			}
-		}
+		});
 
 		// Creates the index.html page.
 		homePage = pa.createHomePage (state.posts.slice (-config.index.postCount), posts);
 
 		pa.savePage (homePage, state.tags);
 
-		config.resources.forEach (function (resource) {
+		_.each (config.resources, function (resource) {
 			files = io.getFiles (config.paths.resources + resource);
 
+			// Okay, what is this and why
 			for (var file in files) {
 				path = files [file];
 
@@ -82,7 +81,7 @@
 	// Take [currently only] new posts, add them to the site's state, process them,
 	// fold them, spindle them, mutilate them...
 	function handlePosts (state, posts, entries, archives) {
-		var archivePostsPath, entry, file, i, index, postCount, output, post;
+		var archivePostsPath, file, index, postCount, output;
 
 		// Each post gets a unique index number which is later used 
 		// for updates.
@@ -94,9 +93,7 @@
 			index = 1;
 		}
 
-		for (i = 0; i < entries.length; i++) {
-			entry = entries [i];
-			
+		_.each (entries, function (entry, i) {
 			if (!entry.index) {
 				entry.index = index;
 
@@ -110,13 +107,11 @@
 			}
 				
 			index = index + 1;
-		}
+		});
 		
 		// Some last prepatory work on new posts including moving the now loaded
 		// files into the archive.
-		for (i = 0; i < posts.length; i++) {
-			post = posts [i];
-
+		_.each (posts, function (post) {
 			if (config.index.useExcerpts) {
 				post.excerpt = pa.getExcerpt (post.content);
 			}
@@ -141,17 +136,15 @@
 			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
 			
 			io.removeFile (config.paths.inbox + post.origFilename);
-		}
+		});
 	
 		// We handle appending the archives first (above) so we can more easily determine
 		// if a post has siblings that need to be handled.
 		po.handlePostsWithSiblings (state, posts);
 
-		for (i = 0; i < posts.length; i++) {
-			post = posts [i];
-
+		_.each (posts, function (post) {
 			po.savePost (post, state.tags);
-		}
+		});
 
 		// Create archives.html.
 		handleArchives (state.posts, state.tags);
@@ -168,7 +161,7 @@
 	// Clears out the public directory, copies everything from resource/archives
 	// then builds the site again. Useful for when changing templates that affect the
 	// entire site.
-	function rebuild () {
+	function rebuildSite () {
 		var files, path;
 
 		files = [];
@@ -187,7 +180,7 @@
 			io.copyFile (path + file, config.paths.inbox + file);
 		}
 
-		compile ();
+		buildSite ();
 	}
 
 
@@ -245,6 +238,7 @@
 		io.writeFile (config.paths.output + feedName, feed.xml ());
 	}
 
-	module.exports.compile = compile;
-	module.exports.rebuild = rebuild;
+
+	module.exports.buildSite = buildSite;
+	module.exports.rebuildSite = rebuildSite;
 } ());

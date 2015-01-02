@@ -22,7 +22,7 @@
 		.command ('build')
 		.description ('Build a new iteration of the site')
 		.action (function () {
-			co.compile (verbose);
+			co.buildSite (verbose);
 
 			process.exit ();
 		});
@@ -49,7 +49,7 @@
 		.command ('rebuild')
 		.description ('Cleans and rebuilds entire site')
 		.action (function () {
-			co.rebuild (verbose);
+			co.rebuildSite (verbose);
 
 			process.exit ();
 		});
@@ -67,18 +67,16 @@
 		.command ('find-post [criterion]')
 		.description ('Returns a list of qualifying posts (does NOT search post content)') 
 		.action (function (criterion) {
-			var post, posts;
+			var posts;
 
 			posts = po.findPosts (criterion);
 
 			console.log ('Found:');
 
-			for (var i = 0; i < posts.length; i++) {
-				post = posts [i];
-
+			_.each (posts, function (post) {
 				console.log (post.title + ' from ' + pa.formatDateForDisplay (post.date) +
 										 ' at index ' + post.index + '.');
-			}
+			});
 			
 			process.exit ();
 		});

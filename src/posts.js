@@ -13,15 +13,9 @@
 
 	// Allows sorting of posts by date.
 	function comparePostsByDate (postA, postB) {
-		if (postA.date < postB.date) {
-			return -1;
-		}
-
-		if (postB.date < postA.date) {
-			return 1;
-		}
-
-		return 0;
+		return _.comparator (function () {
+			return postA.date < postB.date;
+		});
 	}
 
 	
@@ -55,6 +49,7 @@
 	}
 
 	
+	// Searches a site's posts' metadata for a match.
 	function findPosts (criterion) {
 		var compare, date, matches, post, state;
 
@@ -78,6 +73,7 @@
 
 		// Goes through each post in the site and looks through each attribute it has,
 		// searching for matches.
+		// TODO: Refactor this
 		_.each (state.posts, function (post) {
 			_.each (post, function (value, key) {
 				if (typeof value === 'string') {
@@ -104,24 +100,19 @@
 
 	// Filters out any pages that aren't posts.
 	function getPosts (files) {
-		return files.filter (function (file) {
-			if (file.type === 'post') {
-				return true;
-			}
-
-			return false;
+		return _.filter (files, function (file) {
+			return file.type === 'post';
 		});
 	}
 
 
 	function handlePostsWithSiblings (state, posts) {
-		var i, idx, next, post, previous;
+		var idx, next, previous;
 
 		// TODO: What did you do, Ray.
 		idx = state.posts.length - posts.length;
 
-		for (i = 0; i < posts.length; i++) {
-			post = posts [i];
+		_.each (posts, function (post) {
 			next = state.posts [idx + 1];
 			previous = state.posts [idx - 1];
 
@@ -134,7 +125,7 @@
 			}
 
 			idx = idx + 1;
-		}
+		});
 	}
 
 
@@ -142,10 +133,7 @@
 	function linkSibling (source) {
 		var target;
 
-		target = {};
-		target.title = source.title;
-		target.date = source.date;
-		target.filename = source.filename;
+		target = pa.copyPageData (source, ['date', 'filename', 'title']);
 
 		if (!source.path) {
 			target.path = io.getPostDirectoryPathname (source.date);

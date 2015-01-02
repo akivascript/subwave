@@ -4,6 +4,7 @@
 	'use strict';
 
 	var jade = require ('jade');
+	var _ = require ('underscore-contrib');
 
 	var config = require ('../resources/config');
 	var io = require ('./io');
@@ -12,49 +13,31 @@
 
 	
 	// Compile archives.html through Jade.
-	function compile (archives, tags) {
-		var compiler, i, locals, post;
-
-		compiler = jade.compileFile (archives.template, { pretty: true });
-
-		for (i = 0; i < archives.posts.length; i++) {
-			post = archives.posts [i];
-
-			post.path = io.getPostDirectoryPathname (new Date (post.date));
-			post.displayDate = pa.formatDateForDisplay (post.date);
-			post.title = pa.convertToHtml (post.title);
-		}
-
-		locals = {
-			page: archives,
-			tags: Object.keys (tags),
-			config: config
-		};
-
-		return compiler (locals);
+	function compileArchives (page, tags) {
+		return pa.compilePage (page, tags,  function (page) {
+			_.map (page.posts, function (post) {
+				post.path = io.getPostDirectoryPathname (new Date (post.date));
+				post.displayDate = pa.formatDateForDisplay (post.date);
+				post.title = pa.convertToHtml (post.title);
+			});
+		});
 	}
 
 
 	// Copies relevant metadata from one page to another.
 	function copyPostData (source) {
-		var target;
+		var attributes;
 
-		target = {};
-		target.index = source.index;
-		target.title = source.title;
-		target.date = source.date;
-		target.author = source.author;
-		target.filename = source.filename;
-		target.tags = source.tags;
+		attributes = ['author', 'date', 'filename', 'index', 'tags', 'title'];
 
-		return target;
+		return pa.copyPageData (source, attributes);
 	}
 
 
 	// Creates a new archives object. The archives.html file is recreated each time
 	// a post is added to the blog.
 	function createArchives (posts) {
-		var archives, i, post;
+		var archives;
 
 		archives = {
 			type: "archives",
@@ -62,11 +45,9 @@
 			posts: []
 		};
 
-		for (i = 0; i < posts.length; i++) {
-			post = posts [i];
-
+		_.each (posts, function (post) {
 			archives.posts.push (copyPostData (post));
-		}
+		});
 
 		return archives;
 	}
@@ -74,15 +55,15 @@
 
 	// This... maybe unnecessary. Hold tight.
 	function createNewArchiveEntries (files) {
-		var i, entries;
+		var entries;
 
 		entries = [];
 
-		for (i = 0; i < files.length; i = i + 1) {
-			if (files [i].type === 'post') {
-				entries.push (copyPostData (files [i]));
+		_.each (files, function (file) {
+			if (file.type === 'post') {
+				entries.push (copyPostData (file));
 			}
-		}
+		});
 
 		return entries.sort (po.comparePosts);
 	}
@@ -90,7 +71,7 @@
 
 	// Compiles archives.html and commits it to disk.
 	function saveArchives (archives, tags) {
-		archives.output = compile (archives, tags);
+		archives.output = compileArchives (archives, tags);
 
 		io.saveHtmlPage (archives);
 	}

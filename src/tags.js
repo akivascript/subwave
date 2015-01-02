@@ -2,13 +2,15 @@
 (function () {
 	'use strict';
 
+	var _ = require ('underscore-contrib');
+
 	var config = require ('../resources/config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 
 
 	function addTags (tags, taglist) {
-		tags.forEach (function (tag) {
+		_.each (tags, function (tag) {
 			if (!taglist.some (function (t) {
 				return t === tag;
 			})) {

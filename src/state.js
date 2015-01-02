@@ -3,6 +3,8 @@
 (function () {
 	'use strict';
 
+	var _ = require ('underscore-contrib');
+
 	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -12,11 +14,7 @@
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
 	// This is used for generation the tag index pages.
 	function addPostToTagGroups (state, post) {
-		var i, tag;
-
-		for (i = 0; i < post.tags.length; i++) {
-			tag = post.tags [i];
-
+		_.each (post.tags, function (tag) {
 			if (!state.tags [tag]) {
 				state.tags [tag] = {
 					posts: []
@@ -24,20 +22,15 @@
 			}
 
 			state.tags [tag].posts.push (post.filename);
-		}
+		});
 	}
 
 
 	// Returns a post by its index. 
 	function getPostByIndex (index, posts) {
-		var post;
-		for (var i = 0; i < posts.length; i++) {
-			post = posts [i];
-
-			if (post.index == index) {
-				return post;
-			}
-		}
+		_.find (posts, function (post) {
+			return post.index == index;
+		});
 	}
 
 
@@ -64,6 +57,7 @@
 			state = JSON.parse (io.readFile (file));
 
 			for (var post in state.posts) {
+				// ... What?
 				post.date = post.date;
 			}
 		} catch (e) {
