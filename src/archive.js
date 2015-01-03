@@ -30,6 +30,10 @@
 
 	// Creates a new, empty archive.
 	function createArchive (posts) {
+		if (!posts) {
+			posts = [];
+		}
+		
 		return {
 			type: "archive",
 			title: "Archive",
