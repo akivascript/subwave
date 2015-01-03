@@ -128,7 +128,7 @@
 
 		matches = parseFile (file);
 
-		page = copyPageData (JSON.parse (matches [1]));
+		page = copyObject (JSON.parse (matches [1]));
 
 		content = matches [2];
 
@@ -144,9 +144,9 @@
 		} else if (page.type === 'page') {
 			page.template = config.paths.templates + 'page.jade';
 			page.filename = page.title.toLowerCase ();
-		} else if (page.type === 'archives') {
-			page.template = config.paths.templates + 'archives.jade';
-			page.filename = 'archives';
+		} else if (page.type === 'archive') {
+			page.template = config.paths.templates + 'archive.jade';
+			page.filename = 'archive';
 		} else {
 			throw new Error ('Unable to determine template type from page: ' + page);
 		}

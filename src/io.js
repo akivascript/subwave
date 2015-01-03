@@ -294,7 +294,7 @@
 		} else if (page.type === 'tagpage') {
 			path = config.paths.tags;
 		} else if (page.type === 'page' || 
-							 page.type === 'archives' ||
+							 page.type === 'archive' ||
 							 page.type === 'index') {
 			path = config.paths.output;
 		} else {

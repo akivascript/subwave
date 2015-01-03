@@ -6,7 +6,7 @@
 	var Rss = require ('rss');
 	var _ = require ('underscore-contrib');
 
-	var ar = require ('./archives');
+	var ar = require ('./archive');
 	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -68,19 +68,19 @@
 	}
 
 
-	function handleArchives (posts, tags) {
-		var archives;
+	function handleArchive (posts, tags) {
+		var archive;
 
-		archives = ar.createArchives (posts);
-		archives = pa.createPage (JSON.stringify (archives));
+		archives = ar.createArchive (posts);
+		archives = pa.createPage (JSON.stringify (archive));
 
-		ar.saveArchives (archives, tags);
+		ar.saveArchive (archive, tags);
 	}
 
 
 	// Take [currently only] new posts, add them to the site's state, process them,
 	// fold them, spindle them, mutilate them...
-	function handlePosts (state, posts, entries, archives) {
+	function handlePosts (state, posts, entries, archive) {
 		var archivePostsPath, file, index, postCount, output;
 
 		// Each post gets a unique index number which is later used 
@@ -138,7 +138,7 @@
 			io.removeFile (config.paths.inbox + post.origFilename);
 		});
 	
-		// We handle appending the archives first (above) so we can more easily determine
+		// We handle appending the archive first (above) so we can more easily determine
 		// if a post has siblings that need to be handled.
 		po.handlePostsWithSiblings (state, posts);
 
@@ -146,8 +146,8 @@
 			po.savePost (post, state.tags);
 		});
 
-		// Create archives.html.
-		handleArchives (state.posts, state.tags);
+		// Create archive.html.
+		handleArchive (state.posts, state.tags);
 
 		// Create tag index files in tags directory.
 		ta.createTagPages (state);
@@ -158,7 +158,7 @@
 	}
 
 
-	// Clears out the public directory, copies everything from resource/archives
+	// Clears out the public directory, copies everything from resource/archive
 	// then builds the site again. Useful for when changing templates that affect the
 	// entire site.
 	function rebuildSite () {
