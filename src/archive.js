@@ -11,7 +11,7 @@
 	var pa = require ('./pages');
 	var po = require ('./posts');
 
-	
+
 	// Compile archive.html through Jade.
 	function compileArchive (page, tags) {
 		var compileFn;
@@ -42,7 +42,7 @@
 	}
 
 
-	function addPostToArchive (archive, post) {
+	function createArchiveEntry (post) {
 		var attributes;
 
 		attributes = ['author', 'date', 'filename', 'index', 'tags', 'title'];
@@ -59,7 +59,7 @@
 	}
 
 
-	module.exports.addPostToArchive = addPostToArchive;
 	module.exports.createArchive = createArchive;
+	module.exports.createArchiveEntry = createArchiveEntry;
 	module.exports.saveArchive = saveArchive;
 } ());
