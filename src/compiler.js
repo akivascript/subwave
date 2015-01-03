@@ -126,7 +126,7 @@
 
 				result.tag = ta.addPostToTag (result.tag, post.filename);
 
-				if (result.index || result.index !== -1) {
+				if (!result.index || result.index === -1) {
 					repository.tags = repository.tags.concat (result.tag);
 				} else {
 					repository.tags [result.index] = result.tag;
@@ -152,7 +152,7 @@
 			
 			io.removeFile (config.paths.inbox + post.origFilename);
 		});
-	
+
 		// We handle appending the archive first (above) so we can more easily determine
 		// if a post has siblings that need to be handled.
 		po.handlePostsWithSiblings (repository, posts);
