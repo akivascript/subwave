@@ -12,10 +12,7 @@
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
 	// This is used for generation the tag index pages.
 	function addPostToTag (tag, filename) {
-		var key, posts;
-
-		key = _.compose (_.first, _.keys) (tag);
-		tag [key].posts = _.uniq (tag [key].posts.concat (filename));
+		tag.posts = _.uniq (tag.posts.concat (filename));
 		
 		return tag;
 	}
@@ -23,14 +20,10 @@
 
 	// Creates a new, empty tag
 	function createTag (name) {
-		var tag;
-
-		tag = {};
-		tag [name] = {
+		return {
+			name: name,
 			posts: []
 		};
-
-		return tag;
 	}
 
 
@@ -63,18 +56,15 @@
 	}
 
 
+	// Returns a fresh tag index object.
 	function createTagIndex (tag) {
-		var tagIndex;
- 
-		tagIndex = {
+		return {
 			type: 'tagIndex',
 			title: tag,
 			filename: tag.toLowerCase (),
 			posts: [],
 			template: config.paths.templates + 'tagIndex.jade'
 		};
-
-		return tagIndex;
 	}
 
 

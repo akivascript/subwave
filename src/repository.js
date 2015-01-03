@@ -18,7 +18,7 @@
 		return {
 			lastUpdated: '',
 			posts: [],
-			tags: {}
+			tags: []
 		};
 	}
 
@@ -62,17 +62,37 @@
 	}
 
 
+	// Searches the repository for a tag and returns an array of
+	// that tag's index and the tag itself. If the tag is not
+	// present, findTag returns undefined.
+	function findTag (tags, name) {
+		var result;
+
+		result = {};
+		result.tag = _.findWhere (tags, { name: 'Guch' });
+
+
+		if (result.tag) {
+			result.index = _.indexOf (tags, result [1]);
+
+			return result;
+		}
+
+		return {};
+	}
+
+
 	// Reads the repository.json file from disk.
 	function loadRepository () {
-		var file;
+		var repo;
 
 		try {
-			file = io.readFile (config.paths.resources + repoName);
+			repo = io.readFile (config.paths.resources + repoName);
 		} catch (e) {
 			// Do nothing here, we want to return null if repository.json isn't present.
 		}
 
-		return file;
+		return repo;
 	}
 
 
@@ -101,6 +121,7 @@
 	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getLastIndex = getLastIndex;
 	module.exports.getRepository = getRepository;
+	module.exports.findTag = findTag;
 	module.exports.loadRepository = loadRepository;
 	module.exports.saveRepository = saveRepository;
 } ());

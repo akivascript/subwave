@@ -1,5 +1,5 @@
 // This is the 'heart' of subwave. It processes all incoming posts and pages from 
-// the inbox and generates necessary support pages such as archives.html.
+// the inbox and generates necessary support pages such as archive.html.
 (function () {
 	'use strict';
 
@@ -31,11 +31,13 @@
 			return 1;
 		}
 
-		repository = _.compose (repo.getRepository, repo.loadRepository);
+		repository = _.compose (repo.getRepository, repo.loadRepository) ();
 		posts = po.getPosts (pages);
 
 		if (posts.length !== 0) {
-			entries = ar.createNewArchiveEntries (posts);
+			entries = _.map (posts, function (post) {
+				return ar.createArchiveEntry (post);
+			});
 
 			handlePosts (repository, posts, entries);
 		}
@@ -71,8 +73,7 @@
 	function handleArchive (posts, tags) {
 		var archive;
 
-		archives = ar.createArchive (posts);
-		archives = pa.createPage (JSON.stringify (archive));
+		archive = _.compose (pa.createPage, JSON.stringify, ar.createArchive) (posts);
 
 		ar.saveArchive (archive, tags);
 	}
@@ -81,7 +82,7 @@
 	// Take [currently only] new posts, add them to the site's repository, process them,
 	// fold them, spindle them, mutilate them...
 	function handlePosts (repository, posts, entries, archive) {
-		var archivePostsPath, file, index, postCount, output;
+		var repoPostsPath, file, index, postCount, output, result;
 
 		// Each post gets a unique index number which is later used 
 		// for updates.
@@ -110,17 +111,31 @@
 		});
 		
 		// Some last prepatory work on new posts including moving the now loaded
-		// files into the archive.
+		// files into the repository.
 		_.each (posts, function (post) {
 			if (config.index.useExcerpts) {
 				post.excerpt = pa.getExcerpt (post.content);
 			}
 
-			repo.addPostToTagGroups (repository, post);
+			_.each (post.tags, function (name) {
+				result = repo.findTag (repository.tags, name);
 
-			archivePostsPath = config.paths.repository + 'posts/';
+				if (_.isEmpty (result)) {
+					result.tag = ta.createTag (name);
+				} 
 
-			io.createPostDirectory (archivePostsPath + post.path);
+				result.tag = ta.addPostToTag (result.tag, post.filename);
+
+				if (result.index || result.index !== -1) {
+					repository.tags = repository.tags.concat (result.tag);
+				} else {
+					repository.tags [result.index] = result.tag;
+				}
+			});
+
+			repoPostsPath = config.paths.repository + 'posts/';
+
+			io.createPostDirectory (repoPostsPath + post.path);
 
 			output = JSON.stringify ({
 				type: 'post',
@@ -133,7 +148,7 @@
 			file = io.readFile (config.paths.inbox + post.origFilename);
 			output = output + '\n\n' + pa.getContent (file);
 
-			io.writeFile (archivePostsPath + post.path + post.filename + '.md', output);
+			io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
 			
 			io.removeFile (config.paths.inbox + post.origFilename);
 		});
