@@ -95,7 +95,7 @@
 			entry.displayDate = formatDateForDisplay (entry.date);
 
 			if (entry.content) {
-				entry.excerpt = _.pipeline (getExcerpt, prepareForDisplay) (entry.content);
+				entry.excerpt = _.compose (prepareForDisplay, getExcerpt) (entry.content);
 				entry.content = prepareForDisplay (entry.content);
 			}
 
@@ -223,10 +223,13 @@
 	function scrubPage (pageBody) {
 		var output, regexp;
 
-		output = _.reduce (config.htmlElements.scrub, function (res, element) {
+		_.each (config.htmlElements.scrub, function (element) {
+//		output = _.reduce (config.htmlElements.scrub, function (res, element) {
 			regexp = new RegExp ('(<' + element + '>)|(<\/' + element + '>)', 'gi');
 
-			res = pageBody.replace (regexp, '');
+			output = pageBody.replace (regexp, '');
+//
+//			return res;
 		});
 
 		return output || pageBody;
