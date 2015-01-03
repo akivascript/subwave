@@ -12,6 +12,7 @@
 
 	var repoName = 'repository.json';
 
+
 	// Returns a fresh and empty state map.
 	function createRepository () {
 		return {

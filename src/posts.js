@@ -133,7 +133,7 @@
 	function linkSibling (source) {
 		var target;
 
-		target = pa.copyPageData (source, ['date', 'filename', 'title']);
+		target = pa.copyObject (source, ['date', 'filename', 'title']);
 
 		if (!source.path) {
 			target.path = io.getPostDirectoryPathname (source.date);
