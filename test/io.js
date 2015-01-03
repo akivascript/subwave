@@ -16,7 +16,7 @@
 				date = new Date ('2014-08-20 19:54');
 
 				expected = '2014-08-20-this-is-the-title-of-a-post';
-				actual = io.getPostFilename (title, date);
+				actual = testTarget.getPostFilename (title, date);
 
 				expect (actual).to.equal (expected);
 			});
@@ -29,7 +29,7 @@
 				date = new Date ('2014-08-20 19:54');
 
 				expected = '2014/08/';
-				actual = io.getPostDirectoryPathname (date);
+				actual = testTarget.getPostDirectoryPathname (date);
 
 				expect (actual).to.equal (expected);
 			});
