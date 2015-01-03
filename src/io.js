@@ -291,7 +291,7 @@
 
 		if (page.type === 'post') {
 			path = config.paths.posts;
-		} else if (page.type === 'tagpage') {
+		} else if (page.type === 'tag') {
 			path = config.paths.tags;
 		} else if (page.type === 'page' || 
 							 page.type === 'archive' ||
@@ -328,7 +328,7 @@
 	}
 
 	
-	module.exports.cleanArchive = cleanArchive; 
+	module.exports.cleanRepository = cleanRepository; 
 	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
 	module.exports.createNewFile = createNewFile;

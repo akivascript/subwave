@@ -27,43 +27,38 @@
 	}
 
 
-	function createTagPages (state) {
-		for (var t in state.tags) {
-			var page, spost, tag, tpost;
+	function createTagPages (repo) {
+		_.each (repo.tags, function (tag) {
+			var page;
 
-			tag = state.tags [t];
-			page = createTagPage (tag);
+			page = createTagIndex (tag);
 
-			for (var tp in tag.posts) {
-				tpost = tag.posts [tp];
-
-				for (var sp in state.posts) {
-					spost = state.posts [sp];
-
-					if (spost.filename === tpost) {
+			_.each (tag.posts, function (postTag) {
+				_.each (repo.posts, function (post) {
+					if (post.filename === postTag) {
 						page.posts.push ({
-							title: spost.title,
-							displayTitle: pa.convertToHtml (spost.title),
-							filename: spost.filename,
-							path: io.getPostDirectoryPathname (spost.date)
+							title: post.title,
+							displayTitle: pa.convertToHtml (post.title),
+							filename: post.filename,
+							path: io.getPostDirectoryPathname (post.date)
 						});
 					}
-				}
-			}
+				});
+			});
 
-			pa.savePage (page, state.tags);
-		}
+			pa.savePage (page, repo.tags);
+		});
 	}
 
 
 	// Returns a fresh tag index object.
 	function createTagIndex (tag) {
 		return {
-			type: 'tagIndex',
-			title: tag,
-			filename: tag.toLowerCase (),
+			type: 'tag',
+			title: tag.name,
+			filename: tag.name.toLowerCase (),
 			posts: [],
-			template: config.paths.templates + 'tagIndex.jade'
+			template: config.paths.templates + 'tag.jade'
 		};
 	}
 
