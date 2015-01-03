@@ -58,7 +58,7 @@
 		.command ('get-post [index]')
 		.description ('Copies a post to the inbox for updating')
 		.action (function (index) {
-			po.copyPostFromArchive (index, verbose);
+			po.copyPostFromRepository (index, verbose);
 
 			process.exit ();
 		});
@@ -84,7 +84,7 @@
 	subwave
 		.version ('0.8')
 		.option ('-cp, --clean', 'Clean /public directories')
-		.option ('-ca, --clean-archive', 'Clean /resources/archive directories')
+		.option ('-ca, --clean-repository', 'Clean /resources/repository directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
 	try {
@@ -103,7 +103,7 @@
 		io.cleanPublic ();
 	}
 
-	if (subwave.cleanArchive) {
-		io.cleanArchive ();
+	if (subwave.cleanRepository) {
+		io.cleanRepository ();
 	}
 } ());
