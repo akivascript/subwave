@@ -9,12 +9,12 @@
 	var config = require ('../resources/config');
 
 
-	// Resets the /resources/archive to its default state... empty.
-	function cleanArchive () {
+	// Resets the /resources/repository to its default state... empty.
+	function cleanRepository () {
 		var deletes, prunes;
 
 		if (config.verbose) {
-			console.log ('Cleaning archive...');
+			console.log ('Cleaning repository...');
 		}
 
 		deletes = [];
@@ -71,7 +71,7 @@
 
 		clean (deletes, prunes, config.verbose);
 
-		removeFile (config.paths.resources + 'state.json');
+		removeFile (config.paths.resources + 'repository.json');
 	}
 
 

@@ -2,8 +2,9 @@
 	'use strict';
 
 	var expect = require ('chai').expect;
+	var _ = require ('underscore-contrib');
 
-	var io = require ('../src/io.js');
+	var testTarget = require ('../src/io.js');
 
 
 	describe ('IO', function () {
