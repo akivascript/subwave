@@ -215,23 +215,21 @@
 
 	// Prepares the content for display in a browser.
 	function prepareForDisplay (pageBody) {
-		return _.pipeline (scrubPage, convertToHtml) (pageBody);
+		return _.compose (convertToHtml, scrubPage) (pageBody);
 	}
 
 
-	// Removes any faux mark-up tags from a page's body.
-	function scrubPage (pageBody, tags) {
+	// Removes any custom mark-up elements from a page's body.
+	function scrubPage (pageBody) {
 		var output, regexp;
 
-		if (tags && tags.length > 0) {
-			output = _.reduce (tags, function (res, tag) {
-				regexp = new RegExp ('(<' + tag + '>)|(<\/' + tag + '>)', 'gi');
+		output = _.reduce (config.htmlElements.scrub, function (res, element) {
+			regexp = new RegExp ('(<' + element + '>)|(<\/' + element + '>)', 'gi');
 
-				res = pageBody.replace (regexp, '');
-			});
-		}
+			res = pageBody.replace (regexp, '');
+		});
 
-		return output;
+		return output || pageBody;
 	}
 
 
@@ -255,5 +253,4 @@
 	module.exports.getNewPages = getNewPages;
 	module.exports.prepareForDisplay = prepareForDisplay;
 	module.exports.savePage = savePage;
-	module.exports.scrubPage = scrubPage;
 } ());

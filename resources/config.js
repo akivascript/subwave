@@ -10,6 +10,9 @@
 		copyright: '&copy; 2014 Bob Sacamano',
 		dateFormat: 'MMMM DD, YYYY'
 	};
+	config.htmlElements = {
+		scrub: ['excerpt']
+	};
 	config.index = {
 		useExcerpts: true,
 		postCount: 3
