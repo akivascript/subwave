@@ -40,9 +40,9 @@
 	};
 
 	var emptyRepo= { 
-		lastUpdated: '', 
-		posts: [], 
-		tags: {} 
+		lastUpdated: '',
+		posts: [],
+		tags: []
 	};
 
 

@@ -4,7 +4,7 @@
 	var expect = require ('chai').expect;
 	var _ = require ('underscore-contrib');
 
-	var tags = require ('../src/tags.js');
+	var testTarget = require ('../src/tags.js');
 
 
 	describe ('Tags', function () {
@@ -16,7 +16,7 @@
 				filename = '2014-12-20-first-post';
 
 				expected = createTag (tagname);
-				expected [tagname].posts.push (filename);
+				expected.posts = expected.posts.concat (filename);
 
 				post = {};
 				post.tags = [tagname];
@@ -24,7 +24,7 @@
 
 				tag = createTag (tagname);
 				
-				actual = tags.addPostToTag (tag, post.filename);
+				actual = testTarget.addPostToTag (tag, post.filename);
 
 				expect (actual).to.eql (expected);
 			});
@@ -36,12 +36,12 @@
 				filenames = ['2014-12-20-first-post', '2014-12-21-second-post'];
 
 				expected = createTag (tagname);
-				expected [tagname].posts = expected [tagname].posts.concat (filenames);
+				expected.posts = expected.posts.concat (filenames);
 
 				tag = createTag (tagname);
 				
 				actual = _.reduce (filenames, function (res, filename) {
-					return tags.addPostToTag (res, filename);
+					return testTarget.addPostToTag (res, filename);
 				},
 				tag);
 
@@ -54,12 +54,11 @@
 				var actual, expected;
 
 				expected = {
-					'Miscellany': {
-						posts: []
-					}
+					name: 'Miscellany',
+					posts: []
 				};
 
-				actual = tags.createTag ('Miscellany');
+				actual = testTarget.createTag ('Miscellany');
 
 				expect (actual).to.eql (expected);
 			});
@@ -67,14 +66,10 @@
 	});
 
 
-	function createTag (tagname) {
-		var tag;
-
-		tag = {};
-		tag [tagname] = {
+	function createTag (name) {
+		return {
+			name: name,
 			posts: []
 		};
-
-		return tag;
 	}
 } ());
