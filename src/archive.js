@@ -29,16 +29,12 @@
 
 
 	// Creates a new, empty archive.
-	function createArchive () {
-		var archive;
-
-		archive = {
+	function createArchive (posts) {
+		return {
 			type: "archive",
 			title: "Archive",
-			posts: []
+			posts: posts
 		};
-
-		return archive;
 	}
 
 
