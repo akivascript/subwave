@@ -11,26 +11,26 @@
 
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
 	// This is used for generation the tag index pages.
-	function addPostToTagGroup (tagGroup, filename) {
+	function addPostToTag (tag, filename) {
 		var key, posts;
 
-		key = _.compose (_.first, _.keys) (tagGroup);
-		tagGroup [key].posts = _.uniq (tagGroup [key].posts.concat (filename));
+		key = _.compose (_.first, _.keys) (tag);
+		tag [key].posts = _.uniq (tag [key].posts.concat (filename));
 		
-		return tagGroup;
+		return tag;
 	}
 
 
-	// Creates a new, empty tag group
-	function createTagGroup (tagName) {
-		var tagGroup;
+	// Creates a new, empty tag
+	function createTag (name) {
+		var tag;
 
-		tagGroup = {};
-		tagGroup [tagName] = {
+		tag = {};
+		tag [name] = {
 			posts: []
 		};
 
-		return tagGroup;
+		return tag;
 	}
 
 
@@ -63,22 +63,22 @@
 	}
 
 
-	function createTagPage (tag) {
-		var tagPage;
+	function createTagIndex (tag) {
+		var tagIndex;
  
-		tagPage = {
-			type: 'tagpage',
+		tagIndex = {
+			type: 'tagIndex',
 			title: tag,
 			filename: tag.toLowerCase (),
 			posts: [],
-			template: config.paths.templates + 'tag.jade'
+			template: config.paths.templates + 'tagIndex.jade'
 		};
 
-		return tagPage;
+		return tagIndex;
 	}
 
 
-	module.exports.addPostToTagGroup = addPostToTagGroup;
-	module.exports.createTagGroup = createTagGroup;
+	module.exports.addPostToTag = addPostToTag;
+	module.exports.createTag = createTag;
 	module.exports.createTagPages = createTagPages;
 } ());
