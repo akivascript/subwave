@@ -8,7 +8,7 @@
 	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
-	var repo = require ('./repository');
+	var rp = require ('./repository');
 
 
 	// Allows sorting of posts by date.
@@ -21,11 +21,11 @@
 	
 	// Finds a post from the archive and copies it to the inbox for updating.
 	function copyPostFromRepository (index) {
-		var filename, date, post, path, state;
+		var filename, date, post, path, repo;
 
 		if (index) {
-			state = repo.getRepository ();
-			post = repo.getPostByIndex (index, state.posts);
+			repo = rp.getRepository ();
+			post = rp.getPostByIndex (index, rp.posts);
 
 			if (!post) {
 				throw new Error ('Unable to find post with index ' + index + '.');
@@ -51,7 +51,7 @@
 	
 	// Searches a site's posts' metadata for a match.
 	function findPosts (criterion) {
-		var compare, date, matches, post, state;
+		var compare, date, matches, post, repo;
 
 		matches = [];
 
@@ -69,12 +69,12 @@
 			return true;
 		};
 
-		state = repo.getRepository ();
+		repo = rp.getRepository ();
 
 		// Goes through each post in the site and looks through each attribute it has,
 		// searching for matches.
 		// TODO: Refactor this
-		_.each (state.posts, function (post) {
+		_.each (repo.posts, function (post) {
 			_.each (post, function (value, key) {
 				if (typeof value === 'string') {
 					if (key === 'date') {
@@ -106,22 +106,22 @@
 	}
 
 
-	function handlePostsWithSiblings (state, posts) {
+	function handlePostsWithSiblings (repo, posts) {
 		var idx, next, previous;
 
 		// TODO: What did you do, Ray.
-		idx = state.posts.length - posts.length;
+		idx = repo.posts.length - posts.length;
 
 		_.each (posts, function (post) {
-			next = state.posts [idx + 1];
-			previous = state.posts [idx - 1];
+			next = repo.posts [idx + 1];
+			previous = repo.posts [idx - 1];
 
 			if (previous) {
-				processSiblingPosts (post, previous, state, posts, idx, 'previous');
+				processSiblingPosts (post, previous, repo, posts, idx, 'previous');
 			}
 
 			if (next) {
-				processSiblingPosts (post, next, state, posts, idx, 'next');
+				processSiblingPosts (post, next, repo, posts, idx, 'next');
 			}
 
 			idx = idx + 1;
@@ -164,10 +164,10 @@
 	// Connect a new post's navigation with its existing sibling posts, saving the 
 	// existing sibling posts along the way. This allows us to add new posts and modify
 	// existing ones without having to rebuild every post from scratch.
-	function processSiblingPosts (post, sibling, state, posts, index, direction) {
+	function processSiblingPosts (post, sibling, repo, posts, index, direction) {
 		var oppDirection, nextSibling, tmpSibling;
 
-		tmpSibling = pa.copyAttributes (sibling);
+		tmpSibling = pa.copyObject (sibling);
 
 		if (direction === 'previous') {
 			oppDirection = 'next';
@@ -183,8 +183,8 @@
 		// If a sibling has its own sibling, update the navigation of that post as well.
 		// This allows us to handle the case when more than one new post is added simultaneously
 		// and the previous most recent post is part of the sibling chain.
-		if (state.posts [index]) {
-			nextSibling = pa.copyAttributes (state.posts [index]);
+		if (repo.posts [index]) {
+			nextSibling = pa.copyObject (repo.posts [index]);
 
 			tmpSibling [direction] = linkSibling (nextSibling);
 		}
@@ -192,7 +192,7 @@
 		tmpSibling = processSibling (tmpSibling, oppDirection);
 		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
 
-		savePost (tmpSibling, state.tags);
+		savePost (tmpSibling, repo.tags);
 	}
 
 

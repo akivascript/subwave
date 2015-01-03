@@ -87,7 +87,7 @@
 
 		// TODO: Refactor this (with processSibling in posts?): readPost?
 		_.each (posts, function (post) {
-			entry = copyAttributes (post);
+			entry = copyObject (post);
 			entry.path = io.getPostDirectoryPathname (entry.date);
 			file = io.readFile (config.paths.repository + 'posts/' + entry.path + entry.filename + '.md');
 			entry.content = getContent (file);

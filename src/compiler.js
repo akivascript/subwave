@@ -228,7 +228,7 @@
 			content = pa.getContent (file);
 
 			if (config.rss.useExcerpts) {
-				description = _.pipeline (pa.getExcerpt, pa.prepareForDisplay) (content);
+				description = _.compose (pa.prepareForDisplay, pa.getExcerpt) (content);
 			} else {
 				description = pa.prepareForDisplay (content);
 			}
