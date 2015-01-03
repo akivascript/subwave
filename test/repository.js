@@ -25,18 +25,20 @@
 				"tags": ["Guch"],
 				"title": "Second Post"
 			}],
-		"tags": {
-			"Miscellany": {
+		"tags": [
+			{ 
+				"name": "Miscellany",
 				"posts": [
 					"2014-12-20-first-post"
 				]
 			},
-			"Guch": {
+			{
+				"name": "Guch",
 				"posts": [
 					"2014-12-21-second-post"
 				]
 			}
-		}
+		]
 	};
 
 	var emptyRepo= { 
