@@ -69,11 +69,7 @@
 		var target;
 
 		if (attributes && attributes.length > 0) {
-			target = _.reduce (attributes, function (res, attr) {
-				res [attr] = source [attr];
-
-				return res;
-			}, {});
+			target = _.pick (source, attributes);
 		} else {
 			target = _.clone (source);
 		}
