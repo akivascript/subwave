@@ -20,8 +20,8 @@
 		deletes = [];
 		prunes = [];
 
-		deletes.push (config.paths.archive);
-		prunes.push (config.paths.archive + 'posts/');
+		deletes.push (config.paths.repository);
+		prunes.push (config.paths.repository + 'posts/');
 
 		clean (deletes, prunes, config.verbose);
 	}

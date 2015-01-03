@@ -8,7 +8,6 @@
 
 	var config = require ('../resources/config');
 	var io = require ('./io');
-	var st = require ('./state');
 
 	marked.setOptions ({
 		smartypants: true
@@ -94,7 +93,7 @@
 		_.each (posts, function (post) {
 			entry = copyAttributes (post);
 			entry.path = io.getPostDirectoryPathname (entry.date);
-			file = io.readFile (config.paths.archive + 'posts/' + entry.path + entry.filename + '.md');
+			file = io.readFile (config.paths.repository + 'posts/' + entry.path + entry.filename + '.md');
 			entry.content = getContent (file);
 			entry.displayTitle = convertToHtml (entry.title);
 			entry.displayDate = formatDateForDisplay (entry.date);
@@ -166,7 +165,7 @@
 	}
 
 
-	// Create an excerpt for a post.
+	// Create an excerpt for a post..
 	function getExcerpt (postBody) {
 		var excerpt, output;
 

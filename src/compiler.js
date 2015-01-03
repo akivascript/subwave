@@ -11,13 +11,13 @@
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
-	var st = require ('./state');
+	var repo = require ('./repository');
 	var ta = require ('./tags');
 
 
 	// Ceci n'est pas un commentaire.
 	function buildSite () {
-		var homePage, entries, files, pages, path, posts, resources, state;
+		var homePage, entries, files, pages, path, posts, repository, resources;
 
 		if (config.verbose) {
 			console.log ('Compiling the site...');
@@ -31,29 +31,29 @@
 			return 1;
 		}
 
-		state = _.compose (st.getState, st.loadStateFromDisk);
+		repository = _.compose (repo.getRepository, repo.loadRepository);
 		posts = po.getPosts (pages);
 
 		if (posts.length !== 0) {
 			entries = ar.createNewArchiveEntries (posts);
 
-			handlePosts (state, posts, entries);
+			handlePosts (repository, posts, entries);
 		}
 
 		// Processes and saves any page files in inbox.
 		_.each (pages, function (page) {
 			if (page.type !== 'post') {
-				pa.savePage (page, state.tags);
+				pa.savePage (page, repository.tags);
 
 				io.renameFile (config.paths.inbox + page.origFilename, 
-											 config.paths.archive + page.origFilename);
+											 config.paths.repository + page.origFilename);
 			}
 		});
 
 		// Creates the index.html page.
-		homePage = pa.createHomePage (state.posts.slice (-config.index.postCount), posts);
+		homePage = pa.createHomePage (repository.posts.slice (-config.index.postCount), posts);
 
-		pa.savePage (homePage, state.tags);
+		pa.savePage (homePage, repository.tags);
 
 		_.each (config.resources, function (resource) {
 			files = io.getFiles (config.paths.resources + resource);
@@ -78,15 +78,15 @@
 	}
 
 
-	// Take [currently only] new posts, add them to the site's state, process them,
+	// Take [currently only] new posts, add them to the site's repository, process them,
 	// fold them, spindle them, mutilate them...
-	function handlePosts (state, posts, entries, archive) {
+	function handlePosts (repository, posts, entries, archive) {
 		var archivePostsPath, file, index, postCount, output;
 
 		// Each post gets a unique index number which is later used 
 		// for updates.
-		if (state.posts && state.posts.length > 0) {
-			postCount = st.getLastIndex (state.posts);
+		if (repository.posts && repository.posts.length > 0) {
+			postCount = repo.getLastIndex (repository.posts);
 
 			index = postCount + 1;
 		} else {
@@ -101,9 +101,9 @@
 			}
 
 			if (entry.index < postCount) {
-				state.posts [entry.index - 1] = entry;
+				repository.posts [entry.index - 1] = entry;
 			} else {
-				state.posts.push (entry);
+				repository.posts.push (entry);
 			}
 				
 			index = index + 1;
@@ -116,9 +116,9 @@
 				post.excerpt = pa.getExcerpt (post.content);
 			}
 
-			st.addPostToTagGroups (state, post);
+			repo.addPostToTagGroups (repository, post);
 
-			archivePostsPath = config.paths.archive + 'posts/';
+			archivePostsPath = config.paths.repository + 'posts/';
 
 			io.createPostDirectory (archivePostsPath + post.path);
 
@@ -140,21 +140,21 @@
 	
 		// We handle appending the archive first (above) so we can more easily determine
 		// if a post has siblings that need to be handled.
-		po.handlePostsWithSiblings (state, posts);
+		po.handlePostsWithSiblings (repository, posts);
 
 		_.each (posts, function (post) {
-			po.savePost (post, state.tags);
+			po.savePost (post, repository.tags);
 		});
 
 		// Create archive.html.
-		handleArchive (state.posts, state.tags);
+		handleArchive (repository.posts, repository.tags);
 
 		// Create tag index files in tags directory.
-		ta.createTagPages (state);
+		ta.createTagPages (repository);
 
-		updateRssFeed (state);
+		updateRssFeed (repository);
 
-		st.saveState (state);
+		repo.saveRepository (repository);
 	}
 
 
@@ -172,7 +172,7 @@
 
 		io.cleanPublic (false);
 
-		files = io.getFiles (config.paths.archive);
+		files = io.getFiles (config.paths.repository);
 
 		for (var file in files) {
 			path = files [file];
@@ -184,7 +184,7 @@
 	}
 
 
-	function updateRssFeed (state) {
+	function updateRssFeed (repository) {
 		var content, date, description, feed, feedName, feedOptions, file, i, itemOptions, post, total;
 
 		i = 0;
@@ -203,13 +203,13 @@
 
 		feed = new Rss (feedOptions);
 
-		state.posts.reverse ();
+		repository.posts.reverse ();
 
 		while (total < config.rss.postCount &&
-					i < state.posts.length) {
-			post = state.posts [i];
+					i < repository.posts.length) {
+			post = repository.posts [i];
 			date = io.getPostDirectoryPathname (post.date);
-			file = io.readFile (config.paths.archive + 'posts/' + date + post.filename + '.md');
+			file = io.readFile (config.paths.repository + 'posts/' + date + post.filename + '.md');
 			content = pa.getContent (file);
 
 			if (config.rss.useExcerpts) {
@@ -233,7 +233,7 @@
 			total = total + 1;
 		}
 
-		state.posts.reverse ();
+		repository.posts.reverse ();
 
 		io.writeFile (config.paths.output + feedName, feed.xml ());
 	}

@@ -17,7 +17,7 @@
 	config.paths = {
 		resources: 'resources/',
 		inbox: 'resources/' + 'inbox/',
-		archive: 'resources/' + 'archive/',
+		repository: 'resources/' + 'repository/',
 		templates: 'resources/' + 'templates/',
 		output: 'public/',
 		posts: 'public/' + 'posts/',

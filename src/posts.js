@@ -8,7 +8,7 @@
 	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
-	var st = require ('./state');
+	var repo = require ('./repository');
 
 
 	// Allows sorting of posts by date.
@@ -20,12 +20,12 @@
 
 	
 	// Finds a post from the archive and copies it to the inbox for updating.
-	function copyPostFromArchive (index) {
+	function copyPostFromRepository (index) {
 		var filename, date, post, path, state;
 
 		if (index) {
-			state = st.getState ();
-			post = st.getPostByIndex (index, state.posts);
+			state = repo.getRepository ();
+			post = repo.getPostByIndex (index, state.posts);
 
 			if (!post) {
 				throw new Error ('Unable to find post with index ' + index + '.');
@@ -35,11 +35,11 @@
 			path = io.getPostDirectoryPathname (post.date);
 
 			if (config.verbose) {
-				console.log ('Copying from ' + config.paths.archive + 'posts/' + path + post.filename + '.md' +
+				console.log ('Copying from ' + config.paths.repository + 'posts/' + path + post.filename + '.md' +
 									 ' to ' +	config.paths.inbox + post.filename + '.md');
 			}
 			
-			io.copyFile (config.paths.archive + 'posts/' + path + post.filename + '.md',
+			io.copyFile (config.paths.repository + 'posts/' + path + post.filename + '.md',
 									 config.paths.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
@@ -69,7 +69,7 @@
 			return true;
 		};
 
-		state = st.getState ();
+		state = repo.getRepository ();
 
 		// Goes through each post in the site and looks through each attribute it has,
 		// searching for matches.
@@ -151,7 +151,7 @@
 
 		path = io.getPostDirectoryPathname (sibling.date);
 		filename = sibling.filename;
-		file = io.readFile (config.paths.archive + 'posts/' + path + filename + '.md');
+		file = io.readFile (config.paths.repository + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
 		sibling.template = config.paths.templates + 'post.jade';
@@ -207,7 +207,7 @@
 
 
 	module.exports.comparePostsByDate = comparePostsByDate;
-	module.exports.copyPostFromArchive = copyPostFromArchive ;
+	module.exports.copyPostFromRepository = copyPostFromRepository;
 	module.exports.findPosts = findPosts;
 	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;

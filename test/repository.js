@@ -4,9 +4,9 @@
 	var expect = require ('chai').expect;
 	var _ = require ('underscore-contrib');
 
-	var state = require ('../src/state.js');
+	var repository = require ('../src/repository.js');
 
-	var stateMap = {
+	var repo = {
 		"lastUpdated": "2015-01-02T03:57:40.754Z",
 		"posts": [
 			{
@@ -39,28 +39,28 @@
 		}
 	};
 
-	var stateMapEmpty = { 
+	var emptyRepo= { 
 		lastUpdated: '', 
 		posts: [], 
 		tags: {} 
 	};
 
 
-	describe ('State', function () {
+	describe ('Repository', function () {
 		describe ('getLastIndex', function () {
-			it ('returns the map index of the most recently added post in state', function () {
+			it ('returns the map index of the most recently added post in repository', function () {
 				var actual, expected;
 
 				expected = 2;
 
-				actual = state.getLastIndex (stateMap.posts);
+				actual = repository.getLastIndex (repo.posts);
 
 				expect (actual).to.equal (expected);
 			});
 		});
 
 		describe ('getPostByIndex', function () {
-			it ('returns from state a post matching the passed index number', function () {
+			it ('returns from repository a post matching the passed index number', function () {
 				var actual, expected;
 
 				expected = {
@@ -72,40 +72,40 @@
 					"title": "Second Post"
 				};
 
-				actual = state.getPostByIndex (2, stateMap.posts);
+				actual = repository.getPostByIndex (2, repo.posts);
 
 				expect (actual).to.eql (expected);
 			});
 		});
 
-		describe ('getState', function () {
-			it ('returns a properly formatted empty state map when input is empty', function () {
+		describe ('getRepository', function () {
+			it ('returns a properly formatted empty repository map when input is empty', function () {
 				var actual, expected;
 
-				expected = stateMapEmpty;
-				actual = state.getState ('');
+				expected = emptyRepo;
+				actual = repository.getRepository ('');
 
 				expect (actual).to.eql (expected);
 			});
 
-			it ('returns a properly formatted populated state map when input is correct', function () {
+			it ('returns a properly formatted populated repository map when input is correct', function () {
 				var actual, expected;
 
-				expected = stateMap;
-				actual = state.getState (JSON.stringify (stateMap));
+				expected = repo;
+				actual = repository.getRepository (JSON.stringify (repo));
 
 				expect (actual).to.eql (expected);
 			});
 
 			it ('throws an error when input is incorrectly formatted', function () {
-				var fn, badStateMap;
+				var fn, badRepo;
 
-				badStateMap = {
+				badRepo = {
 					unknownKey: '',
 					posts: []
 				};
 
-				fn = function () { state.getState (JSON.stringify (badStateMap)); };
+				fn = function () { repository.getRepository (JSON.stringify (badRepo)); };
 
 				expect (fn).to.throw (Error);
 			});
