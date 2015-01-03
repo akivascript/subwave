@@ -36,7 +36,7 @@
 		// Use a local object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
-			tags: _.keys (tags),
+			tags: tags,
 			config: config
 		};
 
