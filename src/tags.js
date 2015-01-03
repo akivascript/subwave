@@ -28,9 +28,9 @@
 
 
 	function createTagPages (repo) {
-		_.each (repo.tags, function (tag) {
-			var page;
+		var page;
 
+		_.each (repo.tags, function (tag) {
 			page = createTagIndex (tag);
 
 			_.each (tag.posts, function (postTag) {
@@ -44,7 +44,10 @@
 						});
 					}
 				});
+				
 			});
+
+			page.posts = _.sortBy (page.posts, function (post) { return post.title; });
 
 			pa.savePage (page, repo.tags);
 		});
