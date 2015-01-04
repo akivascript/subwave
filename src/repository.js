@@ -69,7 +69,7 @@
 		var result;
 
 		result = {};
-		result.tag = _.findWhere (tags, { name: 'Guch' });
+		result.tag = _.findWhere (tags, { name: name });
 
 		if (result.tag) {
 			result.index = _.indexOf (tags, result.tag);
