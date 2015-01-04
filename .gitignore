@@ -4,5 +4,6 @@ resources/repository/
 resources/drafts/
 resources/inbox/
 resources/public/
+tmp/
 *.json
 .DS_Store
