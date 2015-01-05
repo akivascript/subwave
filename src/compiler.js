@@ -20,30 +20,24 @@
 	function buildSite () {
 		var homePage, entries, files, pages, path, posts, repo;
 
-		pages = pa.getPages (cf.paths.inbox);
+		files = pa.getPages (cf.paths.inbox);
 
-		if (pages.length === 0) {
-			console.log ('No new pages found');
+		if (files.length === 0) {
+			console.log ('No pages found to be built.');
 
 			return 1;
 		}
 
 		repo = _.compose (rp.getRepository, rp.loadRepository) ();
-		posts = pa.filterPages (pages, 'post');
 
-		if (posts.length > 0) {
-			handlePosts (repo, posts);
-		}
+		_.each (cf.pages.content, function (type) {
+			pages = pa.filterPages (files, type);
 
-		// Processes and saves any page files to the repository.
-		_.each (pages, function (page) {
-			if (page.type !== 'post') {
-				pa.savePage (page, repo.tags);
-
-				io.renameFile (cf.paths.inbox + page.origFilename, 
-											 cf.paths.repository + page.origFilename);
+			if (pages.length > 0) {
+				module.internals ['process' + _.capitalize (type)] (repo, pages);
 			}
-		});
+		});	
+
 
 		// Creates the index.html page.
 		homePage = _.compose (pa.createPage, ho.createHome) ();
@@ -60,7 +54,7 @@
 		copyResources ();
 
 		// Create archive.html.
-		handleArchive (repo.posts, repo.tags);
+		processArchive (repo.posts, repo.tags);
 
 		// Create tag index files in tags directory.
 		ta.createTagPages (repo);
@@ -85,7 +79,7 @@
 	}
 
 
-	function handleArchive (posts, tags) {
+	function processArchive (posts, tags) {
 		var archive;
 
 		archive = _.compose (pa.createPage, ar.createArchive) ();
@@ -98,9 +92,19 @@
 	}
 
 
+	function processInfo (repo, pages) {
+		_.each (pages, function (page) {
+				pa.savePage (page, repo.tags);
+
+				io.renameFile (cf.paths.inbox + page.origFilename, 
+											 cf.paths.repository + page.origFilename);
+			});
+	}
+
+
 	// Take [currently only] new posts, add them to the site's repository, process them,
 	// fold them, spindle them, mutilate them...
-	function handlePosts (repo, posts) {
+	function processPosts (repo, posts) {
 		var repoPostsPath, file, index, postCount, output, result;
 
 		repoPostsPath = cf.paths.repository + 'posts/';
@@ -161,6 +165,11 @@
 		buildSite ();
 	}
 
+
+	module.internals = {
+		processInfo: processInfo,
+		processPost: processPosts
+	};
 
 	module.exports.buildSite = buildSite;
 	module.exports.rebuildSite = rebuildSite;

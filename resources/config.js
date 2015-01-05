@@ -20,6 +20,9 @@
 		postCount: 3,
 		useExcerpts: true
 	};
+	config.pages = {
+		content: ['post', 'info', 'mini']
+	};
 	config.paths = {
 		inbox: 'resources/' + 'inbox/',
 		output: 'public/',
