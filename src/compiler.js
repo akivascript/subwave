@@ -7,7 +7,7 @@
 
 	var ar = require ('./archive');
 	var cf = require ('../resources/config');
-	var ho = require ('./home.js');
+	var ho = require ('./home');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var po = require ('./posts');
@@ -20,10 +20,6 @@
 	function buildSite () {
 		var homePage, entries, files, pages, path, posts, repo;
 
-		if (cf.verbose) {
-			console.log ('Building the site...');
-		}
-
 		pages = pa.getPages (cf.paths.inbox);
 
 		if (pages.length === 0) {
@@ -33,7 +29,7 @@
 		}
 
 		repo = _.compose (rp.getRepository, rp.loadRepository) ();
-		posts = po.getPosts (pages);
+		posts = pa.filterPages (pages, 'post');
 
 		if (posts.length > 0) {
 			handlePosts (repo, posts);

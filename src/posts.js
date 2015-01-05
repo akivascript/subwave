@@ -98,14 +98,6 @@
 	}
 
 
-	// Filters out any pages that aren't posts.
-	function getPosts (files) {
-		return _.filter (files, function (file) {
-			return file.type === 'post';
-		});
-	}
-
-
 	function handlePostsWithSiblings (repo, posts) {
 		var idx, next, previous;
 
@@ -209,7 +201,6 @@
 	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.copyPostFromRepository = copyPostFromRepository;
 	module.exports.findPosts = findPosts;
-	module.exports.getPosts = getPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.savePost = savePost;
 } ());

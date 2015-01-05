@@ -72,6 +72,14 @@
 		return pf.createPage (page);
 	}
 
+
+	// Filters a collection for pages of a given type.
+	function filterPages (coll, type) {
+		return _.filter (coll, function (item) {
+			return item.type === type;
+		});
+	}
+
 	
 	// Takes a date object and converts it to the specified date format for display
 	// on both the index and individual post pages.
@@ -170,6 +178,7 @@
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyObject = copyObject;
 	module.exports.createPage = createPage;
+	module.exports.filterPages = filterPages;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.getExcerpt = pf.getExcerpt;
 	module.exports.getContent = getContent;
