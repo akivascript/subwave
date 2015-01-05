@@ -61,7 +61,7 @@
 
 	function configureMini (page) {
 		return configure (page, function (pg) {
-			pg.path = 'miniposts/';
+			pg.path = cf.miniposts.title.toLowerCase () + '/';
 			pg.outputPath = cf.paths.output;
 
 			return pg;

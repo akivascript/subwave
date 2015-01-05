@@ -3,6 +3,7 @@
 
 	var _ = require ('underscore-contrib');
 
+	var cf = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 
@@ -16,6 +17,8 @@
 		var compileFn;
 
 		compileFn = function (page) {
+			page.title = cf.miniposts.title;
+
 			_.map (page.posts, function (post) {
 				post.displayDate = pa.formatDateForDisplay (post.date);
 				post.content = pa.convertToHtml (post.content);
@@ -50,7 +53,7 @@
 	function saveMiniposts (posts, tags) {
 		posts.output = compileMiniposts (posts, tags);
 		
-		posts.filename = 'page1';
+		posts.filename = '1'; // Temporary until pagination
 
 		io.saveHtmlPage (posts);
 	}

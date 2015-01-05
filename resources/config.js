@@ -20,6 +20,11 @@
 		postCount: 3,
 		useExcerpts: true
 	};
+	config.miniposts = {
+		usePagination: false,
+		postsPerPage: 10,
+		title: 'Chunks'
+	};
 	config.pages = {
 		content: ['post', 'info', 'mini']
 	};
