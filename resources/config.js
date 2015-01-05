@@ -23,11 +23,9 @@
 	config.paths = {
 		inbox: 'resources/' + 'inbox/',
 		output: 'public/',
-		posts: 'public/' + 'posts/',
 		repository: 'resources/' + 'repository/',
 		resources: 'resources/',
 		templates: 'resources/' + 'templates/',
-		tags: 'public/' + 'tags/'
 	};
 	config.resources = ['css/', 'js/', 'img/'];
 	config.rss = { 

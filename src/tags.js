@@ -4,7 +4,7 @@
 
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 	
@@ -61,7 +61,8 @@
 			title: tag.name,
 			filename: tag.name.toLowerCase (),
 			posts: [],
-			template: config.paths.templates + 'tag.jade'
+			outputPath: cf.paths.output + 'tags/',
+			template: cf.paths.templates + 'tag.jade'
 		};
 	}
 

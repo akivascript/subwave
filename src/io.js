@@ -69,8 +69,8 @@
 		deletes.push (config.paths.output + 'css/');
 		deletes.push (config.paths.output + 'img/');
 		deletes.push (config.paths.output + 'js/');
-		deletes.push (config.paths.tags);
-		prunes.push (config.paths.posts);
+		deletes.push (config.paths.output + 'tags/');
+		prunes.push (config.paths.output + 'posts/');
 
 		clean (deletes, prunes, config.verbose);
 
@@ -302,25 +302,7 @@
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
 	// with a file written with an '.html' extension. Maybe you're into that.
 	function saveHtmlPage (page) {
-		var path;
-
-		if (page.type === 'post') {
-			path = config.paths.posts;
-		} else if (page.type === 'tag') {
-			path = config.paths.tags;
-		} else if (page.type === 'page' || 
-							 page.type === 'archive' ||
-							 page.type === 'home') {
-			path = config.paths.output;
-		} else {
-			throw new Error ('Unable to determine page type.');
-		}
-
-		if (page.path) {
-			path = path + page.path;
-		}
-
-		writeFile (path + '/' + page.filename + '.html', page.output);
+		writeFile (page.outputPath + page.path + page.filename + '.html', page.output);
 	}
 	
 
@@ -339,7 +321,7 @@
 
 	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
-		fs.writeFileSync (filename, content);
+		fs.outputFileSync (filename, content);
 	}
 
 	

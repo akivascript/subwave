@@ -113,7 +113,8 @@
 			// Move posts to the repository.
 			io.createPostDirectory (repoPostsPath + post.path);
 
-			io.renameFile (cf.paths.inbox + post.origFilename, repoPostsPath + post.path + post.filename + '.md'); 
+			io.renameFile (cf.paths.inbox + post.origFilename, 
+										 repoPostsPath + post.path + post.filename + '.md'); 
 
 			// Saves the post to public.
 			po.savePost (post, repo.tags);
