@@ -205,9 +205,6 @@
 
 			io.renameFile (cf.paths.inbox + post.origFilename, 
 										 repoPostsPath + post.path + post.filename + '.md'); 
-
-			// Saves the post to public.
-			savePost (post, repo.tags);
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
