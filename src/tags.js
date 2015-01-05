@@ -27,7 +27,7 @@
 	}
 
 
-	function createTagPages (repo) {
+	function publishTags (repo) {
 		var page;
 
 		_.each (repo.tags, function (tag) {
@@ -69,5 +69,5 @@
 
 	module.exports.addPostToTag = addPostToTag;
 	module.exports.createTag = createTag;
-	module.exports.createTagPages = createTagPages;
+	module.exports.publishTags = publishTags;
 } ());

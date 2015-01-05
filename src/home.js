@@ -3,7 +3,8 @@
 
 	var _ = require ('underscore-contrib');
 
-	var pa = require ('./pages.js');
+	var cf = require ('../resources/config');
+	var pa = require ('./pages');
 
 	
 	function addPostToHome (home, post) {
@@ -26,6 +27,25 @@
 	}
 
 
+	// The home page is generated here. A number of posts specified
+	// in the site configuration file are displayed with or without
+	// excerpts.
+	function publishHome (repo) {
+		var page;
+
+		page = _.compose (pa.createPage, createHome) ();
+
+		page.posts = _.map (repo.posts.slice (-cf.index.postCount),
+												function (post) {
+													post.excerpt = pa.prepareForDisplay (post.excerpt);
+
+													return post;
+												});
+														
+		pa.savePage (page, repo.tags);
+	}
+
+
 	module.exports.addPostToHome = addPostToHome;
-	module.exports.createHome = createHome;
+	module.exports.publishHome = publishHome;
 } ());

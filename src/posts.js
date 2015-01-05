@@ -5,7 +5,7 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 	var rp = require ('./repository');
@@ -34,13 +34,13 @@
 			date = pa.formatDateForDisplay (post.date);
 			path = io.getPostDirectoryPathname (post.date);
 
-			if (config.verbose) {
-				console.log ('Copying from ' + config.paths.repository + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	config.paths.inbox + post.filename + '.md');
+			if (cf.verbose) {
+				console.log ('Copying from ' + cf.paths.repository + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	cf.paths.inbox + post.filename + '.md');
 			}
 			
-			io.copyFile (config.paths.repository + 'posts/' + path + post.filename + '.md',
-									 config.paths.inbox + post.filename + '.md');
+			io.copyFile (cf.paths.repository + 'posts/' + path + post.filename + '.md',
+									 cf.paths.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
@@ -143,10 +143,10 @@
 
 		path = io.getPostDirectoryPathname (sibling.date);
 		filename = sibling.filename;
-		file = io.readFile (config.paths.repository + 'posts/' + path + filename + '.md');
+		file = io.readFile (cf.paths.repository + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
-		sibling.template = config.paths.templates + 'post.jade';
+		sibling.template = cf.paths.templates + 'post.jade';
 		sibling.title = pa.convertToHtml (sibling.title);
 
 		return sibling;
@@ -187,12 +187,46 @@
 		savePost (tmpSibling, repo.tags);
 	}
 
+	
+	// Take [currently only] new posts, add them to the site's repository, process them,
+	// fold them, spindle them, mutilate them...
+	function publishPosts (posts, repo) {
+		var repoPostsPath, file, index, postCount, output, result;
+
+		repoPostsPath = cf.paths.repository + 'posts/';
+
+		_.each (posts, function (post) {
+			repo.tags = _.reduce (post.tags, function (res, tag) {
+				return res.concat (rp.addTagToRepository (repo.tags, tag, post));
+			}, []);
+
+			// Move posts to the repository.
+			io.createPostDirectory (repoPostsPath + post.path);
+
+			io.renameFile (cf.paths.inbox + post.origFilename, 
+										 repoPostsPath + post.path + post.filename + '.md'); 
+
+			// Saves the post to public.
+			savePost (post, repo.tags);
+		});
+
+		repo.posts = _.reduce (posts, function (res, post) {
+			return res.concat (rp.addPostToRepository (repo.posts, post));
+		}, []);
+
+		handlePostsWithSiblings (repo, posts);
+
+		_.each (posts, function (post) {
+			savePost (post, repo.tags);
+		});
+	}
+
 
 	// Commit a post to disk.
 	function savePost (post, tags) {
 		post.output = pa.compilePage (post, tags);
 
-		io.createPostDirectory (config.paths.posts + post.path);
+		io.createPostDirectory (cf.paths.posts + post.path);
 
 		io.saveHtmlPage (post);
 	}
@@ -202,5 +236,6 @@
 	module.exports.copyPostFromRepository = copyPostFromRepository;
 	module.exports.findPosts = findPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
+	module.exports.publishPosts = publishPosts;
 	module.exports.savePost = savePost;
 } ());

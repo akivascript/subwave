@@ -136,6 +136,7 @@
 		configureArchive: configureArchive,
 		configureHome: configureHome,
 		configureInfo: configureInfo,
+		configureMini: configureMini,
 		configurePost: configurePost
 	};
 
