@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+	include ./includes/head.jade
+	body
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container(style='margin-top: 45px;')
+				div.row
+					div.col-md-2
+					div.col-md-8
+						each post in page.posts
+							div.minipost
+								div.well.content
+									if post.title
+										div.small.title= post.title
+									div.body !{post.content}
+									div.small.text-right.date= post.displayDate
+					div.col-md-2
+		include ./includes/footer.jade

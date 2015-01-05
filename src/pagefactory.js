@@ -61,9 +61,7 @@
 
 	function configureMini (page) {
 		return configure (page, function (pg) {
-			pg.date = convertStringToDate (pg.date);
-			pg.filename = io.getPostFilename (pg.title, pg.date);
-			pg.path = 'minis/';
+			pg.path = 'miniposts/';
 			pg.outputPath = cf.paths.output;
 
 			return pg;
