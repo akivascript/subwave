@@ -3,6 +3,9 @@
 
 	var config = module.exports = {};
 
+	config.archive = {
+		title: 'Archive'
+	};
 	config.blog = {
 		title: 'Blog Title',
 		description: 'Blog description',
@@ -14,22 +17,23 @@
 		scrub: ['excerpt']
 	};
 	config.index = {
-		useExcerpts: true,
-		postCount: 3
+		postCount: 3,
+		useExcerpts: true
 	};
 	config.paths = {
-		resources: 'resources/',
 		inbox: 'resources/' + 'inbox/',
-		repository: 'resources/' + 'repository/',
-		templates: 'resources/' + 'templates/',
 		output: 'public/',
 		posts: 'public/' + 'posts/',
+		repository: 'resources/' + 'repository/',
+		resources: 'resources/',
+		templates: 'resources/' + 'templates/',
 		tags: 'public/' + 'tags/'
 	};
 	config.resources = ['css/', 'js/', 'img/'];
 	config.rss = { 
-		useExcerpts: true,
-		postCount: 5
+		filename: 'rss.xml',
+		postCount: 5,
+		useExcerpts: true
 	};
 	config.verbose = false;
 } ());
