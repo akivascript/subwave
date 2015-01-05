@@ -37,14 +37,30 @@
 	}
 
 
+	function getMiniposts () {
+		return pa.getPages (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
+	}
+
+
 	function publishMiniposts (posts, repo) {
-		var date, filename, page, repoPostsPath;
+		var date, filename, oldPosts, page, repoPostsPath;
 
 		page = _.compose (pa.createPage, createMiniposts) ();
 
+		// To be refactored later...
 		page.posts = _.reduce (posts, function (res, post) {
 			return res.concat (addPostToMiniposts (page.posts, post));
 		}, []);
+
+		oldPosts = getMiniposts ();
+
+		if (oldPosts.length > 0) {
+			page.posts.push (getMiniposts ());
+			
+			page.posts = _.flatten (_.sortBy (page.posts, function (post) { return post.date; }));
+		}
+
+		page.posts.reverse ();
 
 		repoPostsPath = cf.paths.repository + cf.miniposts.title.toLowerCase () + '/';
 		io.createPostDirectory (repoPostsPath);
@@ -69,6 +85,7 @@
 
 		io.saveHtmlPage (posts);
 	}
+
 
 	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
 	// Date object.
