@@ -16,10 +16,11 @@
 	var ta = require ('./tags');
 
 
-	// Ceci n'est pas un commentaire.
+	// Ceci n'est pas un commentaire
 	function buildSite () {
 		var homePage, entries, files, pages, path, posts, repo;
 
+		// Loads all of the files to be published
 		files = pa.getPages (cf.paths.inbox);
 
 		if (files.length === 0) {
@@ -28,43 +29,43 @@
 			return 1;
 		}
 
+		// Loads an existing repo or creates a new one
 		repo = _.compose (rp.getRepository, rp.loadRepository) ();
 
+		// Publishes each type of content page
 		_.each (cf.pages.content, function (type) {
 			pages = pa.filterPages (files, type);
 
 			if (pages.length > 0) {
-				module.internals ['process' + _.capitalize (type)] (repo, pages);
+				module.internals ['publish' + _.capitalize (type)] (repo, pages);
 			}
 		});	
 
+		// The following are calculated from content pages and are thus
+		// handled separately.
+		
+		// index.html
+		publishHome (repo);
 
-		// Creates the index.html page.
-		homePage = _.compose (pa.createPage, ho.createHome) ();
+		// archive.html
+		publishArchive (repo.posts, repo.tags);
 
-		homePage.posts = _.map (repo.posts.slice (-cf.index.postCount), 
-														function (post) {
-															post.excerpt = pa.prepareForDisplay (post.excerpt);
-															return post;
-														});
-
-														
-		pa.savePage (homePage, repo.tags);
-
-		copyResources ();
-
-		// Create archive.html.
-		processArchive (repo.posts, repo.tags);
-
-		// Create tag index files in tags directory.
+		// tags/[tag].html files
 		ta.createTagPages (repo);
 
+		// RSS news feed
 //		rs.updateRssFeed (repo);
 
+		// Support resources such as css and media files
+		copyResources ();
+
+		// Saves the state of the site
 		rp.saveRepository (repo);
 	}
 
 
+	// This function copies all of the resource directories specified
+	// in the configuration file to their published locations.
 	function copyResources () {
 		var files, targets;
 
@@ -79,6 +80,8 @@
 	}
 
 
+	// Creates an archive page from all of the published posts stored
+	// in the repository.
 	function processArchive (posts, tags) {
 		var archive;
 
@@ -92,6 +95,23 @@
 	}
 
 
+	// The home page is generated here. A number of posts specified
+	// in the site configuration file are displayed with or without
+	// excerpts.
+	function processHome (repo) {
+		homePage = _.compose (pa.createPage, ho.createHome) ();
+
+		homePage.posts = _.map (repo.posts.slice (-cf.index.postCount), 
+														function (post) {
+															post.excerpt = pa.prepareForDisplay (post.excerpt);
+															return post;
+														});
+														
+		pa.savePage (homePage, repo.tags);
+	}
+
+	// The various info pages, usually static pages such as an About page
+	// are handled by this function.
 	function processInfo (repo, pages) {
 		_.each (pages, function (page) {
 				pa.savePage (page, repo.tags);
