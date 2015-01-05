@@ -26,7 +26,7 @@
 
 		clean (deletes, prunes, config.verbose);
 
-		removeFile (config.paths.resources + 'repository.json');
+		removeFile (config.paths.repository + 'repository.json');
 	}
 
 
@@ -348,6 +348,7 @@
 	module.exports.copyFile = copyFile;
 	module.exports.createNewFile = createNewFile;
 	module.exports.createPostDirectory = createPostDirectory;
+	module.exports.formatDateForMetadata = formatDateForMetadata;
 	module.exports.getFiles = getFiles;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;

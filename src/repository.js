@@ -12,15 +12,20 @@
 	var repoName = 'repository.json';
 
 
-	function addPostToRepository (repo, post) {
-		var rp, p;
+	function addPostToRepository (posts, post) {
+		var tmp;
 
-		p = _.pick (post, 'author', 'date', 'filename', 'tags', 'title');
+		tmp = findPost (posts);
+			
+		if (_.isEmpty (tmp)) {
+			post.id = _.generateId (post);
 
-		rp = _.snapshot (repo);
-		rp.posts = rp.posts.concat (p);
+			posts = posts.concat (post);
+		} else {
+			posts [tmp.index] = post;
+		}
 
-		return rp;
+		return posts;
 	}
 
 
@@ -88,6 +93,22 @@
 	}
 
 
+	function findPost (posts, id) {
+		var result;
+
+		result = {};
+		result.post = _.findWhere (posts, { id: id });
+
+		if (result.post) {
+			result.index = _.indexOf (posts, result.post);
+
+			return result;
+		}
+
+		return {};
+	}
+
+
 	// Searches the repository for a tag and returns an array of
 	// that tag's index and the tag itself. If the tag is not
 	// present, findTag returns undefined.
@@ -124,13 +145,15 @@
 	// Commits the current blog state to disk.
 	function saveRepository (repo) {
 		var filename;
-
+		
 		filename = cf.paths.repository + repoName;
 		repo.lastUpdated = new Date ();
 		delete repo.type;
 
 		repo.posts = _.reduce (repo.posts, function (res, post) {
-			return res.concat (_.pick (post, 'author', 'date', 'filename', 'tags', 'title'));
+			post = _.pick (post, 'author', 'date', 'filename', 'tags', 'title');
+
+			return res.concat (post);
 		}, []);
 
 		io.writeFile (filename, JSON.stringify (repo, null, '  '));
@@ -147,6 +170,27 @@
 										 true);
 	}
 
+
+	_.mixin ({
+		generateId: function (source) {
+			if (!_.isString (source)) {
+				source = JSON.stringify (source);
+			}
+
+			if (source.length === 0) return hash;
+
+			var chr, hash, i, len;
+
+			for (i = 0, len = source.length; i < len; i++) {
+				chr = source.charCodeAt (i);
+				hash = ((hash << 5) - hash) + chr;
+				hash |= 0;
+			}
+
+			return hash;
+		}
+	});
+			
 
 	module.exports.addPostToRepository = addPostToRepository;
 	module.exports.addTagToRepository = addTagToRepository;

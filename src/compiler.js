@@ -58,6 +58,7 @@
 															return post;
 														});
 
+														
 		pa.savePage (homePage, repo.tags);
 
 		copyResources ();
@@ -107,9 +108,8 @@
 		var repoPostsPath, file, index, postCount, output, result;
 
 		repoPostsPath = cf.paths.repository + 'posts/';
-		_.each (posts, function (post) {
-			repo.posts = repo.posts.concat (post);
 
+		_.each (posts, function (post) {
 			repo.tags = _.reduce (post.tags, function (res, tag) {
 				return res.concat (rp.addTagToRepository (repo.tags, tag, post));
 			}, []);
@@ -122,6 +122,10 @@
 			// Saves the post to public.
 			po.savePost (post, repo.tags);
 		});
+
+		repo.posts = _.reduce (posts, function (res, post) {
+			return res.concat (rp.addPostToRepository (repo.posts, post));
+		}, []);
 
 		po.handlePostsWithSiblings (repo, posts);
 
@@ -150,7 +154,9 @@
 		for (var file in files) {
 			path = files [file];
 
-			io.copyFile (path + file, cf.paths.inbox + file);
+			if (file !== 'repository.json') {
+				io.copyFile (path + file, cf.paths.inbox + file);
+			}
 		}
 
 		io.cleanRepository ();
