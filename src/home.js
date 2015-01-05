@@ -31,7 +31,7 @@
 	// in the site configuration file are displayed with or without
 	// excerpts.
 	function publishHome (repo) {
-		var page;
+		var miniposts, page;
 
 		page = _.compose (pa.createPage, createHome) ();
 
@@ -41,7 +41,21 @@
 
 													return post;
 												});
-														
+
+		miniposts = pa.getPages (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
+
+		if (miniposts.length > 0) {
+			page.posts.push (_.map (miniposts, function (post) {
+				post.displayDate = pa.formatDateForDisplay (post.date);
+				post.content = pa.convertToHtml (post.content);
+
+				return post;
+			}));
+			
+			page.posts = _.flatten (page.posts);
+			page.posts = _.sortBy (page.posts, function (post) { return new Date (post.date); });
+		}
+
 		pa.savePage (page, repo.tags);
 	}
 

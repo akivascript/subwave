@@ -19,9 +19,11 @@
 		compileFn = function (page) {
 			page.title = cf.miniposts.title;
 
-			_.map (page.posts, function (post) {
+			return _.map (page.posts, function (post) {
 				post.displayDate = pa.formatDateForDisplay (post.date);
 				post.content = pa.convertToHtml (post.content);
+
+				return post;
 			});
 		};
 

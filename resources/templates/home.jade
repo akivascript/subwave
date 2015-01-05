@@ -17,22 +17,30 @@ html(lang="en")
 							if post
 								div.row
 									div.col-xs-12
-										div.post-matter
-											if index === 0
-												h5.post-date= post.displayDate
-												h1.post-title!= post.displayTitle
-											else 
-												h6.post-date= post.displayDate
-												h2.post-title!= post.displayTitle
-										div.tags.text-right
-											each tag in post.tags.sort ()
-												a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
-												| 
-										if post.excerpt
-											div.post-content!= post.excerpt
-										else
-											div.post-content!= post.content
-										div.small.text-right
-											| &raquo; 
-											a(href='/posts/' + post.path + post.filename + '.html') Read more
+										if post.type === 'post'
+											div.post-matter
+												if index === 0
+													h5.post-date= post.displayDate
+													h1.post-title!= post.displayTitle
+												else 
+													h6.post-date= post.displayDate
+													h2.post-title!= post.displayTitle
+											div.tags.text-right
+												each tag in post.tags.sort ()
+													a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
+													| 
+											if post.excerpt
+												div.post-content!= post.excerpt
+											else
+												div.post-content!= post.content
+											div.small.text-right
+												| &raquo; 
+												a(href='/posts/' + post.path + post.filename + '.html') Read more
+										else if post.type === 'mini'
+											div.minipost
+												div.well.content
+													if post.title
+														div.small.title= post.title
+													div.body !{post.content}
+													div.small.text-right.date= post.displayDate
 			include ./includes/footer.jade

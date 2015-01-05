@@ -174,6 +174,10 @@
 	function getPostFilename (title, date) {
 		var dateArray, day, filename, month, newTitle, titleArray, year;
 
+		if (!title) {
+			title = 'untitled';
+		}
+
 		titleArray = title.replace (/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
 
