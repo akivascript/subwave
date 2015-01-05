@@ -7,24 +7,25 @@
 	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config');
 
 
 	// Resets the /resources/repository to its default state... empty.
 	function cleanRepository () {
 		var deletes, prunes;
 
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Cleaning repository...');
 		}
 
 		deletes = [];
 		prunes = [];
 
-		deletes.push (config.paths.repository);
-		prunes.push (config.paths.repository + 'posts/');
+		deletes.push (cf.paths.repository);
+		deletes.push (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
+		prunes.push (cf.paths.repository + 'posts/');
 
-		clean (deletes, prunes, config.verbose);
+		clean (deletes, prunes, cf.verbose);
 	}
 
 
@@ -59,20 +60,21 @@
 		deletes = [];
 		prunes = [];
 
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Cleaning public...');
 		}
 
-		deletes.push (config.paths.output);
-		deletes.push (config.paths.output + 'css/');
-		deletes.push (config.paths.output + 'img/');
-		deletes.push (config.paths.output + 'js/');
-		deletes.push (config.paths.output + 'tags/');
-		prunes.push (config.paths.output + 'posts/');
+		deletes.push (cf.paths.output);
+		deletes.push (cf.paths.output + 'css/');
+		deletes.push (cf.paths.output + 'img/');
+		deletes.push (cf.paths.output + 'js/');
+		deletes.push (cf.paths.output + 'tags/');
+		deletes.push (cf.paths.output + cf.miniposts.title.toLowerCase () + '/');
+		prunes.push (cf.paths.output + 'posts/');
 
-		clean (deletes, prunes, config.verbose);
+		clean (deletes, prunes, cf.verbose);
 
-		removeFile (config.paths.resources + 'repository.json');
+		removeFile (cf.paths.resources + 'repository.json');
 	}
 
 
@@ -109,7 +111,7 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (config.paths.inbox + filename, content);
+		writeFile (cf.paths.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
@@ -262,7 +264,7 @@
 				throw error;
 			}
 
-			if (config.verbose) {
+			if (cf.verbose) {
 				console.log ('Deleted ' + target + '...');
 			}
 		});
@@ -283,14 +285,14 @@
 
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Renaming/moving files...');
 		}
 
 		fs.rename (oldPath, newPath, function (err) {
 			if (err) console.log (err);
 
-			if (config.verbose) {
+			if (cf.verbose) {
 				console.log (oldPath + ' => ' + newPath);
 			}
 		});
