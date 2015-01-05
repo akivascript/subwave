@@ -25,8 +25,6 @@
 		prunes.push (config.paths.repository + 'posts/');
 
 		clean (deletes, prunes, config.verbose);
-
-		removeFile (config.paths.repository + 'repository.json');
 	}
 
 
@@ -302,7 +300,7 @@
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
 	// with a file written with an '.html' extension. Maybe you're into that.
 	function saveHtmlPage (page) {
-		writeFile (page.outputPath + page.path + page.filename + '.html', page.output);
+		writeFile (page.outputPath + (page.path || '') + page.filename + '.html', page.output);
 	}
 	
 

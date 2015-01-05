@@ -76,6 +76,5 @@
 	}
 
 
-	module.exports.createArchiveEntry = createArchiveEntry;
 	module.exports.publishArchive = publishArchive;
 } ());

@@ -226,7 +226,7 @@
 	function savePost (post, tags) {
 		post.output = pa.compilePage (post, tags);
 
-		io.createPostDirectory (cf.paths.posts + post.path);
+		io.createPostDirectory (cf.paths.output + post.path);
 
 		io.saveHtmlPage (post);
 	}
