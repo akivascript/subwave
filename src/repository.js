@@ -125,8 +125,6 @@
 	function saveRepository (repo) {
 		var filename;
 
-		repo = _.snapshot (repo);
-
 		filename = cf.paths.repository + repoName;
 		repo.lastUpdated = new Date ();
 		delete repo.type;
