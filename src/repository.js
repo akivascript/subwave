@@ -5,12 +5,46 @@
 
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config.js');
 	var io = require ('./io');
-	var pa = require ('./pages');
 	var ta = require ('./tags');
 
 	var repoName = 'repository.json';
+
+
+	function addPostToRepository (repo, post) {
+		var rp, p;
+
+		p = _.pick (post, 'author', 'date', 'filename', 'tags', 'title');
+
+		rp = _.snapshot (repo);
+		rp.posts = rp.posts.concat (p);
+
+		return rp;
+	}
+
+
+	function addTagToRepository (tags, name, post) {
+		var tg, tmp;
+
+		tg = _.snapshot (tags);
+
+		tmp = findTag (tg, name);
+
+		if (_.isEmpty (tmp)) {
+			tmp.tag = ta.createTag (name);
+		} 
+
+		tmp.tag = ta.addPostToTag (tmp.tag, post.filename);
+
+		if (!tmp.index || tmp.index === -1) {
+			tg = tg.concat (tmp.tag);
+		} else {
+			tg [tmp.index] = tmp.tag;
+		}
+			
+		return tg;
+	}
 
 
 	// Returns a fresh and empty state map.
@@ -31,16 +65,6 @@
 	}
 
 
-	// Gets the index of the most recently added post in the repository.
-	function getLastIndex (posts) {
-		var lastPost;
-
-		lastPost = posts [posts.length - 1];
-
-		return lastPost.index;
-	}
-
-
 	// Returns a JSON object representing the current repository of the blog
 	// or returns a fresh one if no repository currently exists (this should only
 	// occur when a blog is new and has no posts yet or when the entire site
@@ -53,6 +77,8 @@
 		} catch (e) {
 			repo = createRepository ();
 		}
+
+		repo.type = 'repository';
 
 		if (verifyRepository (repo) === false) {
 			throw new Error (repoName + ' is not in the expected format.');
@@ -86,7 +112,7 @@
 		var repo;
 
 		try {
-			repo = io.readFile (config.paths.resources + repoName);
+			repo = io.readFile (cf.paths.repository + repoName);
 		} catch (e) {
 			// Do nothing here, we want to return null if repository.json isn't present.
 		}
@@ -96,29 +122,37 @@
 
 
 	// Commits the current blog state to disk.
-	function saveRepository (repository) {
+	function saveRepository (repo) {
 		var filename;
 
-		filename = config.paths.resources + repoName;
-		repository.lastUpdated = new Date ();
+		repo = _.snapshot (repo);
 
-		io.writeFile (filename, JSON.stringify (repository, null, '  '));
+		filename = cf.paths.repository + repoName;
+		repo.lastUpdated = new Date ();
+		delete repo.type;
+
+		repo.posts = _.reduce (repo.posts, function (res, post) {
+			return res.concat (_.pick (post, 'author', 'date', 'filename', 'tags', 'title'));
+		}, []);
+
+		io.writeFile (filename, JSON.stringify (repo, null, '  '));
 	}
 
 
-	function verifyRepository (repository) {
+	function verifyRepository (repo) {
 		var keys, result;
 
 		keys = ['lastUpdated', 'posts', 'tags'];
 
 		return _.reduce (keys, 
-										 function (result, key) { return _.has (repository, key); },
+										 function (result, key) { return _.has (repo, key); },
 										 true);
 	}
 
 
+	module.exports.addPostToRepository = addPostToRepository;
+	module.exports.addTagToRepository = addTagToRepository;
 	module.exports.getPostByIndex = getPostByIndex;
-	module.exports.getLastIndex = getLastIndex;
 	module.exports.getRepository = getRepository;
 	module.exports.findTag = findTag;
 	module.exports.loadRepository = loadRepository;

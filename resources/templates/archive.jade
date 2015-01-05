@@ -10,10 +10,10 @@ html(lang="en")
 					div.col-md-8
 						div.page-header
 							h1.text-center= page.title
-						each post in page.posts.reverse ()
-							div.row.archives
+						each entry in page.entries.reverse ()
+							div.row
 								div.col-md-6.text-left
-									a(href='/posts/' + post.path + post.filename + '.html')!= post.title
-								div.col-md-6.text-right= post.displayDate
+									a(href='/posts/' + entry.path + entry.filename + '.html')!= entry.title
+								div.col-md-6.text-right= entry.displayDate
 					div.col-md-2
 		include ./includes/footer.jade

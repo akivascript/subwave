@@ -84,7 +84,7 @@
 	subwave
 		.version ('0.8')
 		.option ('-cp, --clean', 'Clean /public directories')
-		.option ('-ca, --clean-repository', 'Clean /resources/repository directories')
+		.option ('-ca, --clean-repo', 'Clean /resources/repository directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
 	try {
@@ -103,7 +103,7 @@
 		io.cleanPublic ();
 	}
 
-	if (subwave.cleanRepository) {
+	if (subwave.cleanRepo) {
 		io.cleanRepository ();
 	}
 } ());

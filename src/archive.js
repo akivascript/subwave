@@ -6,10 +6,18 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
 	var io = require ('./io');
 	var pa = require ('./pages');
-	var po = require ('./posts');
+
+
+	function addEntryToArchive (entries, post) {
+		entries = _.snapshot (entries);
+		post = _.pick (post, 'path', 'filename', 'title', 'displayDate');
+		
+		entries.push (post);
+
+		return entries;
+	}
 
 
 	// Compile archive.html through Jade.
@@ -29,15 +37,9 @@
 
 
 	// Creates a new, empty archive.
-	function createArchive (posts) {
-		if (!posts) {
-			posts = [];
-		}
-		
-		return {
-			type: "archive",
-			title: "Archive",
-			posts: posts
+	function createArchive () {
+		return { 
+			type: 'archive'
 		};
 	}
 
@@ -54,11 +56,12 @@
 	// Compiles archive.html and commits it to disk.
 	function saveArchive (archive, tags) {
 		archive.output = compileArchive (archive, tags);
-
+		
 		io.saveHtmlPage (archive);
 	}
 
 
+	module.exports.addEntryToArchive = addEntryToArchive;
 	module.exports.createArchive = createArchive;
 	module.exports.createArchiveEntry = createArchiveEntry;
 	module.exports.saveArchive = saveArchive;

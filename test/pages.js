@@ -134,7 +134,7 @@
 
 						expected = JSON.parse (expected); 
 
-						actual = _.compose (JSON.parse, pages.getMetadata) (input);
+						actual = pages.getMetadata (input);
 
 						expect (actual).to.eql (expected);
 					});

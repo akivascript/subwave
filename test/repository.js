@@ -7,6 +7,7 @@
 	var repository = require ('../src/repository.js');
 
 	var repo = {
+		"type": "repository",
 		"lastUpdated": "2015-01-02T03:57:40.754Z",
 		"posts": [
 			{
@@ -41,10 +42,11 @@
 		]
 	};
 
-	var emptyRepo= { 
+	var emptyRepo = { 
 		lastUpdated: '',
 		posts: [],
-		tags: []
+		tags: [],
+		type: 'repository'
 	};
 
 

@@ -8,6 +8,7 @@
 
 	var config = require ('../resources/config');
 	var io = require ('./io');
+	var pf = require ('./pagefactory.js');
 
 	marked.setOptions ({
 		smartypants: true
@@ -26,14 +27,13 @@
 			page.displayDate = formatDateForDisplay (page.date);
 			page.headTitle = page.title;
 			page.displayTitle = convertToHtml (page.title);
-			page.title = convertToHtml (page.title);
 		
 			if (page.content) {
 				page.content = prepareForDisplay (page.content);
 			}
 		}
 
-		// Use a local object so multiple objects can be passed to Jade.
+		// Use a locals object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
 			tags: tags,
@@ -48,17 +48,6 @@
 	// for display.
 	function convertToHtml (input) {
 		return marked (input);
-	}
-
-
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
 	
@@ -78,78 +67,12 @@
 	}
 
 
-	// Creates a new index homepage. This gets rebuilt each time a new post is added
-	// to the site.
-	function createHomePage (posts) {
-		var entries, entry, homePage, file, filename, homePath, path;
-
-		entries = [];
-
-		// TODO: Refactor this (with processSibling in posts?): readPost?
-		_.each (posts, function (post) {
-			entry = copyObject (post);
-			entry.path = io.getPostDirectoryPathname (entry.date);
-			file = io.readFile (config.paths.repository + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getContent (file);
-			entry.displayTitle = convertToHtml (entry.title);
-			entry.displayDate = formatDateForDisplay (entry.date);
-
-			if (entry.content) {
-				entry.excerpt = _.compose (prepareForDisplay, getExcerpt) (entry.content);
-				entry.content = prepareForDisplay (entry.content);
-			}
-
-			entries.push (entry);
-		});
-
-		homePage = {
-			type: 'index',
-			title: config.blog.title,
-			filename: 'index',
-			posts: entries,
-			tags: [],
-			template: config.paths.templates + 'index.jade'
-		};
-
-		return homePage;
+	// Returns a page configuration object from the pagefactory.
+	function createPage (page) {
+		return pf.createPage (page);
 	}
 
-
-	// Converts a file into a page. A file has some front matter which is converted
-	// to JSON. This front matter is used to configure the page, determine its type,
-	// and so forth.
-	function createPage (file) {
-		var attr, content, compiler, filename, i, metadata, matches, page;
-
-		matches = parseFile (file);
-
-		page = copyObject (JSON.parse (matches [1]));
-
-		content = matches [2];
-
-		if (content) {
-			page.content = content;
-		}
-
-		if (page.type === 'post') {
-			page.template = config.paths.templates + 'post.jade';
-			page.date = convertStringToDate (page.date);
-			page.filename = io.getPostFilename (page.title, page.date);
-			page.path = io.getPostDirectoryPathname (page.date);
-		} else if (page.type === 'page') {
-			page.template = config.paths.templates + 'page.jade';
-			page.filename = page.title.toLowerCase ();
-		} else if (page.type === 'archive') {
-			page.template = config.paths.templates + 'archive.jade';
-			page.filename = 'archive';
-		} else {
-			throw new Error ('Unable to determine template type from page: ' + page);
-		}
-
-		return page;
-	}
-
-
+	
 	// Takes a date object and converts it to the specified date format for display
 	// on both the index and individual post pages.
 	function formatDateForDisplay (date) {
@@ -161,43 +84,42 @@
 	}
 
 
-	// Create an excerpt for a post..
-	function getExcerpt (postBody) {
-		var excerpt, output;
-
-		excerpt = postBody.match (/<excerpt>((.|\s)+?)<\/excerpt>/);
-
-		if (excerpt) {
-			output = excerpt [1];
-		} else {
-			output = postBody;
-		}
-
-		return output;
-	}
-
-
 	// Parses a file and returns only its content (e.g., the body of a post).
 	function getContent (file) {
-		return parseFile (file) [2];
+		return parsePage (file).content;
 	}
 
 
 	// Parses a file and returns only its metadata.
 	function getMetadata (file) {
-		return parseFile (file) [1];
+		return parsePage (file).metadata;
+	}
+
+
+	function getPages (path) {
+		var page, tmp;
+
+		return _.map (loadPages (path), function (file) {
+			tmp = parsePage (file.content);
+
+			page = tmp.metadata;
+			page.content = tmp.content;
+			page.origFilename = file.origFilename;
+
+			return createPage (page);
+		});
 	}
 
 
 	// An indirector for clarity.
-	function getNewPages () {
-		return io.readFiles (config.paths.inbox, createPage);
+	function loadPages (path) {
+		return io.readFiles (path);
 	}
 
 
 	// Takes the contents of a file as a string and separates the metadata from the
 	// content of the page. 
-	function parseFile (file) {
+	function parsePage (file) {
 		var matches, pattern;
 
 		// Matches '{key: value, key: value, ...} content ...'
@@ -209,7 +131,10 @@
 			throw new Error ('The file isn\'t the correct format: ' + file);
 		}
 
-		return matches;
+		return {
+			metadata: JSON.parse (matches [1]),
+			content: matches [2] || ''
+		};
 	}
 	
 
@@ -224,12 +149,9 @@
 		var output, regexp;
 
 		_.each (config.htmlElements.scrub, function (element) {
-//		output = _.reduce (config.htmlElements.scrub, function (res, element) {
 			regexp = new RegExp ('(<' + element + '>)|(<\/' + element + '>)', 'gi');
 
 			output = pageBody.replace (regexp, '');
-//
-//			return res;
 		});
 
 		return output || pageBody;
@@ -247,13 +169,12 @@
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyObject = copyObject;
-	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
-	module.exports.getExcerpt = getExcerpt;
+	module.exports.getExcerpt = pf.getExcerpt;
 	module.exports.getContent = getContent;
 	module.exports.getMetadata = getMetadata;
-	module.exports.getNewPages = getNewPages;
+	module.exports.getPages = getPages;
 	module.exports.prepareForDisplay = prepareForDisplay;
 	module.exports.savePage = savePage;
 } ());

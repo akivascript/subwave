@@ -5,6 +5,7 @@
 
 	var fs = require ('fs-extra');
 	var moment = require ('moment');
+	var _ = require ('underscore-contrib');
 
 	var config = require ('../resources/config');
 
@@ -24,6 +25,8 @@
 		prunes.push (config.paths.repository + 'posts/');
 
 		clean (deletes, prunes, config.verbose);
+
+		removeFile (config.paths.resources + 'repository.json');
 	}
 
 
@@ -186,7 +189,7 @@
 
 
 	// Return a list of all the markdown files from a given directory.
-	function getFileList (path) {
+	function getFilelist (path) {
 		var fileList;
 
 		fileList = fs.readdirSync (path);
@@ -199,6 +202,17 @@
 			}
 
 			return true;
+		});
+	}
+
+
+	function moveFile (src, dest, callback) {
+		fs.move (src, dest, function (err) {
+			if (err) {
+				console.log (err);
+			}
+
+			console.log ('success!');
 		});
 	}
 
@@ -230,25 +244,16 @@
 
 	// Reads the contents of a list of files and add them to an array. If a function
 	// is provided, process the file contents first.
-	function readFiles (path, fn) {
-		var file, filelist, files;
+	function readFiles (path) {
+		var file;
 
-		files = [];
-		filelist = getFileList (path);
+		return _.map (getFilelist (path), function (filename) {
+			file = {};
+			file.content = readFile (path + filename);
+			file.origFilename = filename;
 
-		for (var i = 0; i < filelist.length; i++) {
-			file = readFile (path + filelist [i]);
-
-			if (fn) {
-				file = fn (file);
-				
-				file.origFilename = filelist [i];
-			}
-
-			files.push (file);
-		}
-
-		return files;
+			return file;
+		});
 	}
 
 
@@ -280,7 +285,17 @@
 
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
-		fs.renameSync (oldPath, newPath);
+		if (config.verbose) {
+			console.log ('Renaming/moving files...');
+		}
+
+		fs.rename (oldPath, newPath, function (err) {
+			if (err) console.log (err);
+
+			if (config.verbose) {
+				console.log (oldPath + ' => ' + newPath);
+			}
+		});
 	}
 	
 
@@ -295,7 +310,7 @@
 			path = config.paths.tags;
 		} else if (page.type === 'page' || 
 							 page.type === 'archive' ||
-							 page.type === 'index') {
+							 page.type === 'home') {
 			path = config.paths.output;
 		} else {
 			throw new Error ('Unable to determine page type.');
