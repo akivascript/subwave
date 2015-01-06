@@ -71,24 +71,6 @@
 
 			process.exit ();
 		});
-
-	subwave
-		.command ('find-post [criterion]')
-		.description ('Returns a list of qualifying posts (does NOT search post content)') 
-		.action (function (criterion) {
-			var posts;
-
-			posts = po.findPosts (criterion);
-
-			console.log ('Found:');
-
-			_.each (posts, function (post) {
-				console.log (post.title + ' from ' + pa.formatDateForDisplay (post.date) +
-										 ' at index ' + post.index + '.');
-			});
-			
-			process.exit ();
-		});
 			
 	subwave
 		.version ('0.8')

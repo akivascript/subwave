@@ -48,55 +48,6 @@
 		}
 	}
 
-	
-	// Searches a site's posts' metadata for a match.
-	function findPosts (criterion) {
-		var compare, date, matches, post, repo;
-
-		matches = [];
-
-		compare = function (valueA, valueB) {
-			var result;
-
-			valueA = valueA.toLowerCase ();
-			valueB = valueB.toLowerCase ();
-			result = valueA.search (valueB);
-
-			if (result === -1) {
-				return false;
-			}
-
-			return true;
-		};
-
-		repo = rp.getRepository ();
-
-		// Goes through each post in the site and looks through each attribute it has,
-		// searching for matches.
-		// TODO: Refactor this
-		_.each (repo.posts, function (post) {
-			_.each (post, function (value, key) {
-				if (typeof value === 'string') {
-					if (key === 'date') {
-						value = pa.formatDateForDisplay (value);
-					}
-
-					if (compare (value, criterion)) {
-						matches.push (post);
-					}
-				} else if (typeof value === 'object') {
-					_.each (value, function (val) {
-						if (compare (val, criterion)) {
-							matches.push (post);
-						}
-					});
-			 	}
-			});
-		});
-
-		return _.uniq (matches);
-	}
-
 
 	function handlePostsWithSiblings (repo, posts) {
 		var idx, next, previous;
@@ -231,7 +182,6 @@
 
 	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.copyPostFromRepository = copyPostFromRepository;
-	module.exports.findPosts = findPosts;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.publishPosts = publishPosts;
 	module.exports.savePost = savePost;
