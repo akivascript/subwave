@@ -17,8 +17,10 @@
 		scrub: ['excerpt']
 	};
 	config.index = {
-		postCount: 3,
-		useExcerpts: true
+		postsPerPage: 1,
+		countPostsOnly: true,
+		useExcerpts: true,
+		usePagination: true
 	};
 	config.miniposts = {
 		usePagination: false,

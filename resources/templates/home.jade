@@ -43,4 +43,14 @@ html(lang="en")
 														div.small.title= post.title
 													div.body !{post.content}
 													div.small.text-right.date= post.displayDate
+						div.row
+							div.post-nav
+								div.col-md-6.text-right.post-nav-divider-l
+									if page.previous
+										h4.post-nav-label
+											a(href=page.previous + '.html') Previous
+								div.col-md-6.text-left.post-nav-divider-r
+									if page.next
+										h4.post-nav-label
+											a(href=page.next + '.html') Next
 			include ./includes/footer.jade

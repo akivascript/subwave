@@ -39,7 +39,7 @@
 	}
 
 
-	function getMiniposts () {
+	function loadMiniposts (path) {
 		return pa.getPages (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
 	}
 
@@ -54,10 +54,10 @@
 			return res.concat (addPostToMiniposts (page.posts, post));
 		}, []);
 
-		oldPosts = getMiniposts ();
+		oldPosts = loadMiniposts ();
 
 		if (oldPosts.length > 0) {
-			page.posts.push (getMiniposts ());
+			page.posts.push (oldPosts);
 			
 			page.posts = _.flatten (_.sortBy (page.posts, function (post) { return post.date; }));
 		}
@@ -100,5 +100,6 @@
 	}
 
 	
+	module.exports.loadMiniposts = loadMiniposts;
 	module.exports.publishMiniposts = publishMiniposts;
 } ());
