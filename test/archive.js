@@ -9,19 +9,6 @@
 
 
 	describe ('Archive', function () {
-		describe ('createArchive', function () {
-			it ('should return an empty archive', function () {
-				var actual, expected;
-
-				expected = {
-					type: 'archive'
-				};
-
-				actual = testTarget.createArchive ();
-
-				expect (actual).to.eql (expected);
-			});
-
 //			it ('should return an empty archive with two posts', function () {
 //				var actual, expected, posts;
 //
@@ -53,6 +40,6 @@
 //
 //				expect (actual).to.eql (expected);
 //			});
-		});
+//		});
 	});
 } ());

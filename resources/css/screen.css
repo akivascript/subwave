@@ -144,4 +144,36 @@ div.taglist {
 	padding-left: 10px;
 }
 
+div.minipost {
+	padding: 30px;
+}
 
+div.minipost > div.content {
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+
+	margin-bottom: 0px;
+
+	font-size: 90%;
+}
+
+div.minipost > div.content > div.body {
+	padding: 0px 10px 0px 10px;
+
+	color: #777;
+}
+
+div.minipost > div.content > div.title,
+div.minipost > div.content > div.date {
+	color: #aaaaaa;
+}	
+
+div.minipost > div.content > div.title {
+	margin-bottom: 10px;
+	border-bottom: 1px solid #bbb;
+}
+
+div.minipost > div.content > div.date {
+	margin-top: -5px;
+}

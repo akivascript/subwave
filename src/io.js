@@ -7,26 +7,25 @@
 	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config');
 
 
 	// Resets the /resources/repository to its default state... empty.
 	function cleanRepository () {
 		var deletes, prunes;
 
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Cleaning repository...');
 		}
 
 		deletes = [];
 		prunes = [];
 
-		deletes.push (config.paths.repository);
-		prunes.push (config.paths.repository + 'posts/');
+		deletes.push (cf.paths.repository);
+		deletes.push (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
+		prunes.push (cf.paths.repository + 'posts/');
 
-		clean (deletes, prunes, config.verbose);
-
-		removeFile (config.paths.repository + 'repository.json');
+		clean (deletes, prunes, cf.verbose);
 	}
 
 
@@ -61,20 +60,21 @@
 		deletes = [];
 		prunes = [];
 
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Cleaning public...');
 		}
 
-		deletes.push (config.paths.output);
-		deletes.push (config.paths.output + 'css/');
-		deletes.push (config.paths.output + 'img/');
-		deletes.push (config.paths.output + 'js/');
-		deletes.push (config.paths.tags);
-		prunes.push (config.paths.posts);
+		deletes.push (cf.paths.output);
+		deletes.push (cf.paths.output + 'css/');
+		deletes.push (cf.paths.output + 'img/');
+		deletes.push (cf.paths.output + 'js/');
+		deletes.push (cf.paths.output + 'tags/');
+		deletes.push (cf.paths.output + cf.miniposts.title.toLowerCase () + '/');
+		prunes.push (cf.paths.output + 'posts/');
 
-		clean (deletes, prunes, config.verbose);
+		clean (deletes, prunes, cf.verbose);
 
-		removeFile (config.paths.resources + 'repository.json');
+		removeFile (cf.paths.resources + 'repository.json');
 	}
 
 
@@ -111,7 +111,7 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (config.paths.inbox + filename, content);
+		writeFile (cf.paths.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
@@ -173,6 +173,10 @@
 	// '2015-01-15-i-like-broccoli-until'.
 	function getPostFilename (title, date) {
 		var dateArray, day, filename, month, newTitle, titleArray, year;
+
+		if (!title) {
+			title = 'untitled';
+		}
 
 		titleArray = title.replace (/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
@@ -264,7 +268,7 @@
 				throw error;
 			}
 
-			if (config.verbose) {
+			if (cf.verbose) {
 				console.log ('Deleted ' + target + '...');
 			}
 		});
@@ -285,14 +289,14 @@
 
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
-		if (config.verbose) {
+		if (cf.verbose) {
 			console.log ('Renaming/moving files...');
 		}
 
 		fs.rename (oldPath, newPath, function (err) {
 			if (err) console.log (err);
 
-			if (config.verbose) {
+			if (cf.verbose) {
 				console.log (oldPath + ' => ' + newPath);
 			}
 		});
@@ -302,25 +306,7 @@
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
 	// with a file written with an '.html' extension. Maybe you're into that.
 	function saveHtmlPage (page) {
-		var path;
-
-		if (page.type === 'post') {
-			path = config.paths.posts;
-		} else if (page.type === 'tag') {
-			path = config.paths.tags;
-		} else if (page.type === 'page' || 
-							 page.type === 'archive' ||
-							 page.type === 'home') {
-			path = config.paths.output;
-		} else {
-			throw new Error ('Unable to determine page type.');
-		}
-
-		if (page.path) {
-			path = path + page.path;
-		}
-
-		writeFile (path + '/' + page.filename + '.html', page.output);
+		writeFile (page.outputPath + (page.path || '') + page.filename + '.html', page.output);
 	}
 	
 
@@ -339,7 +325,7 @@
 
 	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
-		fs.writeFileSync (filename, content);
+		fs.outputFileSync (filename, content);
 	}
 
 	

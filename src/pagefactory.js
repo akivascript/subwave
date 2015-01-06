@@ -22,6 +22,7 @@
 		return configure (page, function (pg) {
 			pg.title = cf.archive.title;
 			pg.filename = pg.title.toLowerCase ();
+			pg.outputPath = cf.paths.output;
 			
 			if (!page.entries) {
 				pg.entries = [];
@@ -35,6 +36,7 @@
 	function configureHome (page) {
 		return configure (page, function (pg) {
 			pg.filename = 'index';
+			pg.outputPath = cf.paths.output;
 			pg.tags = [];
 			pg.title = cf.blog.title;
 
@@ -47,9 +49,20 @@
 	}
 
 
-	function configurePage (page) {
+	function configureInfo (page) {
 		return configure (page, function (pg) {
 			pg.filename = pg.title.toLowerCase ();
+			pg.outputPath = cf.paths.output;
+
+			return pg;
+		});
+	}
+
+
+	function configureMini (page) {
+		return configure (page, function (pg) {
+			pg.path = cf.miniposts.title.toLowerCase () + '/';
+			pg.outputPath = cf.paths.output;
 
 			return pg;
 		});
@@ -61,6 +74,7 @@
 			pg.date = convertStringToDate (pg.date);
 			pg.filename = io.getPostFilename (pg.title, pg.date);
 			pg.path = io.getPostDirectoryPathname (pg.date);
+			pg.outputPath = cf.paths.output + 'posts/';
 
 			if (cf.index.useExcerpts) {
 				pg.excerpt = getExcerpt (pg.content);
@@ -69,7 +83,7 @@
 			return pg;
 		});
 	}
-	
+
 
 	// Creates a page object that is used to configure an html page
 	function createPage (page) {
@@ -119,7 +133,8 @@
 	module.internals = {
 		configureArchive: configureArchive,
 		configureHome: configureHome,
-		configurePage: configurePage,
+		configureInfo: configureInfo,
+		configureMini: configureMini,
 		configurePost: configurePost
 	};
 

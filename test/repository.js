@@ -51,18 +51,6 @@
 
 
 	describe ('Repository', function () {
-		describe ('getLastIndex', function () {
-			it ('returns the map index of the most recently added post in repository', function () {
-				var actual, expected;
-
-				expected = 2;
-
-				actual = repository.getLastIndex (repo.posts);
-
-				expect (actual).to.equal (expected);
-			});
-		});
-
 		describe ('getPostByIndex', function () {
 			it ('returns from repository a post matching the passed index number', function () {
 				var actual, expected;

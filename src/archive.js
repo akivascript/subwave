@@ -53,6 +53,21 @@
 	}
 
 
+	// Creates an archive page from all of the published posts stored
+	// in the repository.
+	function publishArchive (posts, tags) {
+		var archive;
+
+		archive = _.compose (pa.createPage, createArchive) ();
+
+		archive.entries = _.reduce (posts, function (res, post) {
+			return res.concat (addEntryToArchive (archive.entries, post));
+		}, []);
+			
+		saveArchive (archive, tags);
+	}
+
+
 	// Compiles archive.html and commits it to disk.
 	function saveArchive (archive, tags) {
 		archive.output = compileArchive (archive, tags);
@@ -61,8 +76,5 @@
 	}
 
 
-	module.exports.addEntryToArchive = addEntryToArchive;
-	module.exports.createArchive = createArchive;
-	module.exports.createArchiveEntry = createArchiveEntry;
-	module.exports.saveArchive = saveArchive;
+	module.exports.publishArchive = publishArchive;
 } ());

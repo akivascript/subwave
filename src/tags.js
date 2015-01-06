@@ -4,7 +4,7 @@
 
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
+	var cf = require ('../resources/config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 	
@@ -27,7 +27,7 @@
 	}
 
 
-	function createTagPages (repo) {
+	function publishTags (repo) {
 		var page;
 
 		_.each (repo.tags, function (tag) {
@@ -61,12 +61,13 @@
 			title: tag.name,
 			filename: tag.name.toLowerCase (),
 			posts: [],
-			template: config.paths.templates + 'tag.jade'
+			outputPath: cf.paths.output + 'tags/',
+			template: cf.paths.templates + 'tag.jade'
 		};
 	}
 
 
 	module.exports.addPostToTag = addPostToTag;
 	module.exports.createTag = createTag;
-	module.exports.createTagPages = createTagPages;
+	module.exports.publishTags = publishTags;
 } ());
