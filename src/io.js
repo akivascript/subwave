@@ -10,71 +10,16 @@
 	var cf = require ('../resources/config');
 
 
-	// Resets the /resources/repository to its default state... empty.
-	function cleanRepository () {
-		var deletes, prunes;
+	function cleanDirectory (path, callback) {
+		fs.remove (path, function (error) {
+			if (error) {
+				throw error;
+			}
 
-		if (cf.verbose) {
-			console.log ('Cleaning repository...');
-		}
-
-		deletes = [];
-		prunes = [];
-
-		deletes.push (cf.paths.repository);
-		deletes.push (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
-		prunes.push (cf.paths.repository + 'posts/');
-
-		clean (deletes, prunes, cf.verbose);
-	}
-
-
-	// Deletes and prunes files and directories.
-	function clean (deletes, prunes) {
-		if (deletes.length > 0) {
-			deletes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isFile ()) {
-						removeFile (target);
-					}
-				});
-			});
-		}
-
-		if (prunes.length > 0) {
-			prunes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isDirectory ()) {
-						removeDirectories (target);
-					}
-				});
-			});
-		}
-	}
-
-
-	// Resets the /public directory to its default state... empty.
-	function cleanPublic () {
-		var deletes, prunes;
-
-		deletes = [];
-		prunes = [];
-
-		if (cf.verbose) {
-			console.log ('Cleaning public...');
-		}
-
-		deletes.push (cf.paths.output);
-		deletes.push (cf.paths.output + 'css/');
-		deletes.push (cf.paths.output + 'img/');
-		deletes.push (cf.paths.output + 'js/');
-		deletes.push (cf.paths.output + 'tags/');
-		deletes.push (cf.paths.output + cf.miniposts.title.toLowerCase () + '/');
-		prunes.push (cf.paths.output + 'posts/');
-
-		clean (deletes, prunes, cf.verbose);
-
-		removeFile (cf.paths.resources + 'repository.json');
+			if (callback) {
+				callback ();
+			}
+		});
 	}
 
 
@@ -329,8 +274,7 @@
 	}
 
 	
-	module.exports.cleanRepository = cleanRepository; 
-	module.exports.cleanPublic = cleanPublic; 
+	module.exports.cleanDirectory = cleanDirectory; 
 	module.exports.copyFile = copyFile;
 	module.exports.createNewFile = createNewFile;
 	module.exports.createPostDirectory = createPostDirectory;
