@@ -13,42 +13,43 @@
 
 
 	function addPostToRepository (posts, post) {
-		var tmp;
+		var _post;
 
-		tmp = findPost (posts);
-			
-		if (_.isEmpty (tmp)) {
-			post.id = _.generateId (post);
-
-			posts = posts.concat (post);
-		} else {
-			posts [tmp.index] = post;
+		if (!post.id) {
+			post.id = _.compose (generatePostId, createRepositoryPost) (post);
 		}
 
+		_post = findPost (posts, post.id);
+			
+		if (_.isEmpty (_post)) {
+			posts.push (post);
+		} else {
+			posts [_post.index] = post;
+		}
+		
 		return posts;
 	}
 
 
 	function addTagToRepository (tags, name, post) {
-		var tg, tmp;
+		var _tag, output;
 
-		tg = _.snapshot (tags);
+		_tag = findTag (tags, name);
 
-		tmp = findTag (tg, name);
-
-		if (_.isEmpty (tmp)) {
-			tmp.tag = ta.createTag (name);
+		if (_.isEmpty (_tag)) {
+			_tag.tag = ta.createTag (name);
+			_tag.index = -1;
 		} 
 
-		tmp.tag = ta.addPostToTag (tmp.tag, post.filename);
-
-		if (!tmp.index || tmp.index === -1) {
-			tg = tg.concat (tmp.tag);
+		_tag.tag = ta.addPostToTag (_tag.tag, post.filename);
+		
+		if (_tag.index === -1) {
+			tags.push (_tag.tag);
 		} else {
-			tg [tmp.index] = tmp.tag;
+			tags [_tag.index] = _tag.tag;
 		}
 			
-		return tg;
+		return tags;
 	}
 
 
@@ -59,6 +60,32 @@
 			posts: [],
 			tags: []
 		};
+	}
+
+
+	function createRepositoryPost (post) {
+		return _.pick (post, 'type', 'author', 'date', 'filename', 'tags', 'title');
+	}
+
+
+	function generatePostId (post) {
+		var chr, id, i, len, _post;
+
+		_post = post;
+		
+		if (!_.isString (_post)) {
+			_post = JSON.stringify (_post);
+		}
+
+		if (_post.length === 0) return id;
+
+		for (i = 0, len = _post.length; i < len; i++) {
+			chr = _post.charCodeAt (i);
+			id = ((id << 5) - id) + chr;
+			id |= 0;
+		}
+
+		return id;
 	}
 
 
@@ -144,17 +171,21 @@
 
 	// Commits the current blog state to disk.
 	function saveRepository (repo) {
-		var filename;
+		var filename, posts;
 		
 		filename = cf.paths.repository + repoName;
 		repo.lastUpdated = new Date ();
 		delete repo.type;
 
 		repo.posts = _.reduce (repo.posts, function (res, post) {
-			post = _.pick (post, 'author', 'date', 'filename', 'tags', 'title');
+			post = createRepositoryPost (post);
 
-			return res.concat (post);
-		}, []);
+			if (!post.id) {
+				post.id = generatePostId (post);
+			}
+
+			return addPostToRepository (repo.posts, post);
+		}, repo.posts);
 
 		io.writeFile (filename, JSON.stringify (repo, null, '  '));
 	}
@@ -169,31 +200,12 @@
 										 function (result, key) { return _.has (repo, key); },
 										 true);
 	}
-
-
-	_.mixin ({
-		generateId: function (source) {
-			if (!_.isString (source)) {
-				source = JSON.stringify (source);
-			}
-
-			if (source.length === 0) return hash;
-
-			var chr, hash, i, len;
-
-			for (i = 0, len = source.length; i < len; i++) {
-				chr = source.charCodeAt (i);
-				hash = ((hash << 5) - hash) + chr;
-				hash |= 0;
-			}
-
-			return hash;
-		}
-	});
 			
 
 	module.exports.addPostToRepository = addPostToRepository;
 	module.exports.addTagToRepository = addTagToRepository;
+	module.exports.createRepositoryPost = createRepositoryPost;
+	module.exports.generatePostId = generatePostId;
 	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getRepository = getRepository;
 	module.exports.findTag = findTag;

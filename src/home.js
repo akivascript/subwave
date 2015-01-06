@@ -113,7 +113,9 @@
 		if (cf.index.useExcerpts) {
 			posts = _.map (posts,
 										 function (post) {
-											 post.excerpt = pa.prepareForDisplay (post.excerpt); 
+											 if (post.type === 'post') {
+												 post.excerpt = pa.prepareForDisplay (post.excerpt); 
+											 }
 											 
 											 return post;
 										 });

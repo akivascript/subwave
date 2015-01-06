@@ -98,7 +98,7 @@
 			console.log ('Rebuilding the site...');
 		}
 
-		io.cleanPublic ();
+		io.removeDirectory (cf.paths.output);
 
 		files = io.getFiles (cf.paths.repository);
 
@@ -110,7 +110,7 @@
 			}
 		}
 
-		io.cleanRepository ();
+		io.removeDirectory (cf.paths.repository);
 
 		buildSite ();
 	}

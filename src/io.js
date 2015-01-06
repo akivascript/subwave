@@ -10,74 +10,6 @@
 	var cf = require ('../resources/config');
 
 
-	// Resets the /resources/repository to its default state... empty.
-	function cleanRepository () {
-		var deletes, prunes;
-
-		if (cf.verbose) {
-			console.log ('Cleaning repository...');
-		}
-
-		deletes = [];
-		prunes = [];
-
-		deletes.push (cf.paths.repository);
-		deletes.push (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
-		prunes.push (cf.paths.repository + 'posts/');
-
-		clean (deletes, prunes, cf.verbose);
-	}
-
-
-	// Deletes and prunes files and directories.
-	function clean (deletes, prunes) {
-		if (deletes.length > 0) {
-			deletes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isFile ()) {
-						removeFile (target);
-					}
-				});
-			});
-		}
-
-		if (prunes.length > 0) {
-			prunes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isDirectory ()) {
-						removeDirectories (target);
-					}
-				});
-			});
-		}
-	}
-
-
-	// Resets the /public directory to its default state... empty.
-	function cleanPublic () {
-		var deletes, prunes;
-
-		deletes = [];
-		prunes = [];
-
-		if (cf.verbose) {
-			console.log ('Cleaning public...');
-		}
-
-		deletes.push (cf.paths.output);
-		deletes.push (cf.paths.output + 'css/');
-		deletes.push (cf.paths.output + 'img/');
-		deletes.push (cf.paths.output + 'js/');
-		deletes.push (cf.paths.output + 'tags/');
-		deletes.push (cf.paths.output + cf.miniposts.title.toLowerCase () + '/');
-		prunes.push (cf.paths.output + 'posts/');
-
-		clean (deletes, prunes, cf.verbose);
-
-		removeFile (cf.paths.resources + 'repository.json');
-	}
-
-
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
 		fs.copySync (oldPath, newPath);
@@ -117,10 +49,8 @@
 	}
 
 
-	// In subwave, posts are grouped by year and then by month; this function
-	// creates this year/month path based on the filename of the post itself.
-	function createPostDirectory (path) {
-		fs.mkdirsSync (path);
+	function createDirectory (path) {
+		fs.ensureDirSync (path);
 	}
 
 
@@ -276,7 +206,7 @@
 
 
 	// Deletes a directory recursively from disk.
-	function removeDirectories (path) {
+	function removeDirectory (path) {
 		remove (path);
 	}
 
@@ -329,17 +259,16 @@
 	}
 
 	
-	module.exports.cleanRepository = cleanRepository; 
-	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
+	module.exports.createDirectory = createDirectory;
 	module.exports.createNewFile = createNewFile;
-	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.formatDateForMetadata = formatDateForMetadata;
 	module.exports.getFiles = getFiles;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
+	module.exports.removeDirectory = removeDirectory;
 	module.exports.removeFile = removeFile;
 	module.exports.renameFile = renameFile;
 	module.exports.writeFile = writeFile;
