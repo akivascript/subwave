@@ -197,19 +197,26 @@
 
 		_.each (posts, function (post) {
 			repo.tags = _.reduce (post.tags, function (res, tag) {
-				return res.concat (rp.addTagToRepository (repo.tags, tag, post));
-			}, []);
+				return rp.addTagToRepository (repo.tags, tag, post);
+			}, repo.tags);
 
 			// Move posts to the repository.
-			io.createPostDirectory (repoPostsPath + post.path);
+			io.createDirectory (repoPostsPath + post.path);
 
 			io.renameFile (cf.paths.inbox + post.origFilename, 
 										 repoPostsPath + post.path + post.filename + '.md'); 
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
-			return res.concat (rp.addPostToRepository (repo.posts, post));
-		}, []);
+			var _post;
+
+			if (!post.id) {
+				_post = rp.createRepositoryPost (post);
+				post.id = rp.generatePostId (_post);
+			}
+
+			return rp.addPostToRepository (repo.posts, post);
+		}, repo.posts);
 
 		handlePostsWithSiblings (repo, posts);
 
