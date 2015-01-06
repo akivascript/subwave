@@ -113,7 +113,7 @@
 		if (cf.index.useExcerpts) {
 			posts = _.map (posts,
 										 function (post) {
-											 if (post.type === 'post') {
+											 if (post.type === 'post' && post.excerpt) {
 												 post.excerpt = pa.prepareForDisplay (post.excerpt); 
 											 }
 											 
@@ -132,10 +132,10 @@
 			}));
 			
 			posts = _.flatten (posts);
-			posts = _.sortBy (posts, function (post) { return -(new Date (post.date)); });
+			posts = _.sortBy (posts, function (post) { return new Date (post.date); });
 		}
 
-		return posts;
+		return posts.reverse ();
 	}
 
 
