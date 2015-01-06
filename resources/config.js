@@ -17,7 +17,7 @@
 		scrub: ['excerpt']
 	};
 	config.index = {
-		postsPerPage: 1,
+		postsPerPage: 3,
 		countPostsOnly: true,
 		useExcerpts: true,
 		usePagination: true
@@ -25,7 +25,7 @@
 	config.miniposts = {
 		usePagination: false,
 		postsPerPage: 10,
-		title: 'Chunks'
+		title: 'Bits'
 	};
 	config.pages = {
 		content: ['post', 'info', 'mini']
