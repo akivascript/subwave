@@ -28,6 +28,15 @@
 		});
 
 	subwave
+		.command ('gen-id')
+		.description ('Create a new ID')
+		.action (function () {
+			console.log (pa.generateId ());
+
+			process.exit ();
+		});
+		
+	subwave
 		.command ('new-post')
 		.description ('Create a new post')
 		.action (function () {

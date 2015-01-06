@@ -15,10 +15,6 @@
 	function addPostToRepository (posts, post) {
 		var _post;
 
-		if (!post.id) {
-			post.id = _.compose (generatePostId, createRepositoryPost) (post);
-		}
-
 		_post = findPost (posts, post.id);
 			
 		if (_.isEmpty (_post)) {
@@ -64,28 +60,7 @@
 
 
 	function createRepositoryPost (post) {
-		return _.pick (post, 'type', 'author', 'date', 'filename', 'tags', 'title');
-	}
-
-
-	function generatePostId (post) {
-		var chr, id, i, len, _post;
-
-		_post = post;
-		
-		if (!_.isString (_post)) {
-			_post = JSON.stringify (_post);
-		}
-
-		if (_post.length === 0) return id;
-
-		for (i = 0, len = _post.length; i < len; i++) {
-			chr = _post.charCodeAt (i);
-			id = ((id << 5) - id) + chr;
-			id |= 0;
-		}
-
-		return id;
+		return _.pick (post, 'type', 'id', 'author', 'date', 'filename', 'tags', 'title');
 	}
 
 
@@ -180,10 +155,6 @@
 		repo.posts = _.reduce (repo.posts, function (res, post) {
 			post = createRepositoryPost (post);
 
-			if (!post.id) {
-				post.id = generatePostId (post);
-			}
-
 			return addPostToRepository (repo.posts, post);
 		}, repo.posts);
 
@@ -205,7 +176,6 @@
 	module.exports.addPostToRepository = addPostToRepository;
 	module.exports.addTagToRepository = addTagToRepository;
 	module.exports.createRepositoryPost = createRepositoryPost;
-	module.exports.generatePostId = generatePostId;
 	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getRepository = getRepository;
 	module.exports.findTag = findTag;

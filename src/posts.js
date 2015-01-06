@@ -200,21 +200,16 @@
 				return rp.addTagToRepository (repo.tags, tag, post);
 			}, repo.tags);
 
-			// Move posts to the repository.
-			io.createDirectory (repoPostsPath + post.path);
+			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date', 'tags'),
+															null, '  ');
+			output = output + '\n\n' + post.content;
 
-			io.renameFile (cf.paths.inbox + post.origFilename, 
-										 repoPostsPath + post.path + post.filename + '.md'); 
+			io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
+
+			io.removeFile (cf.paths.inbox + post.origFilename);
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
-			var _post;
-
-			if (!post.id) {
-				_post = rp.createRepositoryPost (post);
-				post.id = rp.generatePostId (_post);
-			}
-
 			return rp.addPostToRepository (repo.posts, post);
 		}, repo.posts);
 

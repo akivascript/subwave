@@ -8,6 +8,7 @@
 	var _ = require ('underscore-contrib');
 
 	var cf = require ('../resources/config');
+	var pa = require ('./pages');
 
 
 	// Copies a file.
@@ -22,6 +23,7 @@
 		if (type === 'post') {
 			metadata = {
 				type: type,
+				id: pa.generateId (),
 				title: 'Untitled',
 				author: 'John Doe',
 				date: formatDateForMetadata (Date.now ()),
