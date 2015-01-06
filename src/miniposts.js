@@ -9,7 +9,28 @@
 
 
 	function addPostToMiniposts (posts, post) {
-		return posts.concat (post);
+		var _post;
+
+		_post = pa.findById (posts, post.id);
+			
+		if (_.isEmpty (_post)) {
+			posts.push (post);
+		} else {
+			posts [_post.index] = post;
+		}
+		
+		return posts;
+	}
+
+
+	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
+	// Date object.
+	function convertStringToDate (date) {
+		var pattern;
+
+		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
+
+		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
 
@@ -39,65 +60,71 @@
 	}
 
 
+	function findPost (posts, id) {
+		var result;
+
+		result = {};
+		result.post = _.findWhere (posts, { id: id });
+
+		if (result.post) {
+			result.index = _.indexOf (posts, result.post);
+
+			return result;
+		}
+
+		return {};
+	}
+
+
 	function loadMiniposts (path) {
 		return pa.getPages (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
 	}
 
 
 	function publishMiniposts (posts, repo) {
-		var date, filename, oldPosts, page, repoPostsPath;
+		var page;
+
+		posts = posts.concat (loadMiniposts ());
 
 		page = _.compose (pa.createPage, createMiniposts) ();
 
-		// To be refactored later...
 		page.posts = _.reduce (posts, function (res, post) {
-			return res.concat (addPostToMiniposts (page.posts, post));
-		}, []);
+			return addPostToMiniposts (page.posts, post);
+		}, page.posts);
 
-		oldPosts = loadMiniposts ();
-
-		if (oldPosts.length > 0) {
-			page.posts.push (oldPosts);
-			
-			page.posts = _.flatten (_.sortBy (page.posts, function (post) { return post.date; }));
-		}
-
-		page.posts.reverse ();
-
-		repoPostsPath = cf.paths.repository + cf.miniposts.title.toLowerCase () + '/';
-
-		io.createDirectory (repoPostsPath);
-
-		// Move miniposts to the repository
-		_.each (page.posts, function (post) {
-			date = convertStringToDate (post.date);
-			filename = io.getPostFilename (post.title, post.date);
-
-			io.renameFile (cf.paths.inbox + post.origFilename, 
-										 repoPostsPath + filename + '.md'); 
-		});
+		page.posts = _.flatten (_.sortBy (page.posts, function (post) { 
+			return -(new Date (post.date)); }));
 
 		saveMiniposts (page, repo.tags);
 	}
 
 
-	function saveMiniposts (posts, tags) {
-		posts.output = compileMiniposts (posts, tags);
+	function saveMiniposts (page, tags) {
+		var date, filename, output, repoPostsPath;
+
+		repoPostsPath = cf.paths.repository + cf.miniposts.title.toLowerCase () + '/';
 		
-		posts.filename = '1'; // Temporary until pagination
+		// Move new miniposts to the repository
+		_.each (page.posts, function (post) {
+			date = convertStringToDate (post.date);
+			filename = io.getPostFilename (post.title, post.date);
 
-		io.saveHtmlPage (posts);
-	}
+			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date'),
+															null, '  ');
+			output = output + '\n\n' + post.content;
 
+			io.writeFile (repoPostsPath + 
+										(io.getPostFilename (post.title, post.date)) + 
+										'.md', output);
 
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
+			io.removeFile (cf.paths.inbox + post.origFilename);
+		});
 
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
+		page.output = compileMiniposts (page, tags);
+		
+		page.filename = '1'; // Temporary until pagination
 
-		return new Date (date.replace (pattern, '$1T$2:00'));
+		io.saveHtmlPage (page);
 	}
 
 	

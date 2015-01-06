@@ -65,6 +65,10 @@
 			pg.path = cf.miniposts.title.toLowerCase () + '/';
 			pg.outputPath = cf.paths.output;
 
+			if (!pg.id) {
+				pg.id = generateId ();
+			}
+
 			return pg;
 		});
 	}
