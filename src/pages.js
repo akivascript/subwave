@@ -121,7 +121,11 @@
 
 	// An indirector for clarity.
 	function loadPages (path) {
-		return io.readFiles (path);
+		try {
+			return io.readFiles (path);
+		} catch (e) {
+			return null;
+		}
 	}
 
 

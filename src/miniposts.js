@@ -65,7 +65,8 @@
 		page.posts.reverse ();
 
 		repoPostsPath = cf.paths.repository + cf.miniposts.title.toLowerCase () + '/';
-		io.createPostDirectory (repoPostsPath);
+
+		io.createDirectory (repoPostsPath);
 
 		// Move miniposts to the repository
 		_.each (page.posts, function (post) {

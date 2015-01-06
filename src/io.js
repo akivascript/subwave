@@ -10,19 +10,6 @@
 	var cf = require ('../resources/config');
 
 
-	function cleanDirectory (path, callback) {
-		fs.remove (path, function (error) {
-			if (error) {
-				throw error;
-			}
-
-			if (callback) {
-				callback ();
-			}
-		});
-	}
-
-
 	// Copies a file.
 	function copyFile (oldPath, newPath) {
 		fs.copySync (oldPath, newPath);
@@ -62,10 +49,8 @@
 	}
 
 
-	// In subwave, posts are grouped by year and then by month; this function
-	// creates this year/month path based on the filename of the post itself.
-	function createPostDirectory (path) {
-		fs.mkdirsSync (path);
+	function createDirectory (path) {
+		fs.ensureDirSync (path);
 	}
 
 
@@ -221,7 +206,7 @@
 
 
 	// Deletes a directory recursively from disk.
-	function removeDirectories (path) {
+	function removeDirectory (path) {
 		remove (path);
 	}
 
@@ -274,16 +259,16 @@
 	}
 
 	
-	module.exports.cleanDirectory = cleanDirectory; 
 	module.exports.copyFile = copyFile;
+	module.exports.createDirectory = createDirectory;
 	module.exports.createNewFile = createNewFile;
-	module.exports.createPostDirectory = createPostDirectory;
 	module.exports.formatDateForMetadata = formatDateForMetadata;
 	module.exports.getFiles = getFiles;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
+	module.exports.removeDirectory = removeDirectory;
 	module.exports.removeFile = removeFile;
 	module.exports.renameFile = renameFile;
 	module.exports.writeFile = writeFile;

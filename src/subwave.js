@@ -100,10 +100,10 @@
 	}
 		
 	if (subwave.clean) {
-		io.cleanPublic ();
+		io.removeDirectory (config.paths.output);
 	}
 
 	if (subwave.cleanRepo) {
-		io.cleanRepository ();
+		io.removeDirectory (config.paths.repository);
 	}
 } ());
