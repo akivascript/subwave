@@ -80,6 +80,22 @@
 		});
 	}
 
+
+	function findById (posts, id) {
+		var result;
+
+		result = {};
+		result.post = _.findWhere (posts, { id: id });
+
+		if (result.post) {
+			result.index = _.indexOf (posts, result.post);
+
+			return result;
+		}
+
+		return {};
+	}
+
 	
 	// Takes a date object and converts it to the specified date format for display
 	// on both the index and individual post pages.
@@ -182,6 +198,7 @@
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyObject = copyObject;
 	module.exports.createPage = createPage;
+	module.exports.findById = findById;
 	module.exports.filterPages = filterPages;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
 	module.exports.generateId = pf.generateId;
