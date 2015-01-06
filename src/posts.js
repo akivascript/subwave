@@ -208,13 +208,6 @@
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
-			var _post;
-
-			if (!post.id) {
-				_post = rp.createRepositoryPost (post);
-				post.id = rp.generatePostId (_post);
-			}
-
 			return rp.addPostToRepository (repo.posts, post);
 		}, repo.posts);
 

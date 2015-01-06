@@ -184,6 +184,7 @@
 	module.exports.createPage = createPage;
 	module.exports.filterPages = filterPages;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
+	module.exports.generateId = pf.generateId;
 	module.exports.getExcerpt = pf.getExcerpt;
 	module.exports.getContent = getContent;
 	module.exports.getMetadata = getMetadata;

@@ -5,7 +5,8 @@
 
 	var cf = require ('../resources/config');
 	var io = require ('./io');
-	var pa = require ('./pages').getExcerpt;
+	var pa = require ('./pages').generateId;
+	
 
 
 	function configure (page, callback) {
@@ -76,6 +77,10 @@
 			pg.path = io.getPostDirectoryPathname (pg.date);
 			pg.outputPath = cf.paths.output + 'posts/';
 
+			if (!pg.id) {
+				pg.id = generateId ();
+			}
+
 			if (cf.index.useExcerpts) {
 				pg.excerpt = getExcerpt (pg.content);
 			}
@@ -103,6 +108,14 @@
 		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
 
 		return new Date (date.replace (pattern, '$1T$2:00'));
+	}
+
+
+	function generateId () {
+		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+			return v.toString(16);
+		});
 	}
 
 
@@ -139,5 +152,6 @@
 	};
 
 	module.exports.createPage = createPage;
+	module.exports.generateId = generateId;
 	module.exports.getExcerpt = getExcerpt;
 } ());
