@@ -3,9 +3,9 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
-	var mi = require ('./miniposts');
-	var pa = require ('./pages');
+	var $config = require ('../resources/config');
+	var $miniposts = require ('./miniposts');
+	var $pages = require ('./pages');
 
 	
 	function addPostNav (pages) {
@@ -37,7 +37,7 @@
 		posts = _.snapshot (home.posts);
 		post = _.pick (post, 'displayDate', 'displayTitle', 'tags', 
 									 'excerpt', 'content', 'path', 'filename');
-		post.content = pa.prepareForDisplay (post.content);
+		post.content = $pages.prepareForDisplay (post.content);
 
 		return posts.concat (post);
 	}
@@ -66,10 +66,10 @@
 				return pages;
 			}
 
-			page = _.compose (pa.createPage, createHome) ();
+			page = _.compose ($pages.createPage, createHome) ();
 
-			if (cf.index.countPostsOnly) {
-				while (skip < posts.length && i <= cf.index.postsPerPage) {
+			if ($config.index.countPostsOnly) {
+				while (skip < posts.length && i <= $config.index.postsPerPage) {
 					post = posts [skip];
 
 					page.posts.push (post);
@@ -81,9 +81,9 @@
 					skip = skip + 1;
 				}
 			} else {
-				page.posts = _.head (posts, cf.index.postsPerPage);
+				page.posts = _.head (posts, $config.index.postsPerPage);
 
-				skip = cf.index.postsPerPage;
+				skip = $config.index.postsPerPage;
 			}
 
 			page.posts.reverse ();
@@ -96,7 +96,7 @@
 			pages.push (page);
 
 			// If we're not paginating, we're already done
-			if (!cf.index.usePagination) {
+			if (!$config.index.usePagination) {
 				return pages;
 			}
 
@@ -110,23 +110,23 @@
 	function processPosts (posts) {
 		var miniposts;
 
-		if (cf.index.useExcerpts) {
+		if ($config.index.useExcerpts) {
 			posts = _.map (posts,
 										 function (post) {
 											 if (post.type === 'post' && post.excerpt) {
-												 post.excerpt = pa.prepareForDisplay (post.excerpt); 
+												 post.excerpt = $pages.prepareForDisplay (post.excerpt); 
 											 }
 											 
 											 return post;
 										 });
 		}
 
-		miniposts = mi.loadMiniposts ();
+		miniposts = $miniposts.loadMiniposts ();
 
 		if (miniposts.length > 0) {
 			posts.push (_.map (miniposts, function (post) {
-				post.displayDate = pa.formatDateForDisplay (post.date);
-				post.content = pa.convertToHtml (post.content);
+				post.displayDate = $pages.formatDateForDisplay (post.date);
+				post.content = $pages.convertToHtml (post.content);
 
 				return post;
 			}));
@@ -150,7 +150,7 @@
 		pages = addPostNav (pages);
 
 		_.each (pages, function (page) {
-			pa.savePage (page, repo.tags);
+			$pages.savePage (page, repo.tags);
 		});
 	}
 

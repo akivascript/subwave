@@ -5,10 +5,10 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages');
-	var rp = require ('./repository');
+	var $config = require ('../resources/config');
+	var $io = require ('./io');
+	var $pages = require ('./pages');
+	var $repository = require ('./repository');
 
 
 	// Allows sorting of posts by date.
@@ -24,23 +24,23 @@
 		var filename, date, post, path, repo;
 
 		if (index) {
-			repo = rp.getRepository ();
-			post = rp.getPostByIndex (index, rp.posts);
+			repo = $repository.getRepository ();
+			post = $repository.getPostByIndex (index, $repository.posts);
 
 			if (!post) {
 				throw new Error ('Unable to find post with index ' + index + '.');
 			}
 
-			date = pa.formatDateForDisplay (post.date);
-			path = io.getPostDirectoryPathname (post.date);
+			date = $pages.formatDateForDisplay (post.date);
+			path = $io.getPostDirectoryPathname (post.date);
 
-			if (cf.verbose) {
-				console.log ('Copying from ' + cf.paths.repository + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	cf.paths.inbox + post.filename + '.md');
+			if ($config.verbose) {
+				console.log ('Copying from ' + $config.paths.repository + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	$config.paths.inbox + post.filename + '.md');
 			}
 			
-			io.copyFile (cf.paths.repository + 'posts/' + path + post.filename + '.md',
-									 cf.paths.inbox + post.filename + '.md');
+			$io.copyFile ($config.paths.repository + 'posts/' + path + post.filename + '.md',
+									 $config.paths.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
@@ -76,10 +76,10 @@
 	function linkSibling (source) {
 		var target;
 
-		target = pa.copyObject (source, ['date', 'filename', 'title']);
+		target = $pages.copyObject (source, ['date', 'filename', 'title']);
 
 		if (!source.path) {
-			target.path = io.getPostDirectoryPathname (source.date);
+			target.path = $io.getPostDirectoryPathname (source.date);
 		} else {
 			target.path = source.path;
 		}	
@@ -92,13 +92,13 @@
 	function processSibling (sibling, direction) {
 		var file, filename, path;
 
-		path = io.getPostDirectoryPathname (sibling.date);
+		path = $io.getPostDirectoryPathname (sibling.date);
 		filename = sibling.filename;
-		file = io.readFile (cf.paths.repository + 'posts/' + path + filename + '.md');
+		file = $io.readFile ($config.paths.repository + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
-		sibling.template = cf.paths.templates + 'post.jade';
-		sibling.title = pa.convertToHtml (sibling.title);
+		sibling.template = $config.paths.templates + 'post.jade';
+		sibling.title = $pages.convertToHtml (sibling.title);
 
 		return sibling;
 	}
@@ -110,7 +110,7 @@
 	function processSiblingPosts (post, sibling, repo, posts, index, direction) {
 		var oppDirection, nextSibling, tmpSibling;
 
-		tmpSibling = pa.copyObject (sibling);
+		tmpSibling = $pages.copyObject (sibling);
 
 		if (direction === 'previous') {
 			oppDirection = 'next';
@@ -127,13 +127,13 @@
 		// This allows us to handle the case when more than one new post is added simultaneously
 		// and the previous most recent post is part of the sibling chain.
 		if (repo.posts [index]) {
-			nextSibling = pa.copyObject (repo.posts [index]);
+			nextSibling = $pages.copyObject (repo.posts [index]);
 
 			tmpSibling [direction] = linkSibling (nextSibling);
 		}
 
 		tmpSibling = processSibling (tmpSibling, oppDirection);
-		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
+		tmpSibling.path = $io.getPostDirectoryPathname (tmpSibling.date);
 
 		savePost (tmpSibling, repo.tags);
 	}
@@ -144,24 +144,24 @@
 	function publishPosts (posts, repo) {
 		var repoPostsPath, file, index, postCount, output, result;
 
-		repoPostsPath = cf.paths.repository + 'posts/';
+		repoPostsPath = $config.paths.repository + 'posts/';
 
 		_.each (posts, function (post) {
 			repo.tags = _.reduce (post.tags, function (res, tag) {
-				return rp.addTagToRepository (repo.tags, tag, post);
+				return $repository.addTagToRepository (repo.tags, tag, post);
 			}, repo.tags);
 
 			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date', 'tags'),
 															null, '  ');
 			output = output + '\n\n' + post.content;
 
-			io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
+			$io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
 
-			io.removeFile (cf.paths.inbox + post.origFilename);
+			$io.removeFile ($config.paths.inbox + post.origFilename);
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
-			return rp.addPostToRepository (repo.posts, post);
+			return $repository.addPostToRepository (repo.posts, post);
 		}, repo.posts);
 
 		handlePostsWithSiblings (repo, posts);
@@ -174,9 +174,9 @@
 
 	// Commit a post to disk.
 	function savePost (post, tags) {
-		post.output = pa.compilePage (post, tags);
+		post.output = $pages.compilePage (post, tags);
 
-		io.saveHtmlPage (post);
+		$io.saveHtmlPage (post);
 	}
 
 

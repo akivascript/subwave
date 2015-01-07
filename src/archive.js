@@ -6,8 +6,8 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var io = require ('./io');
-	var pa = require ('./pages');
+	var $io = require ('./io');
+	var $pages = require ('./pages');
 
 
 	function addEntryToArchive (entries, post) {
@@ -26,13 +26,13 @@
 
 		compileFn = function (page) {
 			_.map (page.posts, function (post) {
-				post.path = io.getPostDirectoryPathname (new Date (post.date));
-				post.displayDate = pa.formatDateForDisplay (post.date);
-				post.title = pa.convertToHtml (post.title);
+				post.path = $io.getPostDirectoryPathname (new Date (post.date));
+				post.displayDate = $pages.formatDateForDisplay (post.date);
+				post.title = $pages.convertToHtml (post.title);
 			});
 		};
 
-		return pa.compilePage (page, tags, compileFn);
+		return $pages.compilePage (page, tags, compileFn);
 	}
 
 
@@ -49,7 +49,7 @@
 
 		attributes = ['author', 'date', 'filename', 'index', 'tags', 'title'];
 
-		return pa.copyObject (post, attributes);
+		return $pages.copyObject (post, attributes);
 	}
 
 
@@ -58,7 +58,7 @@
 	function publishArchive (posts, tags) {
 		var archive;
 
-		archive = _.compose (pa.createPage, createArchive) ();
+		archive = _.compose ($pages.createPage, createArchive) ();
 
 		archive.entries = _.reduce (posts, function (res, post) {
 			return res.concat (addEntryToArchive (archive.entries, post));
@@ -72,7 +72,7 @@
 	function saveArchive (archive, tags) {
 		archive.output = compileArchive (archive, tags);
 		
-		io.saveHtmlPage (archive);
+		$io.saveHtmlPage (archive);
 	}
 
 

@@ -3,15 +3,15 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages');
+	var $config = require ('../resources/config');
+	var $io = require ('./io');
+	var $pages = require ('./pages');
 
 
 	function addPostToMiniposts (posts, post) {
 		var _post;
 
-		_post = pa.findById (posts, post.id);
+		_post = $pages.findById (posts, post.id);
 			
 		if (_.isEmpty (_post)) {
 			posts.push (post);
@@ -38,17 +38,17 @@
 		var compileFn;
 
 		compileFn = function (page) {
-			page.title = cf.miniposts.title;
+			page.title = $config.miniposts.title;
 
 			return _.map (page.posts, function (post) {
-				post.displayDate = pa.formatDateForDisplay (post.date);
-				post.content = pa.convertToHtml (post.content);
+				post.displayDate = $pages.formatDateForDisplay (post.date);
+				post.content = $pages.convertToHtml (post.content);
 
 				return post;
 			});
 		};
 
-		return pa.compilePage (page, tags, compileFn);
+		return $pages.compilePage (page, tags, compileFn);
 	}
 
 
@@ -77,7 +77,7 @@
 
 
 	function loadMiniposts (path) {
-		return pa.getPages (cf.paths.repository + cf.miniposts.title.toLowerCase () + '/');
+		return $pages.getPages ($config.paths.repository + $config.miniposts.title.toLowerCase () + '/');
 	}
 
 
@@ -86,7 +86,7 @@
 
 		posts = posts.concat (loadMiniposts ());
 
-		page = _.compose (pa.createPage, createMiniposts) ();
+		page = _.compose ($pages.createPage, createMiniposts) ();
 
 		page.posts = _.reduce (posts, function (res, post) {
 			return addPostToMiniposts (page.posts, post);
@@ -102,29 +102,29 @@
 	function saveMiniposts (page, tags) {
 		var date, filename, output, repoPostsPath;
 
-		repoPostsPath = cf.paths.repository + cf.miniposts.title.toLowerCase () + '/';
+		repoPostsPath = $config.paths.repository + $config.miniposts.title.toLowerCase () + '/';
 		
 		// Move new miniposts to the repository
 		_.each (page.posts, function (post) {
 			date = convertStringToDate (post.date);
-			filename = io.getPostFilename (post.title, post.date);
+			filename = $io.getPostFilename (post.title, post.date);
 
 			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date'),
 															null, '  ');
 			output = output + '\n\n' + post.content;
 
-			io.writeFile (repoPostsPath + 
-										(io.getPostFilename (post.title, post.date)) + 
+			$io.writeFile (repoPostsPath + 
+										($io.getPostFilename (post.title, post.date)) + 
 										'.md', output);
 
-			io.removeFile (cf.paths.inbox + post.origFilename);
+			$io.removeFile ($config.paths.inbox + post.origFilename);
 		});
 
 		page.output = compileMiniposts (page, tags);
 		
 		page.filename = '1'; // Temporary until pagination
 
-		io.saveHtmlPage (page);
+		$io.saveHtmlPage (page);
 	}
 
 	

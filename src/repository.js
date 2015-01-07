@@ -5,9 +5,9 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config.js');
-	var io = require ('./io');
-	var ta = require ('./tags');
+	var $config = require ('../resources/config.js');
+	var $io = require ('./io');
+	var $tags = require ('./tags');
 
 	var repoName = 'repository.json';
 
@@ -33,11 +33,11 @@
 		_tag = findTag (tags, name);
 
 		if (_.isEmpty (_tag)) {
-			_tag.tag = ta.createTag (name);
+			_tag.tag = $tags.createTag (name);
 			_tag.index = -1;
 		} 
 
-		_tag.tag = ta.addPostToTag (_tag.tag, post.filename);
+		_tag.tag = $tags.addPostToTag (_tag.tag, post.filename);
 		
 		if (_tag.index === -1) {
 			tags.push (_tag.tag);
@@ -135,7 +135,7 @@
 		var repo;
 
 		try {
-			repo = io.readFile (cf.paths.repository + repoName);
+			repo = $io.readFile ($config.paths.repository + repoName);
 		} catch (e) {
 			// Do nothing here, we want to return null if repository.json isn't present.
 		}
@@ -148,7 +148,7 @@
 	function saveRepository (repo) {
 		var filename, posts;
 		
-		filename = cf.paths.repository + repoName;
+		filename = $config.paths.repository + repoName;
 		repo.lastUpdated = new Date ();
 		delete repo.type;
 
@@ -158,7 +158,7 @@
 			return addPostToRepository (repo.posts, post);
 		}, repo.posts);
 
-		io.writeFile (filename, JSON.stringify (repo, null, '  '));
+		$io.writeFile (filename, JSON.stringify (repo, null, '  '));
 	}
 
 

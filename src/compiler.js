@@ -5,17 +5,17 @@
 	var _ = require ('underscore-contrib');
 	var fs = require ('fs-extra');
 
-	var ar = require ('./archive');
-	var cf = require ('../resources/config');
-	var ho = require ('./home');
-	var inf = require ('./info');
-	var io = require ('./io');
-	var mi = require ('./miniposts');
-	var pa = require ('./pages');
-	var po = require ('./posts');
-	var rp = require ('./repository');
-	var rs = require ('./rss');
-	var ta = require ('./tags');
+	var $archive = require ('./archive');
+	var $config = require ('../resources/config');
+	var $home = require ('./home');
+	var $info = require ('./info');
+	var $io = require ('./io');
+	var $miniposts = require ('./miniposts');
+	var $pages = require ('./pages');
+	var $posts = require ('./posts');
+	var $repository = require ('./repository');
+	var $rss = require ('./rss');
+	var $tags = require ('./tags');
 
 	var publish;
 
@@ -25,7 +25,7 @@
 		var entries, files, pages, path, posts, repo;
 
 		// Loads all of the files to be published
-		files = pa.getPages (cf.paths.inbox);
+		files = $pages.getPages ($config.paths.inbox);
 
 		if (files.length === 0) {
 			console.log ('No pages found to be built.');
@@ -34,11 +34,11 @@
 		}
 
 		// Loads an existing repo or creates a new one
-		repo = _.compose (rp.getRepository, rp.loadRepository) ();
+		repo = _.compose ($repository.getRepository, $repository.loadRepository) ();
 
 		// Publishes each type of content page
-		_.each (cf.pages.content, function (type) {
-			pages = pa.filterPages (files, type);
+		_.each ($config.pages.content, function (type) {
+			pages = $pages.filterPages (files, type);
 
 			if (pages.length > 0) {
 				publish [type] (pages, repo);
@@ -58,7 +58,7 @@
 		publish.tags (repo);
 
 		// RSS news feed
-		rs.updateRssFeed (repo);
+		$rss.updateRssFeed (repo);
 
 		// And finally...
 		
@@ -66,7 +66,7 @@
 		copyResources ();
 
 		// Saves the state of the site
-		rp.saveRepository (repo);
+		$repository.saveRepository (repo);
 	}
 
 
@@ -75,12 +75,12 @@
 	function copyResources () {
 		var files, targets;
 
-		_.each (cf.resources, function (resource) {
-			files = io.getFiles (cf.paths.resources + resource);
+		_.each ($config.resources, function (resource) {
+			files = $io.getFiles ($config.paths.resources + resource);
 
 			_.each (files, function (path, file) { 
-				io.copyFile (path + file,
-										 cf.paths.output + resource + file);
+				$io.copyFile (path + file,
+										 $config.paths.output + resource + file);
 			});
 		});
 	}
@@ -94,35 +94,35 @@
 
 		files = [];
 
-		if (cf.verbose) {
+		if ($config.verbose) {
 			console.log ('Rebuilding the site...');
 		}
 
-		io.removeDirectory (cf.paths.output);
+		$io.removeDirectory ($config.paths.output);
 
-		files = io.getFiles (cf.paths.repository);
+		files = $io.getFiles ($config.paths.repository);
 
 		for (var file in files) {
 			path = files [file];
 
 			if (file !== 'repository.json') {
-				io.copyFile (path + file, cf.paths.inbox + file);
+				$io.copyFile (path + file, $config.paths.inbox + file);
 			}
 		}
 
-		io.removeDirectory (cf.paths.repository);
+		$io.removeDirectory ($config.paths.repository);
 
 		buildSite ();
 	}
 
 
 	publish = {
-		archive: ar.publishArchive,
-		home: ho.publishHome,
-		info: inf.publishInfo,
-		mini: mi.publishMiniposts,
-		post: po.publishPosts,
-		tags: ta.publishTags
+		archive: $archive.publishArchive,
+		home: $home.publishHome,
+		info: $info.publishInfo,
+		mini: $miniposts.publishMiniposts,
+		post: $posts.publishPosts,
+		tags: $tags.publishTags
 	};
 
 	module.exports.buildSite = buildSite;
