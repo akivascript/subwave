@@ -25,7 +25,7 @@
 	config.miniposts = {
 		usePagination: false,
 		postsPerPage: 10,
-		title: 'Bits'
+		title: 'Miniposts'
 	};
 	config.pages = {
 		content: ['post', 'info', 'mini']
