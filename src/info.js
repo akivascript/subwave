@@ -3,7 +3,7 @@
 
 	var _ = require ('underscore');
 
-	var $config = require ('../resources/config');
+	var $config = require ('../config');
 	var $io = require ('./io');
 	var $pages = require ('./pages');
 

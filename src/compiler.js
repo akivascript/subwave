@@ -6,7 +6,7 @@
 	var fs = require ('fs-extra');
 
 	var $archive = require ('./archive');
-	var $config = require ('../resources/config');
+	var $config = require ('../config');
 	var $home = require ('./home');
 	var $info = require ('./info');
 	var $io = require ('./io');

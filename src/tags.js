@@ -4,7 +4,7 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
+	var cf = require ('../config');
 	var pa = require ('./pages');
 	var io = require ('./io');
 	

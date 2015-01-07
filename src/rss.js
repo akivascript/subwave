@@ -4,7 +4,7 @@
 	var Rss = require ('rss');
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
+	var cf = require ('../config');
 	var io = require ('./io');
 	var pa = require ('./pages');
 
