@@ -33,7 +33,7 @@
 	config.paths = {
 		inbox: 'resources/' + 'inbox/',
 		output: 'public/',
-		repository: 'resources/' + 'repository/',
+		repository: 'repository/',
 		resources: 'resources/',
 		templates: 'resources/' + 'templates/',
 	};
