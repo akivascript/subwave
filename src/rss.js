@@ -10,12 +10,10 @@
 
 
 	function updateRssFeed (repo) {
-		var content, date, description, feed, feedOptions, file, i, itemOptions, post, posts, total;
+		var content, date, description, feed, feedOptions, file, i, itemOptions, post, total;
 
 		i = 0;
 		total = 0;
-		posts = _.snapshot (repo.posts).reverse ();
-
 
 		feedOptions = {
 			title: cf.blog.title,
@@ -30,8 +28,8 @@
 		feed = new Rss (feedOptions);
 
 		while (total < cf.rss.postCount &&
-					i < posts.length) {
-			post = posts [i];
+					i < repo.posts.length) {
+			post = repo.posts [i];
 			date = io.getPostDirectoryPathname (post.date);
 			file = io.readFile (cf.paths.repository + 'posts/' + date + post.filename + '.md');
 			content = pa.getContent (file);
@@ -56,8 +54,6 @@
 			i = i + 1;
 			total = total + 1;
 		}
-
-		repo.posts.reverse ();
 
 		io.writeFile (cf.paths.output + cf.rss.filename, feed.xml ());
 	}

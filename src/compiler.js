@@ -58,7 +58,7 @@
 		publish.tags (repo);
 
 		// RSS news feed
-//		rs.updateRssFeed (repo);
+		rs.updateRssFeed (repo);
 
 		// And finally...
 		
