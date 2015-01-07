@@ -6,9 +6,9 @@
 	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
-	var io = require ('./io');
-	var pf = require ('./factory.js');
+	var $config = require ('../resources/config');
+	var $io = require ('./io');
+	var $factory = require ('./factory.js');
 
 	marked.setOptions ({
 		smartypants: true
@@ -37,7 +37,7 @@
 		locals = {
 			page: page,
 			tags: tags,
-			config: config
+			config: $config
 		};
 
 		return compiler (locals);
@@ -69,7 +69,7 @@
 
 	// Returns a page configuration object from the pagefactory.
 	function createPage (page) {
-		return pf.createPage (page);
+		return $factory.createPage (page);
 	}
 
 
@@ -104,7 +104,7 @@
 
 		postDate = moment (date);
 
-		return postDate.format (config.blog.dateFormat);
+		return postDate.format ($config.blog.dateFormat);
 	}
 
 
@@ -138,7 +138,7 @@
 	// An indirector for clarity.
 	function loadPages (path) {
 		try {
-			return io.readFiles (path);
+			return $io.readFiles (path);
 		} catch (e) {
 			return null;
 		}
@@ -176,7 +176,7 @@
 	function scrubPage (pageBody) {
 		var output, regexp;
 
-		_.each (config.htmlElements.scrub, function (element) {
+		_.each ($config.htmlElements.scrub, function (element) {
 			regexp = new RegExp ('(<' + element + '>)|(<\/' + element + '>)', 'gi');
 
 			output = pageBody.replace (regexp, '');
@@ -190,7 +190,7 @@
 	function savePage (page, tags) {
 		page.output = compilePage (page, tags);
 
-		io.saveHtmlPage (page);
+		$io.saveHtmlPage (page);
 	}
 
 
@@ -201,8 +201,8 @@
 	module.exports.findById = findById;
 	module.exports.filterPages = filterPages;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
-	module.exports.generateId = pf.generateId;
-	module.exports.getExcerpt = pf.getExcerpt;
+	module.exports.generateId = $factory.generateId;
+	module.exports.getExcerpt = $factory.getExcerpt;
 	module.exports.getContent = getContent;
 	module.exports.getMetadata = getMetadata;
 	module.exports.getPages = getPages;

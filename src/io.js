@@ -7,7 +7,7 @@
 	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
+	var $config = require ('../resources/config');
 	var pa = require ('./pages');
 
 
@@ -23,7 +23,7 @@
 		if (type === 'post') {
 			metadata = {
 				type: type,
-				id: pa.generateId (),
+				id: $pages.generateId (),
 				title: 'Untitled',
 				author: 'John Doe',
 				date: formatDateForMetadata (Date.now ()),
@@ -45,7 +45,7 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (cf.paths.inbox + filename, content);
+		writeFile ($config.paths.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
@@ -200,7 +200,7 @@
 				throw error;
 			}
 
-			if (cf.verbose) {
+			if ($config.verbose) {
 				console.log ('Deleted ' + target + '...');
 			}
 		});
@@ -221,14 +221,14 @@
 
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
-		if (cf.verbose) {
+		if ($config.verbose) {
 			console.log ('Renaming/moving files...');
 		}
 
 		fs.rename (oldPath, newPath, function (err) {
 			if (err) console.log (err);
 
-			if (cf.verbose) {
+			if ($config.verbose) {
 				console.log (oldPath + ' => ' + newPath);
 			}
 		});

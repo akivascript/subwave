@@ -3,9 +3,8 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages').generateId;
+	var $config = require ('../resources/config');
+	var $io = require ('./io');
 	
 
 
@@ -13,7 +12,7 @@
 		var pg;
 
 		pg = _.compose (callback, _.snapshot) (page);
-		pg.template = cf.paths.templates + pg.type.toLowerCase () + '.jade';
+		pg.template = $config.paths.templates + pg.type.toLowerCase () + '.jade';
 
 		return pg;
 	}
@@ -21,9 +20,9 @@
 
 	function configureArchive (page) {
 		return configure (page, function (pg) {
-			pg.title = cf.archive.title;
+			pg.title = $config.archive.title;
 			pg.filename = pg.title.toLowerCase ();
-			pg.outputPath = cf.paths.output;
+			pg.outputPath = $config.paths.output;
 			
 			if (!page.entries) {
 				pg.entries = [];
@@ -37,9 +36,9 @@
 	function configureHome (page) {
 		return configure (page, function (pg) {
 			pg.filename = 'index';
-			pg.outputPath = cf.paths.output;
+			pg.outputPath = $config.paths.output;
 			pg.tags = [];
-			pg.title = cf.blog.title;
+			pg.title = $config.blog.title;
 
 			if (!pg.posts) {
 				pg.posts = [];
@@ -53,7 +52,7 @@
 	function configureInfo (page) {
 		return configure (page, function (pg) {
 			pg.filename = pg.title.toLowerCase ();
-			pg.outputPath = cf.paths.output;
+			pg.outputPath = $config.paths.output;
 
 			return pg;
 		});
@@ -62,8 +61,8 @@
 
 	function configureMini (page) {
 		return configure (page, function (pg) {
-			pg.path = cf.miniposts.title.toLowerCase () + '/';
-			pg.outputPath = cf.paths.output;
+			pg.path = $config.miniposts.title.toLowerCase () + '/';
+			pg.outputPath = $config.paths.output;
 
 			if (!pg.id) {
 				pg.id = generateId ();
@@ -77,15 +76,15 @@
 	function configurePost (page) {
 		return configure (page, function (pg) {
 			pg.date = convertStringToDate (pg.date);
-			pg.filename = io.getPostFilename (pg.title, pg.date);
-			pg.path = io.getPostDirectoryPathname (pg.date);
-			pg.outputPath = cf.paths.output + 'posts/';
+			pg.filename = $io.getPostFilename (pg.title, pg.date);
+			pg.path = $io.getPostDirectoryPathname (pg.date);
+			pg.outputPath = $config.paths.output + 'posts/';
 
 			if (!pg.id) {
 				pg.id = generateId ();
 			}
 
-			if (cf.index.useExcerpts) {
+			if ($config.index.useExcerpts) {
 				pg.excerpt = getExcerpt (pg.content);
 			}
 
