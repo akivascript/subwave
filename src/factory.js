@@ -93,13 +93,27 @@
 	}
 
 
+	function configureTagHome (page) {
+		return configure (page, function (pg) {
+			pg.filename = 'index';
+			pg.outputPath = $config.paths.output + 'tags/';
+
+			return pg;
+		});
+	}
+
+
 	// Creates a page object that is used to configure an html page
 	function createPage (page) {
+		var name;
+
 		if (!page) {
 			return undefined; // Should this be an empty object?
 		}
 
-		return module.internals ['configure' + _.capitalize (page.type)] (page);
+		name = _.compose (_.capitalize, _.camelCase) (page.type);
+
+		return module.internals ['configure' + name] (page);
 	}
 
 
@@ -140,18 +154,19 @@
 
 	_.mixin ({
 		capitalize: function (string) {
-			return string.charAt (0).toUpperCase () + 
-				string.substring (1).toLowerCase ();
+			return string.charAt (0).toUpperCase () + string.substring (1);
 		}
 	});
 
 
+	// This allows us to refer to functions dynamically.
 	module.internals = {
 		configureArchive: configureArchive,
 		configureHome: configureHome,
 		configureInfo: configureInfo,
 		configureMini: configureMini,
-		configurePost: configurePost
+		configurePost: configurePost,
+		configureTagHome: configureTagHome
 	};
 
 	module.exports.createPage = createPage;
