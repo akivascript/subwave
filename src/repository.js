@@ -5,7 +5,7 @@
 
 	var _ = require ('underscore-contrib');
 
-	var $config = require ('../resources/config.js');
+	var $config = require ('../config.js');
 	var $io = require ('./io');
 	var $tags = require ('./tags');
 

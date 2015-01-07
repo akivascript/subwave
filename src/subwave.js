@@ -9,7 +9,7 @@
 
 	var subwave = require ('commander');
 
-	var config = require ('../resources/config');
+	var config = require ('../config');
 	var co = require ('./compiler');
 	var io = require ('./io');
 	var pa = require ('./pages');
