@@ -25,8 +25,11 @@
 			callback (page);
 		} else {
 			page.displayDate = formatDateForDisplay (page.date);
-			page.headTitle = page.title;
-			page.displayTitle = convertToHtml (page.title);
+
+			if (page.title) {
+				page.headTitle = page.title;
+				page.displayTitle = convertToHtml (page.title);
+			}
 		
 			if (page.content) {
 				page.content = prepareForDisplay (page.content);
