@@ -8,7 +8,7 @@
 
 	var config = require ('../resources/config');
 	var io = require ('./io');
-	var pf = require ('./pagefactory.js');
+	var pf = require ('./factory.js');
 
 	marked.setOptions ({
 		smartypants: true
