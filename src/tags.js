@@ -4,9 +4,9 @@
 
 	var _ = require ('underscore-contrib');
 
-	var cf = require ('../config');
-	var pa = require ('./pages');
-	var io = require ('./io');
+	var $config = require ('../config');
+	var $pages = require ('./pages');
+	var $io = require ('./io');
 	
 
 	// Adds a post to any tags the post is tagged with. Yes, that's somehow English.
@@ -28,19 +28,22 @@
 
 
 	function publishTags (repo) {
-		var page;
+		var home, page;
 
+		home = _.compose ($pages.createPage, createTagHome) ();
+			
 		_.each (repo.tags, function (tag) {
 			page = createTagIndex (tag);
+			home.tags = home.tags.concat (tag);
 
 			_.each (tag.posts, function (postTag) {
 				_.each (repo.posts, function (post) {
 					if (post.filename === postTag) {
 						page.posts.push ({
 							title: post.title,
-							displayTitle: pa.convertToHtml (post.title),
+							displayTitle: $pages.convertToHtml (post.title),
 							filename: post.filename,
-							path: io.getPostDirectoryPathname (post.date)
+							path: $io.getPostDirectoryPathname (post.date)
 						});
 					}
 				});
@@ -49,8 +52,19 @@
 
 			page.posts = _.sortBy (page.posts, function (post) { return post.title; });
 
-			pa.savePage (page, repo.tags);
+			$pages.savePage (page, repo.tags);
 		});
+
+		$pages.savePage (home, repo.tags);
+	}
+
+
+	// Creates a central tag page
+	function createTagHome () {
+		return {
+			type: 'tag-home',
+			tags: [],
+		};
 	}
 
 
@@ -61,8 +75,8 @@
 			title: tag.name,
 			filename: tag.name.toLowerCase (),
 			posts: [],
-			outputPath: cf.paths.output + 'tags/',
-			template: cf.paths.templates + 'tag.jade'
+			outputPath: $config.paths.output + 'tags/',
+			template: $config.paths.templates + 'tag.jade'
 		};
 	}
 
