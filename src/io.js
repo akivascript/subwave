@@ -195,15 +195,7 @@
 
 	// Deletes a file or directory (recursively) from disk.
 	function remove (target) {
-		fs.remove (target, function (error) {
-			if (error) {
-				throw error;
-			}
-
-			if ($config.verbose) {
-				console.log ('Deleted ' + target + '...');
-			}
-		});
+		fs.removeSync (target);
 	}
 
 
