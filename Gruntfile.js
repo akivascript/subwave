@@ -14,6 +14,15 @@
 
 		grunt.initConfig ({
 			pkg: grunt.file.readJSON ('package.json'),
+			concat: {
+				options: {
+					separator: ';'
+				},
+				dist: {
+					src: ['src/subwave.js'],
+					dest: 'uh.js'
+				},
+			},
 			connect: {
 				server: {
 					options: {

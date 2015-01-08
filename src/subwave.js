@@ -78,13 +78,6 @@
 		.option ('-ca, --clean-repo', 'Clean /resources/repository directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
-	try {
-		subwave.parse (process.argv);
-	} catch (e) {
-		console.log (e.stack);
-
-		process.exit ();
-	}
 
 	if (subwave.verbose) {
 		config.verbose = true;
@@ -97,4 +90,16 @@
 	if (subwave.cleanRepo) {
 		io.removeDirectory (config.paths.repository);
 	}
+
+	function main () {
+		try {
+			subwave.parse (process.argv);
+		} catch (e) {
+			console.log (e.stack);
+
+			process.exit ();
+		}
+	}
+
+	main ();
 } ());
