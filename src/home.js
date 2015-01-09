@@ -4,6 +4,7 @@
 	var _ = require ('underscore-contrib');
 
 	var $config = require ('../config');
+	var $links = require ('./links');
 	var $miniposts = require ('./miniposts');
 	var $pages = require ('./pages');
 
@@ -27,6 +28,16 @@
 			}
 
 			return page;
+		});
+	}
+
+
+	function addItemsToHome (items) {
+		return _.map (items, function (item) {
+			item.displayDate = $pages.formatDateForDisplay (item.date);
+			item.content = $pages.convertToHtml (item.content);
+
+			return item;
 		});
 	}
 
@@ -105,10 +116,10 @@
 									 idx + 1);
 		}) (posts, [], 1);
 	}
-
+	
 
 	function processPosts (posts) {
-		var miniposts;
+		var links, miniposts;
 
 		if ($config.index.useExcerpts) {
 			posts = _.map (posts,
@@ -121,21 +132,17 @@
 										 });
 		}
 
-		miniposts = $miniposts.loadMiniposts ();
+		posts = posts.concat (_.map ($miniposts.loadMiniposts (), function (post) {
+			return $miniposts.processMinipost (post);
+		}));
 
-		if (miniposts.length > 0) {
-			posts.push (_.map (miniposts, function (post) {
-				post.displayDate = $pages.formatDateForDisplay (post.date);
-				post.content = $pages.convertToHtml (post.content);
+		posts = posts.concat (_.map ($links.loadItems ('links'), function (link) {
+			return $links.processItem (link);
+		}));
 
-				return post;
-			}));
-			
-			posts = _.flatten (posts);
-			posts = _.sortBy (posts, function (post) { return new Date (post.date); });
-		}
+		posts = _.flatten (posts);
 
-		return posts.reverse ();
+		return _.sortBy (posts, function (post) { return new Date (post.date); }).reverse ();
 	}
 
 

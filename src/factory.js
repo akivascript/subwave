@@ -59,6 +59,20 @@
 	}
 
 
+	function configureLink (page) {
+		return configure (page, function (pg) {
+			pg.path = 'links/';
+			pg.outputPath = $config.paths.output;
+
+			if (!pg.id) {
+				pg.id = generateId ();
+			}
+
+			return pg;
+		});
+	}
+
+
 	function configureMini (page) {
 		return configure (page, function (pg) {
 			pg.path = $config.miniposts.title.toLowerCase () + '/';
@@ -164,6 +178,7 @@
 		configureArchive: configureArchive,
 		configureHome: configureHome,
 		configureInfo: configureInfo,
+		configureLink: configureLink,
 		configureMini: configureMini,
 		configurePost: configurePost,
 		configureTagHome: configureTagHome

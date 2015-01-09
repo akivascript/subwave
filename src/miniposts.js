@@ -81,6 +81,14 @@
 	}
 
 
+	function processMinipost (item) {
+		item.displayDate = $pages.formatDateForDisplay (item.date);
+		item.content = $pages.convertToHtml (item.content);
+
+		return item;
+	}
+
+
 	function publishMiniposts (posts, repo) {
 		var page;
 
@@ -129,5 +137,6 @@
 
 	
 	module.exports.loadMiniposts = loadMiniposts;
+	module.exports.processMinipost = processMinipost;
 	module.exports.publishMiniposts = publishMiniposts;
 } ());

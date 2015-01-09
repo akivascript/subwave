@@ -91,6 +91,10 @@ div.bq span {
 	background-color: #6f7d8a;
 }
 
+div.post {
+	padding: 30px 0px 30px 0px;
+}
+
 .post-content {
 	margin: 15px 10px 25px 10px;
 }
@@ -144,6 +148,45 @@ div.taglist {
 	padding-left: 10px;
 }
 
+div.link {
+	padding: 30px 0px 30px 0px;
+}
+
+div.link > div.content > div.line {
+	width: 100%;
+	border-bottom: 1px solid #ddd;
+}
+
+div.link > div.content > h3 {
+	margin-top: -17px;
+}
+
+div.link > div.content > h3 a {
+	background-color: #efefef;
+	padding-right: 10px;
+	padding-bottom: 4px;
+	border-right: 1px solid #ddd;
+	color: #87A794;
+}
+
+div.link > div.content > h3 a:hover {
+	color: #444;
+}
+
+div.link > div.content > div.body {
+	padding: 0px 10px 10px 10px;
+	font-size: 90%;
+}
+
+div.link > div.content > div.title {
+	color: #aaaaaa;
+}	
+
+div.link > div.content > div.date {
+	margin-top: -2px;
+	color: #ccc;
+}
+
 div.minipost {
 	padding: 30px;
 }
@@ -177,3 +220,24 @@ div.minipost > div.content > div.title {
 div.minipost > div.content > div.date {
 	margin-top: -5px;
 }
+
+.main {
+	margin-top: 100px;
+}
+
+div.link-page h3 {
+	margin: 0px;
+}
+
+div.link-page div.body {
+	font-size: 90%;
+}
+
+div.link-page div.title {
+	color: #aaa;
+}
+
+div.link-page div.date {
+	color: #c1c1c1;
+}
+

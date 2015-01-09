@@ -43,6 +43,7 @@
 			config: $config
 		};
 
+
 		return compiler (locals);
 	}
 
@@ -154,7 +155,7 @@
 		var matches, pattern;
 
 		// Matches '{key: value, key: value, ...} content ...'
-		pattern = /({[\s\w"'\?!,: \-\[\]\{\}\.\n]*})?\n*((.|[\n\r])*)/;
+		pattern = /({[\s\w@/"'\?!,: \-\[\]\{\}\.\n]*})?\n*((.|[\n\r])*)/;
 
 		matches = file.match (pattern);
 
