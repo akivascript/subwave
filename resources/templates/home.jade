@@ -4,8 +4,8 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container(style='margin-top: 75px;')
-				div.row
+			div.container
+				div.row.main
 					div.col-xs-3 
 						h4.taglist Tags
 						div.taglist
@@ -18,30 +18,42 @@ html(lang="en")
 								div.row
 									div.col-xs-12
 										if post.type === 'post'
-											div.post-matter
-												if index === 0
-													h5.post-date= post.displayDate
-													h1.post-title!= post.displayTitle
-												else 
-													h6.post-date= post.displayDate
-													h2.post-title!= post.displayTitle
-											div.tags.text-right
-												each tag in post.tags.sort ()
-													a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
-													| 
-											if post.excerpt
-												div.post-content!= post.excerpt
-											else
-												div.post-content!= post.content
-											div.small.text-right
-												| &raquo; 
-												a(href='/posts/' + post.path + post.filename + '.html') Read more
+											div.post
+												div.post-matter
+													if index === 0
+														h5.post-date= post.displayDate
+														h1.post-title!= post.displayTitle
+													else 
+														h6.post-date= post.displayDate
+														h2.post-title!= post.displayTitle
+												div.tags.text-right
+													each tag in post.tags.sort ()
+														a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
+														| 
+												if post.excerpt
+													div.post-content!= post.excerpt
+												else
+													div.post-content!= post.content
+												div.small.text-right
+													| &raquo; 
+													a(href='/posts/' + post.path + post.filename + '.html') Read more
 										else if post.type === 'mini'
 											div.minipost
 												div.well.content
 													if post.title
 														div.small.title= post.title
 													div.body !{post.content}
+													div.small.text-right.date= post.displayDate
+										else if post.type === 'link'
+											div.link
+												div.content
+													div.line
+													h3.url
+														a(href=post.url)= post.urlTitle
+													if post.content
+														div.body!= post.content
+													if post.title
+														div.small.text-right.title!= post.title
 													div.small.text-right.date= post.displayDate
 						div.row
 							div.post-nav

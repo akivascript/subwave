@@ -22,13 +22,16 @@
 		useExcerpts: true,
 		usePagination: true
 	};
+	config.items = ['post', 'info', 'link', 'mini'];
+	config.links = {
+		usePagination: false,
+		itemsPerPage: 10,
+		title: 'Links'
+	};
 	config.miniposts = {
 		usePagination: false,
 		postsPerPage: 10,
 		title: 'Miniposts'
-	};
-	config.pages = {
-		content: ['post', 'info', 'mini']
 	};
 	config.paths = {
 		inbox: 'resources/' + 'inbox/',

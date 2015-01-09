@@ -8,7 +8,7 @@
 	var _ = require ('underscore-contrib');
 
 	var $config = require ('../config');
-	var pa = require ('./pages');
+	var $pages = require ('./pages');
 
 
 	// Copies a file.

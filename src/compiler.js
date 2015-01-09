@@ -10,6 +10,7 @@
 	var $home = require ('./home');
 	var $info = require ('./info');
 	var $io = require ('./io');
+	var $links = require ('./links');
 	var $miniposts = require ('./miniposts');
 	var $pages = require ('./pages');
 	var $posts = require ('./posts');
@@ -37,7 +38,7 @@
 		repo = _.compose ($repository.getRepository, $repository.loadRepository) ();
 
 		// Publishes each type of content page
-		_.each ($config.pages.content, function (type) {
+		_.each ($config.items, function (type) {
 			pages = $pages.filterPages (files, type);
 
 			if (pages.length > 0) {
@@ -120,6 +121,7 @@
 		archive: $archive.publishArchive,
 		home: $home.publishHome,
 		info: $info.publishInfo,
+		link: $links.publishLinks,
 		mini: $miniposts.publishMiniposts,
 		post: $posts.publishPosts,
 		tags: $tags.publishTags
