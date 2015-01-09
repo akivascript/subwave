@@ -2,6 +2,31 @@
 
 A static blog generator using JavaScript and Node in the spirit of Octopress/Jekyll and Cryogen.
 
+### Current Features
+* Quickly create new posts with `subwave new`
+* Builds with `subwave build`
+* Deploys easily `subwave deploy`
+* Multiple posts and pages can be added at once
+* Different post types
+* Easy user configuration
+* Post tagging
+* Markdown support
+* Syntax highlighting
+* RSS feed
+* Post excerpts
+* Bootstrap styling
+* Jade templates
+
+### Upcoming Features
+In no particular order:
+* Textile support
+* Post previews
+* Post/Page subtitles
+* Deleting posts
+* Site auditing
+* Multiple authors
+* Marking posts as favorites
+
 ## Installation
 
 Clone and examine. Proper documentation coming very soon. Probably this weekend. Maybe even later today. WHO KNOWS? I'M CAPRICIOUS. Until then:
