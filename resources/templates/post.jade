@@ -16,16 +16,34 @@ html(lang="en")
 								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 								| 
 						div.post-content!= page.content
-						div.post-nav
-							div.col-md-6.text-right.post-nav-divider-l
-								if page.previous
-									h3
+				div.row(style='margin-top: 25px;')
+					if (page.previous && !page.next)
+						div.post-nav-single
+							div.col-xs-12
+								div.post-nav-content.text-center
+									h3.post-nav-link
 										a(href='/posts/' + page.previous.path + page.previous.filename + '.html') #{page.previous.title}
 									h4.post-nav-label Previous
-							div.col-md-6.text-left.post-nav-divider-r
-								if page.next
-									h3
+					else if (page.next && !page.previous)
+						div.post-nav-single
+							div.col-xs-12
+								div.post-nav-content.text-center
+									h3.post-nav-link
 										a(href='/posts/' + page.next.path + page.next.filename + '.html') #{page.next.title}
 									h4.post-nav-label Next
+					else
+						div.post-nav
+							div.col-xs-6
+								div.post-nav-content.post-nav-divider-l.text-right
+									if page.previous
+										h3.post-nav-link
+											a(href='/posts/' + page.previous.path + page.previous.filename + '.html') #{page.previous.title}
+										h4.post-nav-label Previous
+							div.col-xs-6
+								div.post-nav-content.post-nav-divider-r.text-left
+									if page.next
+										h3.post-nav-link
+											a(href='/posts/' + page.next.path + page.next.filename + '.html') #{page.next.title}
+										h4.post-nav-label Next
 					div.col-md-1
 		include ./includes/footer.jade

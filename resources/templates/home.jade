@@ -6,13 +6,11 @@ html(lang="en")
 			include ./includes/nav-top.jade
 			div.container
 				div.row.main
-					div.col-xs-3 
-						h4.taglist Tags
-						div.taglist
-							each tag in tags.sort ()
-								a(href='/tags/' + tag.name.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag.name}
-								| 
-					div.col-xs-9
+					div.col-lg-12.text-center.hero
+						img(src='/img/desks.png', alt='Office desks')
+				div.row
+					div.col-xs-1
+					div.col-xs-10.center-column
 						each post, index in page.posts.reverse ()
 							if post
 								div.row
@@ -36,7 +34,8 @@ html(lang="en")
 													div.post-content!= post.content
 												div.small.text-right
 													| &raquo; 
-													a(href='/posts/' + post.path + post.filename + '.html') Read more
+													strong
+														a(href='/posts/' + post.path + post.filename + '.html') Read more
 										else if post.type === 'mini'
 											div.minipost
 												div.well.content
@@ -56,15 +55,34 @@ html(lang="en")
 														div.small.text-right.title!= post.title
 													div.small.text-right.date= post.displayDate
 								div.row
-									div.col-xs-12.text-center.small.divider . . . . .
-						div.row
-							div.post-nav
-								div.col-md-6.text-right.post-nav-divider-l
+									div.col-xs-12.text-center.small.divider . . 
+										strong . 
+										| . .
+				div.row
+					if (page.previous && !page.next)
+						div.post-nav-single
+							div.col-xs-12
+								div.post-nav-content.text-center
+									h4(style='margin-top: 0px;').post-nav-label
+										a(href=page.previous + '.html') Previous
+					else if (page.next && !page.previous)
+						div.post-nav-single
+							div.col-xs-12
+								div.post-nav-content.text-center
+									h4(style='margin-top: 0px;').post-nav-label
+										a(href=page.next + '.html') Next
+					else
+						div.post-nav
+							div.col-xs-6
+								div.post-nav-content.post-nav-divider-l.text-right
 									if page.previous
-										h4.post-nav-label
+										h4.post-nav-label(style='margin-top: 0px;')
 											a(href=page.previous + '.html') Previous
-								div.col-md-6.text-left.post-nav-divider-r
+						div.post-nav
+							div.col-xs-6
+								div.post-nav-content.post-nav-divider-r.text-left
 									if page.next
-										h4.post-nav-label
+										h4.post-nav-label(style='margin-top: 0px;')
 											a(href=page.next + '.html') Next
+					div.col-xs-1
 			include ./includes/footer.jade
