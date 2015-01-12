@@ -48,11 +48,11 @@ html(lang="en")
 												div.content
 													div.line
 													h3.url
-														a(href=post.url)= post.urlTitle
+														a(href=post.url)= post.displayUrlTitle
 													if post.content
 														div.body!= post.content
-													if post.title
-														div.small.text-right.title!= post.title
+													if post.displayTitle
+														div.small.text-right.title!= post.displayTitle
 													div.small.text-right.date= post.displayDate
 								div.row
 									div.col-xs-12.text-center.small.divider . . 

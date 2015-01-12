@@ -4,6 +4,8 @@
 	var jade = require ('jade');
 	var marked = require ('marked');
 	var moment = require ('moment');
+	var Retext = require ('retext');
+	var smartypants = require ('retext-smartypants');
 	var _ = require ('underscore-contrib');
 
 	var $config = require ('../config');
@@ -42,7 +44,6 @@
 			tags: tags,
 			config: $config
 		};
-
 
 		return compiler (locals);
 	}
@@ -198,6 +199,23 @@
 	}
 
 
+	// Converts text to 'smart' typography.
+	function smartenText (text) {
+		var output, retext;
+
+		retext = new Retext ().use (smartypants);
+		retext.parse (text, function (error, tree) {
+			if (error) {
+				throw error;
+			}
+
+			text = tree.toString ();
+		});
+
+		return text;
+	}
+
+
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyObject = copyObject;
@@ -212,4 +230,5 @@
 	module.exports.getPages = getPages;
 	module.exports.prepareForDisplay = prepareForDisplay;
 	module.exports.savePage = savePage;
+	module.exports.smartenText = smartenText;
 } ());

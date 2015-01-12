@@ -9,15 +9,17 @@
   "main": "src/subwave.js",
   "scripts": {
     "test": "grunt",
-		"archive": "node_modules/nar/bin/nar create --executable"
+    "archive": "node_modules/nar/bin/nar create --executable"
   },
   "author": "Akiva Schoen",
   "license": "EPL",
-	"archive": {
-		"dependencies": true,
-		"devDependencies": false,
-		"patterns": ["src/**"]
-	},
+  "archive": {
+    "dependencies": true,
+    "devDependencies": false,
+    "patterns": [
+      "src/**"
+    ]
+  },
   "devDependencies": {
     "chai": "^1.10.0",
     "connect": "^3.3.3",
@@ -42,6 +44,8 @@
     "jade": "^1.8.1",
     "marked": "^0.3.2",
     "moment": "^2.8.4",
+    "retext": "^0.5.0",
+    "retext-smartypants": "^0.4.2",
     "rss": "^1.0.1",
     "underscore": "^1.7.0",
     "underscore-contrib": "^0.3.0"
