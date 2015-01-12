@@ -3,7 +3,6 @@
 	'use strict';
 
 	var _ = require ('underscore-contrib');
-	var fs = require ('fs-extra');
 
 	var $archive = require ('./archive');
 	var $config = require ('../config');
