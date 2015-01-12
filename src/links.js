@@ -164,7 +164,12 @@
 		// Move new miniposts to the repository
 		_.each (page.items, function (item) {
 			date = convertStringToDate (item.date);
-			filename = $io.getPostFilename (item.title, item.date);
+			
+			if (item.title) {
+				filename = $io.getPostFilename (item.title, item.date);
+			} else {
+				filename = $io.getPostFilename (item.urlTitle, item.date);
+			}
 
 			output = JSON.stringify (_.pick (item, 'type', 'id', 'title', 'author', 'date', 'url', 'urlTitle'),
 															null, '  ');
