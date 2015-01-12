@@ -10,9 +10,9 @@ html(lang="en")
 						div.row.link-page
 							div.col-md-4
 								h3.url.text-right
-									a(href=item.url)= item.urlTitle
-								if item.title
-									div.small.text-right.title!= item.title
+									a(href=item.url)= item.displayUrlTitle
+								if item.displayTitle
+									div.small.text-right.title!= item.displayTitle
 								div.small.text-right.date= item.displayDate
 							div.col-md-8
 								if item.content

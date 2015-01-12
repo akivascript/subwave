@@ -53,10 +53,7 @@
 			page.title = $config [page.type + 's'].title;
 
 			return _.map (page.items, function (item) {
-				item.displayDate = $pages.formatDateForDisplay (item.date);
-				item.content = $pages.convertToHtml (item.content);
-
-				return item;
+				return processItem (item);
 			});
 		};
 
@@ -136,6 +133,11 @@
 
 
 	function processItem (item) {
+		if (item.title) {
+			item.displayTitle = $pages.smartenText (item.title);
+		}
+
+		item.displayUrlTitle = $pages.smartenText (item.urlTitle);
 		item.displayDate = $pages.formatDateForDisplay (item.date);
 		item.content = $pages.convertToHtml (item.content);
 
@@ -159,7 +161,8 @@
 	function savePage (page, tags) {
 		var date, filename, output, repoItemsPath;
 
-		repoItemsPath = $config.paths.repository + $config [page.type + 's'].title.toLowerCase () + '/';
+		repoItemsPath = $config.paths.repository + 
+			$config [page.type + 's'].title.toLowerCase () + '/';
 		
 		// Move new miniposts to the repository
 		_.each (page.items, function (item) {

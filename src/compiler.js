@@ -28,7 +28,7 @@
 		files = $pages.getPages ($config.paths.inbox);
 
 		if (files.length === 0) {
-			console.log ('No pages found to be built.');
+			console.log ('No new items found.');
 
 			return 1;
 		}
