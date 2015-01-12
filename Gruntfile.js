@@ -14,6 +14,14 @@
 
 		grunt.initConfig ({
 			pkg: grunt.file.readJSON ('package.json'),
+			compass: {
+				dev: {
+					options: {
+						sassDir: 'resources/sass',
+						cssDir: 'public/css'
+					}
+				}
+			},
 			concat: {
 				options: {
 					separator: ';'

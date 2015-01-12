@@ -1,0 +1,318 @@
+@import 'base';
+
+a {
+	color: $link-color;
+}
+a:hover {
+	text-decoration: none;
+}
+
+body {
+	background-color: $background-color;
+}
+
+code, kbd, pre, samp {
+	font-family: 'source code pro';
+}
+
+pre {
+	margin: 30px;
+
+	@include borders (10px);
+
+	font-size: 13px;
+}
+
+code {
+	background-color: #efefef;
+	color: #65a576;
+
+	@include borders (5px);
+}
+
+div.post {
+	padding: 30px 0px 30px 0px;
+	
+	.content {
+		margin: 15px 10px 25px 10px;
+
+		img {
+			@include borders (5px);
+
+			border: 1px solid $light-gray;
+		}
+	}
+	.date {
+		color: $light-gray;
+	}
+	.metadata {
+		border-bottom: 1px solid #ddd;
+	}
+	.title {
+		margin-top: -10px;
+	}
+
+	div.tags {
+
+	}
+}
+
+div.minipost {
+	padding: 30px;
+
+	div.content {
+		margin-bottom: 0px;
+
+		@include borders (15px);
+
+		font-size: 90%;
+
+		div.body {
+			padding: 0px 10px 0px 10px;
+
+			color: #777;
+		}
+
+		div.title {
+			margin-bottom: 10px;
+			border-bottom: 1px solid #bbb;
+
+			color: #bb9999;
+		}
+
+		div.date {
+			margin-top: -5px;
+
+			color: $light-gray;
+		}
+	}
+}
+
+div.container {
+	div.center-column {
+		padding-left: 75px;
+		padding-right: 75px;
+	}
+}
+
+div.home {
+}
+
+div.bq {
+	margin: 20px 0px 19px 0px;
+
+	text-align: center;
+
+	span {
+		padding: 5px 10px 5px 10px;
+		
+		@include borders (5px);
+
+		background-color: #a9b5a9;
+
+		color: #eee;
+	}
+}
+
+div.row .archives {
+	line-height: .75em;
+}
+
+.footnotes {
+	padding-left: 50px;
+	padding-right: 50px;
+}
+
+.btn-tag {
+	padding: 2px 6px;
+	
+	@include borders (5px);
+
+	border-color: #8798a7;
+
+	background-color: #8798a7;
+	font-size: 6pt;
+}
+
+.btn-tag:hover {
+	background-color: #6f7d8a;
+	border-color: #6f7d8a;
+}
+
+div.footer {
+	margin-top: 40px;
+	margin-bottom: 65px;
+	padding-top: 15px;
+	border-top: 1px solid #ddd;
+}
+
+.navbar-default {
+	background-color: #8798a7;
+}
+
+.navbar-default .dropdown-menu {
+	background-color: #6f7d8a;
+}
+
+.navbar .dropdown-menu > li > a {
+	background-color: #6f7d8a;
+	border-radius: 0px;
+	border: 0px;
+}
+
+.navbar .dropdown-menu > li > a:hover {
+	background-color: #475059;
+	border: 0px;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+	background-color: #6f7d8a;
+}
+
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus {
+	background-color: #6f7d8a;
+}
+
+.post-nav {
+	margin-top: 65px;
+
+	.single {
+		margin-left: -30px;
+
+		.label {
+			margin-top: 0px;
+		}
+	}
+
+	.content {
+		position: absolute;
+		padding: 0px 20px 0px 20px;
+		width: 100%;
+		bottom: 0px;
+	}
+
+	.divider-l {
+		border-right: 1px dotted #ddd;
+		margin-left: -15px;
+	}
+
+	.divider-r {
+		border-left: 1px dotted #ddd;
+		margin-left: -16px;
+	}
+
+	.label {
+		margin-top: -10px;
+		color: #ccc;
+	}
+}
+
+
+.hero {
+	margin: 10px 0px 40px 0px;
+}
+
+.hero img {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+
+	border: 1px solid #aaa;
+}
+
+.rounded {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+
+	border: 1px solid #aaa;
+}
+
+.tags {
+	margin-top: 10.5px;
+}
+
+.post-nav-link {
+	vertical-align: bottom;
+}
+
+h4.sidebar-title {
+	margin-bottom: 5px;
+}
+
+div.taglist {
+	padding-left: 10px;
+}
+
+img.archive {
+	margin-bottom: 10.5px;
+}
+
+div.link {
+	padding: 30px 0px 30px 0px;
+
+	div.line {
+		width: 100%;
+
+		border-bottom: 1px solid #ddd;
+	}
+
+	h3 {
+		margin-top: -17px;
+
+		a {
+			padding-right: 10px;
+			padding-bottom: 4px;
+			border-right: 1px solid #ddd;
+
+			background-color: #efefef;
+			color: #87A794;
+		}
+		a:hover {
+			color: #444;
+		}
+
+		div.body {
+			padding: 0px 10px 10px 10px;
+
+			font-size: 90%;
+		}
+
+		div.title {
+			color: $light-gray;
+		}	
+
+		div.date {
+			margin-top: -2px;
+
+			color: #ccc;
+		}
+	}
+}
+
+.main {
+	margin-top: 100px;
+}
+
+div.link-page h3 {
+	margin: 0px;
+}
+
+div.link-page div.body {
+	font-size: 90%;
+}
+
+div.link-page div.title {
+	color: #aaa;
+}
+
+div.link-page div.date {
+	color: #c1c1c1;
+}
+
+div.divider {
+	color: rgba(74, 123, 167, 0.26);
+}
