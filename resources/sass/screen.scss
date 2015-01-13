@@ -260,7 +260,7 @@ div.row .archives {
 	background-color: #8798a7;
 	font-size: 8pt;
 
-	&:hover {
+	a:hover {
 		background-color: #6f7d8a;
 		border-color: #6f7d8a;
 	}
@@ -280,22 +280,32 @@ div.footer {
 		background-color: #6f7d8a;
 	}
 
-	.navbar-nav > li > a:hover,
-	.navbar-nav > li > a:focus {
-		background-color: #6f7d8a;
-	}
+	.navbar-nav {
+		& > li > a:hover,
+		& > li > a:focus {
+			background-color: #6f7d8a;
+		}
 
-	.navbar-nav > .open > a, 
-	.navbar-nav > .open > a:hover, 
-	.navbar-nav > .open > a:focus {
-		background-color: #6f7d8a;
+		& > .open > a, 
+		& > .open > a:hover, 
+		& > .open > a:focus {
+			background-color: #6f7d8a;
+		}
 	}
 }
 
 .navbar {
-	.dropdown-menu > li > a:hover {
-		background-color: #475059;
-		border: 0px;
+	.dropdown-menu {
+		& > li > a {
+			background-color: #6f7d8a;
+			border-radius: 0px;
+			border: 0px;
+		}
+		
+		& > li > a:hover {
+			background-color: #475059;
+			border: 0px;
+		}
 	}
 }
 
