@@ -11,7 +11,10 @@
 	function configure (page, callback) {
 		var pg;
 
-		pg = _.compose (callback, _.snapshot) (page);
+		if (callback) {
+			pg = callback (page);
+		}
+
 		pg.template = $config.paths.templates + pg.type.toLowerCase () + '.jade';
 
 		return pg;
@@ -89,18 +92,9 @@
 
 	function configurePost (page) {
 		return configure (page, function (pg) {
-			pg.date = convertStringToDate (pg.date);
 			pg.filename = $io.getPostFilename (pg.title, pg.date);
 			pg.path = $io.getPostDirectoryPathname (pg.date);
 			pg.outputPath = $config.paths.output + 'posts/';
-
-			if (!pg.id) {
-				pg.id = generateId ();
-			}
-
-			if ($config.index.useExcerpts) {
-				pg.excerpt = getExcerpt (pg.content);
-			}
 
 			return pg;
 		});
@@ -141,17 +135,6 @@
 	}
 
 
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
-	}
-
-
 	function generateId () {
 		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -181,7 +164,6 @@
 			return string.charAt (0).toUpperCase () + string.substring (1);
 		}
 	});
-
 
 	// This allows us to refer to functions dynamically.
 	module.internals = {

@@ -12,11 +12,13 @@
 	// are handled by this function.
 	function publishInfo (pages, repo) {
 		_.each (pages, function (page) {
-				$pages.savePage (page, repo.tags);
+			page = $pages.createPage (page);
 
-				$io.renameFile ($config.paths.inbox + page.origFilename, 
-											 $config.paths.repository + page.origFilename);
-			});
+			$pages.savePage (page, repo.tags);
+
+			$io.renameFile ($config.paths.inbox + page.origFilename, 
+										 $config.paths.repository + page.origFilename);
+		});
 	}
 
 	module.exports.publishInfo = publishInfo;

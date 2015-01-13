@@ -49,6 +49,21 @@
 	}
 
 
+	function createPost (post) {
+		post.date = $pages.convertStringToDate (post.date);
+
+		if (!post.id) {
+			post.id = generateId ();
+		}
+
+		if ($config.index.useExcerpts) {
+			post.excerpt = $pages.getExcerpt (post.content);
+		}
+
+		return post;
+	}
+
+	
 	function handlePostsWithSiblings (repo, posts) {
 		var idx, next, previous;
 
@@ -139,13 +154,17 @@
 	}
 
 	
-	// Take [currently only] new posts, add them to the site's repository, process them,
+	// Take new posts, add them to the site's repository, process them,
 	// fold them, spindle them, mutilate them...
 	function publishPosts (posts, repo) {
-		var repoPostsPath, file, index, postCount, output, result;
+		var repoPostsPath, output;
 
 		repoPostsPath = $config.paths.repository + 'posts/';
 
+		posts = _.map (posts, function (post) {
+			return _.compose ($pages.createPage, createPost) (post);
+		});
+		
 		_.each (posts, function (post) {
 			repo.tags = _.reduce (post.tags, function (res, tag) {
 				return $repository.addTagToRepository (repo.tags, tag, post);
@@ -182,6 +201,7 @@
 
 	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.copyPostFromRepository = copyPostFromRepository;
+	module.exports.createPost = createPost;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
 	module.exports.publishPosts = publishPosts;
 	module.exports.savePost = savePost;
