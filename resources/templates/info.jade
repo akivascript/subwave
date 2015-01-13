@@ -4,7 +4,7 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container(style='margin-top: 100px;')
+			div.container.info-page
 				div.row
 					div.col-md-1
 					div.col-xs-10
@@ -12,4 +12,4 @@ html(lang="en")
 							h2.post-title!= page.title
 						div.post-content!= page.content
 					div.col-md-1
-		include ./includes/footer.jade
+			include ./includes/footer.jade

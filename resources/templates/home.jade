@@ -4,8 +4,8 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container
-				div.row.main
+			div.container.home-page
+				div.row
 					div.col-lg-12.text-center.hero
 						img(src='/img/desks.png', alt='Office desks')
 				div.row
@@ -17,21 +17,21 @@ html(lang="en")
 									div.col-xs-12
 										if post.type === 'post'
 											div.post
-												div.post-matter
+												div.metadata
 													if index === 0
-														h5.post-date= post.displayDate
-														h1.post-title!= post.displayTitle
+														h5.date= post.displayDate
+														h1.title!= post.displayTitle
 													else 
-														h6.post-date= post.displayDate
-														h2.post-title!= post.displayTitle
+														h6.date= post.displayDate
+														h2.title!= post.displayTitle
 												div.tags.text-right
 													each tag in post.tags.sort ()
 														a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
 														| 
 												if post.excerpt
-													div.post-content!= post.excerpt
+													div.content!= post.excerpt
 												else
-													div.post-content!= post.content
+													div.content!= post.content
 												div.small.text-right
 													| &raquo; 
 													strong
@@ -41,48 +41,47 @@ html(lang="en")
 												div.well.content
 													if post.title
 														div.small.title= post.title
-													div.body !{post.content}
+													div.body!= post.content
 													div.small.text-right.date= post.displayDate
 										else if post.type === 'link'
 											div.link
-												div.content
-													div.line
-													h3.url
-														a(href=post.url)= post.displayUrlTitle
-													if post.content
-														div.body!= post.content
-													if post.displayTitle
-														div.small.text-right.title!= post.displayTitle
-													div.small.text-right.date= post.displayDate
+												div.line
+												h3
+													a(href=post.url)= post.displayUrlTitle
+												if post.content
+													div.body!= post.content
+												if post.displayTitle
+													div.small.text-right.title!= post.displayTitle
+												div.small.text-right.date= post.displayDate
 								div.row
 									div.col-xs-12.text-center.small.divider . . 
 										strong . 
 										| . .
 				div.row
 					if (page.previous && !page.next)
-						div.post-nav-single
-							div.col-xs-12
-								div.post-nav-content.text-center
-									h4(style='margin-top: 0px;').post-nav-label
+						div.col-xs-12
+							div.post-nav.single
+								div.content.text-center
+									h4.nav-label
 										a(href=page.previous + '.html') Previous
 					else if (page.next && !page.previous)
-						div.post-nav-single
-							div.col-xs-12
-								div.post-nav-content.text-center
-									h4(style='margin-top: 0px;').post-nav-label
+						div.col-xs-12
+							div.post-nav.single
+								div.content.text-center
+									h4.nav-label
 										a(href=page.next + '.html') Next
 					else
-						div.post-nav
-							div.col-xs-6
-								div.post-nav-content.post-nav-divider-l.text-right
+						div.col-xs-6
+							div.post-nav
+								div.content.divider-l.text-right
 									if page.previous
-										h4.post-nav-label(style='margin-top: 0px;')
+										h4.nav-label
 											a(href=page.previous + '.html') Previous
-						div.post-nav
-							div.col-xs-6
-								div.post-nav-content.post-nav-divider-r.text-left
+						div.col-xs-6
+							div.post-nav
+								div.content.divider-r.text-left
 									if page.next
-										h4.post-nav-label(style='margin-top: 0px;')
+										h4.nav-label
 											a(href=page.next + '.html') Next
 					div.col-xs-1
 			include ./includes/footer.jade

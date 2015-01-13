@@ -4,10 +4,10 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container
-				div.row.main
+			div.container.link-page
+				div.row
 					each item in page.items
-						div.row.link-page
+						div.row.link
 							div.col-md-4
 								h3.url.text-right
 									a(href=item.url)= item.displayUrlTitle
@@ -17,4 +17,4 @@ html(lang="en")
 							div.col-md-8
 								if item.content
 									div.body!= item.content
-		include ./includes/footer.jade
+			include ./includes/footer.jade
