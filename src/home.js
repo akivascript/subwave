@@ -142,7 +142,7 @@
 
 		posts = _.flatten (posts);
 
-		return _.sortBy (posts, function (post) { return new Date (post.date); }).reverse ();
+		return _.sortBy (posts, function (post) { return -(new Date (post.date)); });
 	}
 
 

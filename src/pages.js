@@ -55,6 +55,17 @@
 		return marked (input);
 	}
 
+
+	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
+	// Date object.
+	function convertStringToDate (date) {
+		var pattern;
+
+		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
+
+		return new Date (date.replace (pattern, '$1T$2:00'));
+	}
+
 	
 	// Copies an object. If attributes are specified, only
 	// those attributes are copied. Otherwise, the source object
@@ -135,7 +146,7 @@
 			page.content = tmp.content;
 			page.origFilename = file.origFilename;
 
-			return createPage (page);
+			return page;
 		});
 	}
 
@@ -218,6 +229,7 @@
 
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
+	module.exports.convertStringToDate = convertStringToDate 
 	module.exports.copyObject = copyObject;
 	module.exports.createPage = createPage;
 	module.exports.findById = findById;
