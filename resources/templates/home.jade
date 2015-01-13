@@ -58,30 +58,32 @@ html(lang="en")
 										strong . 
 										| . .
 				div.row
-					if (page.previous && !page.next)
-						div.col-xs-12
-							div.post-nav.single
-								div.content.text-center
-									h4.nav-label
-										a(href=page.previous + '.html') Previous
-					else if (page.next && !page.previous)
-						div.col-xs-12
-							div.post-nav.single
-								div.content.text-center
-									h4.nav-label
-										a(href=page.next + '.html') Next
-					else
-						div.col-xs-6
-							div.post-nav
-								div.content.divider-l.text-right
-									if page.previous
-										h4.nav-label
+					div.post-nav
+						if (page.previous && !page.next)
+							div.col-xs-12
+								div.single
+									div.content.text-center
+										h4.subtitle
 											a(href=page.previous + '.html') Previous
-						div.col-xs-6
-							div.post-nav
-								div.content.divider-r.text-left
-									if page.next
-										h4.nav-label
+						else if (page.next && !page.previous)
+							div.col-xs-12
+								div.single
+									div.content.text-center
+										h4.subtitle
 											a(href=page.next + '.html') Next
+						else
+							div.double
+								div.col-xs-6
+									div.content
+										div.divider-l
+										if page.previous
+											h4.subtitle
+												a(href=page.previous + '.html') Previous
+								div.col-xs-6
+									div.content
+										div.divider-r
+										if page.next
+											h4.subtitle
+												a(href=page.next + '.html') Next
 					div.col-xs-1
 			include ./includes/footer.jade

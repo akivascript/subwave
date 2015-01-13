@@ -200,6 +200,11 @@ div.info-page {
 	margin-bottom: 45px;
 }
 
+div.post-page {
+	@extend div.page;
+
+}
+
 div.tags-page {
 	@extend div.page;
 
@@ -295,38 +300,47 @@ div.footer {
 }
 
 .post-nav {
+	margin-top: 75px;
+
 	.single {
-		margin-top: 35px;
-		margin-left: -30px;
-
-		.content {
-			position: absolute;
-			padding: 0px 20px 0px 20px;
-			width: 100%;
-			bottom: 0px;
-
-			.nav-label {
-				margin-top: 0px;
-			}
-		}
-	}
-
-	.divider-l {
-		border-right: 1px dotted #ddd;
 		margin-left: -15px;
 	}
 
-	.divider-r {
-		border-left: 1px dotted #ddd;
-		margin-left: -16px;
+	.double {
+		margin-left: -30px;
 	}
 
-	.label {
-		margin-top: -10px;
-		color: #ccc;
+	.content {
+		position: absolute;
+		padding: 0px 20px 0px 20px;
+		width: 100%;
+		bottom: 0px;
+
+		.title {
+			margin-top: 0px;
+		}
+
+		.subtitle {
+			margin-top: -10px;
+			vertical-align: bottom;
+
+			color: #ccc;
+		}
+
+		.divider-l {
+			margin-right: -20px;
+			padding-right: 20px;
+			border-right: 1px dotted #ddd;
+
+			text-align: right;
+		}
+
+		.divider-r {
+
+			text-align: left;
+		}
 	}
 }
-
 
 .hero {
 	margin: 0px 0px 40px 0px;
