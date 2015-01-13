@@ -1,5 +1,10 @@
 @import 'base';
 
+
+/**************
+ * 	HTML Tags *
+ **************/
+
 a {
 	color: $link-color;
 
@@ -30,6 +35,27 @@ code {
 
 	@include borders (5px);
 }
+
+
+/******************
+ * Primary Layout *
+ *****************/
+
+div.container {
+	div.center-column {
+		padding-left: 75px;
+		padding-right: 75px;
+	}
+}
+
+div.page {
+	margin-top: 100px;
+}
+
+
+/***************************
+ * Individual Item Layouts *
+ ***************************/
 
 div.post {
 	margin-top: -10px;
@@ -91,16 +117,10 @@ div.minipost {
 	}
 }
 
-div.container {
-	div.center-column {
-		padding-left: 75px;
-		padding-right: 75px;
-	}
-}
 
-div.page {
-	margin-top: 100px;
-}
+/**************
+ * Main Pages *
+ **************/
 
 div.archive-page {
 	@extend div.page;
@@ -218,6 +238,11 @@ div.tags-page {
 		margin-top: 0px;
 	}
 }
+
+
+/*************************
+ * To be Organized Later *
+ *************************/
 
 div.bq {
 	margin: 20px 0px 19px 0px;
@@ -366,18 +391,6 @@ div.footer {
 	@include borders (5px);
 
 	border: 1px solid #aaa;
-}
-
-.post-nav-link {
-	vertical-align: bottom;
-}
-
-h4.sidebar-title {
-	margin-bottom: 5px;
-}
-
-div.taglist {
-	padding-left: 10px;
 }
 
 img.archive {
