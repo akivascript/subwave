@@ -4,16 +4,16 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container(style='margin-top: 30px;')
+			div.container.tags-page
 				div.row
 					div.col-md-2
 					div.col-md-8
 						div.page-header
 							div.text-center Posts filed under
-							h1(style='margin-top: 0px;').text-center!= page.title
+							h1.text-center!= page.title
 						each post in page.posts.sort ()
 							div.row
 								div.col-md-12.text-center
 									a(href='/posts/' + post.path + post.filename + '.html')!= post.displayTitle 
 					div.col-md-2
-		include ./includes/footer.jade
+			include ./includes/footer.jade
