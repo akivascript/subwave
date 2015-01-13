@@ -9,11 +9,10 @@ html(lang="en")
 					div.col-md-2
 					div.col-md-8
 						div.page-header
-							div.text-center Posts filed under
 							h1.text-center!= page.name
-						each post in page.posts
+						each tag in page.tags
 							div.row
 								div.col-md-12.text-center
-									a(href='/posts/' + post.path + post.filename + '.html')!= post.displayTitle 
+									a(href='/tags/' + tag.name.toLowerCase () + '.html')!= tag.name
 					div.col-md-2
 			include ./includes/footer.jade

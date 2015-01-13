@@ -18,7 +18,7 @@
 	}
 
 
-	// Creates a new, empty tag
+	// Creates a tag object
 	function createTag (name) {
 		return {
 			name: name,
@@ -27,19 +27,41 @@
 	}
 
 
-	function publishTags (repo) {
-		var home, page;
+	// Creates tag list object which lists all of the extant tags
+	function createTagListPage () {
+		return {
+			type: 'taglist',
+			name: 'Tags',
+			tags: []
+		};
+	}
 
-		home = _.compose ($pages.createPage, createTagHome) ();
+
+	// Creates a tag page object for an individual tag
+	function createTagPage (tag) {
+		return {
+			type: 'tag',
+			name: tag.name,
+			posts: []
+		};
+	}
+
+
+	function publishTags (repo) {
+		var taglist, tagpage; 
+
+		taglist = _.compose ($pages.createPage, createTagListPage) ();
 			
 		_.each (repo.tags, function (tag) {
-			page = createTagIndex (tag);
-			home.tags = home.tags.concat (tag);
+			tagpage = _.compose ($pages.createPage, createTagPage) (tag);
+			taglist.tags = taglist.tags.concat (tag);
 
+			// Add all necessary post information from posts whic
+			// have been tagged with this tag
 			_.each (tag.posts, function (postTag) {
 				_.each (repo.posts, function (post) {
 					if (post.filename === postTag) {
-						page.posts.push ({
+						tagpage.posts.push ({
 							title: post.title,
 							displayTitle: $pages.convertToHtml (post.title),
 							filename: post.filename,
@@ -47,37 +69,18 @@
 						});
 					}
 				});
-				
 			});
 
-			page.posts = _.sortBy (page.posts, function (post) { return post.title; });
+			tagpage.posts = _.sortBy (tagpage.posts, function (post) { return post.title; });
 
-			$pages.savePage (page, repo.tags);
+			// Save individual tag index pages
+			$pages.savePage (tagpage, repo.tags);
 		});
 
-		$pages.savePage (home, repo.tags);
-	}
+		taglist.tags = _.sortBy (taglist.tags, function (tag) { return tag.name; });
 
-
-	// Creates a central tag page
-	function createTagHome () {
-		return {
-			type: 'tag-home',
-			tags: [],
-		};
-	}
-
-
-	// Returns a fresh tag index object.
-	function createTagIndex (tag) {
-		return {
-			type: 'tag',
-			title: tag.name,
-			filename: tag.name.toLowerCase (),
-			posts: [],
-			outputPath: $config.paths.output + 'tags/',
-			template: $config.paths.templates + 'tag.jade'
-		};
+		// Saves a central tag index page
+		$pages.savePage (taglist, repo.tags);
 	}
 
 
