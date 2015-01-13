@@ -107,7 +107,17 @@
 	}
 
 
-	function configureTagHome (page) {
+	function configureTag (page) {
+		return configure (page, function (pg) {
+			pg.filename = pg.name.toLowerCase ();
+			pg.outputPath = $config.paths.output + 'tags/';
+
+			return pg;
+		});
+	}
+
+
+	function configureTaglist (page) {
 		return configure (page, function (pg) {
 			pg.filename = 'index';
 			pg.outputPath = $config.paths.output + 'tags/';
@@ -122,7 +132,7 @@
 		var name;
 
 		if (!page) {
-			return undefined; // Should this be an empty object?
+			return {}; 
 		}
 
 		name = _.compose (_.capitalize, _.camelCase) (page.type);
@@ -181,7 +191,8 @@
 		configureLink: configureLink,
 		configureMini: configureMini,
 		configurePost: configurePost,
-		configureTagHome: configureTagHome
+		configureTag: configureTag,
+		configureTaglist: configureTaglist
 	};
 
 	module.exports.createPage = createPage;

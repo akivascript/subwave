@@ -54,7 +54,7 @@
 		// archive.html
 		publish.archive (repo.posts, repo.tags);
 
-		// tags/[tag].html files
+		// tag index files
 		publish.tags (repo);
 
 		// RSS news feed
