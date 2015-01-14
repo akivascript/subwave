@@ -232,6 +232,12 @@ div.info-page {
 
 	.content {
 		margin: 15px 10px 25px 10px;
+
+		img {
+			@include borders (5px);
+
+			border: 1px solid $light-gray;
+		}
 	}
 }
 
