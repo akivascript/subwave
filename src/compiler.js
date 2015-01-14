@@ -110,7 +110,7 @@
 			}
 		}
 
-		$io.removeDirectory ($config.paths.repository);
+//		$io.removeDirectory ($config.paths.repository);
 
 		buildSite ();
 	}

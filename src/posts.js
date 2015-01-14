@@ -103,6 +103,32 @@
 	}
 
 
+	function loadPost (post) {
+		var file, path;
+
+		path = $config.paths.repository + 'posts/' + 
+			$io.getPostDirectoryPathname (post.date) + post.filename + '.md';
+
+		return $io.readFile (path);
+	}
+
+
+	function loadPosts (path) {
+		var files, posts;
+
+		path = path || $config.paths.repository + 'posts/';
+
+		files = $io.getFiles (path);
+
+		for (var file in files) {
+			path = files [file];
+
+			if (file !== 'repository.json') {
+				$io.copyFile (path + file, $config.paths.inbox + file);
+			}
+		}
+	}
+
 	// Loads and processes an existing post from resources/archives/..
 	function processSibling (sibling, direction) {
 		var file, filename, path;
@@ -203,6 +229,7 @@
 	module.exports.copyPostFromRepository = copyPostFromRepository;
 	module.exports.createPost = createPost;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
+	module.exports.loadPost = loadPost;
 	module.exports.publishPosts = publishPosts;
 	module.exports.savePost = savePost;
 } ());

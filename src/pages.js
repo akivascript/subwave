@@ -36,6 +36,10 @@
 			if (page.content) {
 				page.content = prepareForDisplay (page.content);
 			}
+
+			if (page.excerpt) {
+				page.excerpt = prepareForDisplay (page.excerpt);
+			}
 		}
 
 		// Use a locals object so multiple objects can be passed to Jade.
@@ -140,13 +144,7 @@
 		var page, tmp;
 
 		return _.map (loadPages (path), function (file) {
-			tmp = parsePage (file.content);
-
-			page = tmp.metadata;
-			page.content = tmp.content;
-			page.origFilename = file.origFilename;
-
-			return page;
+			return _.compose (createPage, processFile) (file);
 		});
 	}
 
@@ -185,6 +183,19 @@
 	// Prepares the content for display in a browser.
 	function prepareForDisplay (pageBody) {
 		return _.compose (convertToHtml, scrubPage) (pageBody);
+	}
+
+
+	function processFile (file) {
+		var page, tmp;
+
+		tmp = parsePage (file.content || file);
+
+		page = tmp.metadata;
+		page.content = tmp.content;
+		page.origFilename = file.origFilename;
+
+		return page;
 	}
 
 
@@ -241,6 +252,7 @@
 	module.exports.getMetadata = getMetadata;
 	module.exports.getPages = getPages;
 	module.exports.prepareForDisplay = prepareForDisplay;
+	module.exports.processFile = processFile;
 	module.exports.savePage = savePage;
 	module.exports.smartenText = smartenText;
 } ());

@@ -64,37 +64,6 @@
 	}
 
 
-	// Returns a post by its index. 
-	function getPostByIndex (index, posts) {
-		return _.find (posts, function (post) {
-			return post.index == index;
-		});
-	}
-
-
-	// Returns a JSON object representing the current repository of the blog
-	// or returns a fresh one if no repository currently exists (this should only
-	// occur when a blog is new and has no posts yet or when the entire site
-	// is being rebuilt from scratch).
-	function getRepository (file) {
-		var repo;
-
-		try {
-			repo = JSON.parse (file);
-		} catch (e) {
-			repo = createRepository ();
-		}
-
-		repo.type = 'repository';
-
-		if (verifyRepository (repo) === false) {
-			throw new Error (repoName + ' is not in the expected format.');
-		}
-
-		return repo;
-	}
-
-
 	function findPost (posts, id) {
 		var result;
 
@@ -130,17 +99,46 @@
 	}
 
 
-	// Reads the repository.json file from disk.
-	function loadRepository () {
+	// Returns a post by its index. 
+	function getPostByIndex (index, posts) {
+		return _.find (posts, function (post) {
+			return post.index == index;
+		});
+	}
+
+
+	// Returns a JSON object representing the current repository of the blog
+	// or returns a fresh one if no repository currently exists (this should only
+	// occur when a blog is new and has no posts yet or when the entire site
+	// is being rebuilt from scratch).
+	function getRepository (file) {
 		var repo;
 
-		try {
-			repo = $io.readFile ($config.paths.repository + repoName);
-		} catch (e) {
-			// Do nothing here, we want to return null if repository.json isn't present.
+		if (_.isEmpty (file)) {
+			repo = createRepository ();
+		} else {
+			repo = file;
+		}
+
+		repo.type = 'repository';
+
+		if (verifyRepository (repo) === false) {
+			throw new Error (repoName + ' is not in the expected format.');
 		}
 
 		return repo;
+	}
+
+
+	// Reads the repository.json file from disk.
+	function loadRepository () {
+		try {
+			return JSON.parse ($io.readFile ($config.paths.repository + repoName));
+		} catch (e) {
+			// Do nothing here, we want to return an empty repo if necessary.
+		}
+
+		return {};
 	}
 
 
@@ -165,8 +163,8 @@
 	function verifyRepository (repo) {
 		var keys, result;
 
-		keys = ['lastUpdated', 'posts', 'tags'];
-
+		keys = ['type', 'lastUpdated', 'posts', 'tags'];
+		
 		return _.reduce (keys, 
 										 function (result, key) { return _.has (repo, key); },
 										 true);
@@ -179,6 +177,7 @@
 	module.exports.getPostByIndex = getPostByIndex;
 	module.exports.getRepository = getRepository;
 	module.exports.findTag = findTag;
+	module.exports.findPost = findPost;
 	module.exports.loadRepository = loadRepository;
 	module.exports.saveRepository = saveRepository;
 } ());

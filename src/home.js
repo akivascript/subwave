@@ -7,6 +7,7 @@
 	var $links = require ('./links');
 	var $miniposts = require ('./miniposts');
 	var $pages = require ('./pages');
+	var $posts = require ('./posts');
 
 	
 	function addPostNav (pages) {
@@ -29,28 +30,6 @@
 
 			return page;
 		});
-	}
-
-
-	function addItemsToHome (items) {
-		return _.map (items, function (item) {
-			item.displayDate = $pages.formatDateForDisplay (item.date);
-			item.content = $pages.convertToHtml (item.content);
-
-			return item;
-		});
-	}
-
-
-	function addPostToHome (home, post) {
-		var posts;
-
-		posts = _.snapshot (home.posts);
-		post = _.pick (post, 'displayDate', 'displayTitle', 'tags', 
-									 'excerpt', 'content', 'path', 'filename');
-		post.content = $pages.prepareForDisplay (post.content);
-
-		return posts.concat (post);
 	}
 	
 
@@ -118,19 +97,32 @@
 	}
 	
 
+	function processPost (item) {
+		item.displayDate = $pages.formatDateForDisplay (item.date);
+		item.displayTitle = $pages.convertToHtml (item.title);
+		item.content = $pages.prepareForDisplay (item.content);
+		
+		if (item.excerpt) {
+			item.excerpt = $pages.prepareForDisplay (item.excerpt);
+		}
+
+		return item;
+	}
+
+
 	function processPosts (posts) {
 		var links, miniposts;
 
-		if ($config.index.useExcerpts) {
-			posts = _.map (posts,
-										 function (post) {
-											 if (post.type === 'post' && post.excerpt) {
-												 post.excerpt = $pages.prepareForDisplay (post.excerpt); 
-											 }
-											 
-											 return post;
-										 });
-		}
+		posts = _.map (posts, function (post) {
+			if (post.type === 'post') {
+				if (!post.content) {
+						post = _.compose (processPost, $pages.createPage, $posts.createPost, 
+															$pages.processFile, $posts.loadPost) (post);
+				}
+
+				return post;
+			}
+		});
 
 		posts = posts.concat (_.map ($miniposts.loadMiniposts (), function (post) {
 			return $miniposts.processMinipost (post);
@@ -162,6 +154,5 @@
 	}
 
 
-	module.exports.addPostToHome = addPostToHome;
 	module.exports.publishHome = publishHome;
 } ());
