@@ -1,6 +1,6 @@
 {
   "name": "subwave",
-  "version": "0.1.0",
+  "version": "0.7.5",
   "description": "A static weblog generator",
   "repository": {
     "type": "git",
