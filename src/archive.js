@@ -10,16 +10,6 @@
 	var $pages = require ('./pages');
 
 
-	function addEntryToArchive (entries, post) {
-		entries = _.snapshot (entries);
-		post = _.pick (post, 'path', 'filename', 'title', 'displayDate');
-		
-		entries.push (post);
-
-		return entries;
-	}
-
-
 	// Compile archive.html through Jade.
 	function compileArchive (page, tags) {
 		var compileFn;
@@ -53,6 +43,14 @@
 	}
 
 
+	function processItem (item) {
+		item.displayDate = $pages.formatDateForDisplay (item.date);
+		item.displayTitle = $pages.convertToHtml (item.title);
+
+		return item;
+	}
+
+
 	// Creates an archive page from all of the published posts stored
 	// in the repository.
 	function publishArchive (posts, tags) {
@@ -60,9 +58,9 @@
 
 		archive = _.compose ($pages.createPage, createArchive) ();
 
-		archive.entries = _.reduce (posts, function (res, post) {
-			return res.concat (addEntryToArchive (archive.entries, post));
-		}, []);
+		archive.entries = _.map (posts, function (post) {
+			return processItem (post);
+		});
 			
 		saveArchive (archive, tags);
 	}
