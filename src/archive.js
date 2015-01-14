@@ -46,6 +46,8 @@
 	function processItem (item) {
 		item.displayDate = $pages.formatDateForDisplay (item.date);
 		item.displayTitle = $pages.convertToHtml (item.title);
+		item.filename = $io.getPostFilename (item.title, item.date);
+		item.path = $io.getPostDirectoryPathname (item.date);
 
 		return item;
 	}
@@ -61,7 +63,7 @@
 		archive.entries = _.map (posts, function (post) {
 			return processItem (post);
 		});
-			
+
 		saveArchive (archive, tags);
 	}
 
