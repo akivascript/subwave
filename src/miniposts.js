@@ -23,17 +23,6 @@
 	}
 
 
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
-	}
-
-
 	function compileMiniposts (page, tags) {
 		var compileFn;
 
@@ -82,6 +71,7 @@
 
 
 	function processMinipost (item) {
+		item.date = new Date (item.date);
 		item.displayDate = $pages.formatDateForDisplay (item.date);
 		item.content = $pages.convertToHtml (item.content);
 
@@ -114,7 +104,7 @@
 		
 		// Move new miniposts to the repository
 		_.each (page.posts, function (post) {
-			date = convertStringToDate (post.date);
+			date = new Date (post.date);
 			filename = $io.getPostFilename (post.title, post.date);
 
 			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date'),

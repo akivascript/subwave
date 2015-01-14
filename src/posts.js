@@ -3,6 +3,7 @@
 	'use strict';
 
 	var jade = require ('jade');
+	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
 	var $config = require ('../config');
@@ -50,7 +51,7 @@
 
 
 	function createPost (post) {
-		post.date = $pages.convertStringToDate (post.date);
+		post.date = new Date (post.date);
 
 		if (!post.id) {
 			post.id = generateId ();
@@ -191,10 +192,14 @@
 			return _.compose ($pages.createPage, createPost) (post);
 		});
 		
-		_.each (posts, function (post) {
+		_.each (posts, function (p) {
+			var post = p;
+
 			repo.tags = _.reduce (post.tags, function (res, tag) {
 				return $repository.addTagToRepository (repo.tags, tag, post);
 			}, repo.tags);
+
+			post.date = $pages.formatDate (post.date, 'YYYY-MM-DD HH:mm');
 
 			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date', 'tags'),
 															null, '  ');
@@ -203,13 +208,15 @@
 			$io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
 
 			$io.removeFile ($config.paths.inbox + post.origFilename);
+
+			post.date = new Date (post.date);
 		});
 
 		repo.posts = _.reduce (posts, function (res, post) {
 			return $repository.addPostToRepository (repo.posts, post);
 		}, repo.posts);
 
-		repo.posts = _.sortBy (repo.posts, function (post) { return new Date (post.date); });
+		repo.posts = _.sortBy (repo.posts, function (post) { return post.date; });
 
 		handlePostsWithSiblings (repo, posts);
 

@@ -2,6 +2,7 @@
 	'use strict';
 
 	var _ = require ('underscore-contrib');
+	var moment = require ('moment');
 
 	var $config = require ('../config');
 	var $links = require ('./links');
@@ -134,7 +135,7 @@
 
 		posts = _.flatten (posts);
 
-		return _.sortBy (posts, function (post) { return -(new Date (post.date)); });
+		return _.sortBy (posts, function (post) { return -post.date; });
 	}
 
 
@@ -145,6 +146,7 @@
 		var page, pages, posts;
 
 		posts = processPosts (repo.posts);
+
 		pages = createPages (posts);
 		pages = addPostNav (pages);
 
