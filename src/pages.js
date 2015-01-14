@@ -42,6 +42,8 @@
 			}
 		}
 
+		tags = _.sortBy (tags, function (tag) { return tag.name; });
+
 		// Use a locals object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
