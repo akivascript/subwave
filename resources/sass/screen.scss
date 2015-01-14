@@ -218,11 +218,26 @@ div.info-page {
 
 	margin-top: 75px;
 	margin-bottom: 45px;
+
+	.metadata {
+		margin-bottom: 20px;
+		padding-left: 3px;
+
+		border-bottom: 1px solid #ddd;
+
+		h2 {
+			margin-bottom: 3px;
+		}
+	}
+
+	.content {
+		margin: 15px 10px 25px 10px;
+	}
 }
+
 
 div.post-page {
 	@extend div.page;
-
 }
 
 div.tags-page {
