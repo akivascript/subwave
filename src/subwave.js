@@ -9,7 +9,7 @@
 
 	var subwave = require ('commander');
 
-	var config = require ('../resources/config');
+	var config = require ('../config');
 	var co = require ('./compiler');
 	var io = require ('./io');
 	var pa = require ('./pages');
@@ -27,6 +27,15 @@
 			process.exit ();
 		});
 
+	subwave
+		.command ('gen-id')
+		.description ('Create a new ID')
+		.action (function () {
+			console.log (pa.generateId ());
+
+			process.exit ();
+		});
+		
 	subwave
 		.command ('new-post')
 		.description ('Create a new post')
@@ -62,48 +71,35 @@
 
 			process.exit ();
 		});
-
-	subwave
-		.command ('find-post [criterion]')
-		.description ('Returns a list of qualifying posts (does NOT search post content)') 
-		.action (function (criterion) {
-			var posts;
-
-			posts = po.findPosts (criterion);
-
-			console.log ('Found:');
-
-			_.each (posts, function (post) {
-				console.log (post.title + ' from ' + pa.formatDateForDisplay (post.date) +
-										 ' at index ' + post.index + '.');
-			});
-			
-			process.exit ();
-		});
 			
 	subwave
 		.version ('0.8')
 		.option ('-cp, --clean', 'Clean /public directories')
-		.option ('-ca, --clean-repository', 'Clean /resources/repository directories')
+		.option ('-ca, --clean-repo', 'Clean /resources/repository directories')
 		.option ('-v, --verbose', 'Be chatty about what\'s being done');
 
-	try {
-		subwave.parse (process.argv);
-	} catch (e) {
-		console.log (e.stack);
-
-		process.exit ();
-	}
 
 	if (subwave.verbose) {
 		config.verbose = true;
 	}
 		
 	if (subwave.clean) {
-		io.cleanPublic ();
+		io.removeDirectory (config.paths.output);
 	}
 
-	if (subwave.cleanRepository) {
-		io.cleanRepository ();
+	if (subwave.cleanRepo) {
+		io.removeDirectory (config.paths.repository);
 	}
+
+	function main () {
+		try {
+			subwave.parse (process.argv);
+		} catch (e) {
+			console.log (e.stack);
+
+			process.exit ();
+		}
+	}
+
+	main ();
 } ());

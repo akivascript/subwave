@@ -134,7 +134,7 @@
 
 						expected = JSON.parse (expected); 
 
-						actual = _.compose (JSON.parse, pages.getMetadata) (input);
+						actual = pages.getMetadata (input);
 
 						expect (actual).to.eql (expected);
 					});
@@ -147,6 +147,41 @@
 				fn = function () { pages.getMetadata (); };
 
 				expect (fn).to.throw (Error);
+			});
+		});
+
+		describe ('smartenText', function () {
+			it ('should return text with \'smart\' typography in place', function () {
+				var actual, expected, text;
+
+				text = 'This\'ll be the example text--it does the thing.';
+				expected = 'This’ll be the example text—it does the thing.';
+
+				actual = pages.smartenText (text);
+
+				expect (actual).to.equal (expected);
+			});
+
+			it ('should return an empty string when an empty string is passed', function () {
+				var actual, expected, text;
+
+				text = '';
+				expected = '';
+
+				actual = pages.smartenText (text);
+
+				expect (actual).to.equal (expected);
+			});
+
+			it ('should return an unaltered string when the string doesn\'t need altering', function () {
+				var actual, expected, text;
+
+				text = 'This text does not require changing.';
+				expected = 'This text does not require changing.';
+
+				actual = pages.smartenText (text);
+
+				expect (actual).to.equal (expected);
 			});
 		});
 	});

@@ -4,10 +4,13 @@
 	var jade = require ('jade');
 	var marked = require ('marked');
 	var moment = require ('moment');
+	var Retext = require ('retext');
+	var smartypants = require ('retext-smartypants');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
-	var io = require ('./io');
+	var $config = require ('../config');
+	var $io = require ('./io');
+	var $factory = require ('./factory.js');
 
 	marked.setOptions ({
 		smartypants: true
@@ -24,20 +27,26 @@
 			callback (page);
 		} else {
 			page.displayDate = formatDateForDisplay (page.date);
-			page.headTitle = page.title;
-			page.displayTitle = convertToHtml (page.title);
-			page.title = convertToHtml (page.title);
+
+			if (page.title) {
+				page.headTitle = page.title;
+				page.displayTitle = convertToHtml (page.title);
+			}
 		
 			if (page.content) {
 				page.content = prepareForDisplay (page.content);
 			}
+
+			if (page.excerpt) {
+				page.excerpt = prepareForDisplay (page.excerpt);
+			}
 		}
 
-		// Use a local object so multiple objects can be passed to Jade.
+		// Use a locals object so multiple objects can be passed to Jade.
 		locals = {
 			page: page,
 			tags: tags,
-			config: config
+			config: $config
 		};
 
 		return compiler (locals);
@@ -48,17 +57,6 @@
 	// for display.
 	function convertToHtml (input) {
 		return marked (input);
-	}
-
-
-	// Takes a string in the format of 'YYYY-MM-DD HH:MM' and returns a
-	// Date object.
-	function convertStringToDate (date) {
-		var pattern;
-
-		pattern = /(\d{4}-\d{2}-\d{2})\s(\d+:\d+)/;
-
-		return new Date (date.replace (pattern, '$1T$2:00'));
 	}
 
 	
@@ -78,130 +76,92 @@
 	}
 
 
-	// Creates a new index homepage. This gets rebuilt each time a new post is added
-	// to the site.
-	function createHomePage (posts) {
-		var entries, entry, homePage, file, filename, homePath, path;
+	// Returns a page configuration object from the pagefactory.
+	function createPage (page) {
+		return $factory.createPage (page);
+	}
 
-		entries = [];
 
-		// TODO: Refactor this (with processSibling in posts?): readPost?
-		_.each (posts, function (post) {
-			entry = copyObject (post);
-			entry.path = io.getPostDirectoryPathname (entry.date);
-			file = io.readFile (config.paths.repository + 'posts/' + entry.path + entry.filename + '.md');
-			entry.content = getContent (file);
-			entry.displayTitle = convertToHtml (entry.title);
-			entry.displayDate = formatDateForDisplay (entry.date);
-
-			if (entry.content) {
-				entry.excerpt = _.compose (prepareForDisplay, getExcerpt) (entry.content);
-				entry.content = prepareForDisplay (entry.content);
-			}
-
-			entries.push (entry);
+	// Filters a collection for pages of a given type.
+	function filterPages (coll, type) {
+		return _.filter (coll, function (item) {
+			return item.type === type;
 		});
-
-		homePage = {
-			type: 'index',
-			title: config.blog.title,
-			filename: 'index',
-			posts: entries,
-			tags: [],
-			template: config.paths.templates + 'index.jade'
-		};
-
-		return homePage;
 	}
 
 
-	// Converts a file into a page. A file has some front matter which is converted
-	// to JSON. This front matter is used to configure the page, determine its type,
-	// and so forth.
-	function createPage (file) {
-		var attr, content, compiler, filename, i, metadata, matches, page;
+	function findById (posts, id) {
+		var result;
 
-		matches = parseFile (file);
+		result = {};
+		result.post = _.findWhere (posts, { id: id });
 
-		page = copyObject (JSON.parse (matches [1]));
+		if (result.post) {
+			result.index = _.indexOf (posts, result.post);
 
-		content = matches [2];
-
-		if (content) {
-			page.content = content;
+			return result;
 		}
 
-		if (page.type === 'post') {
-			page.template = config.paths.templates + 'post.jade';
-			page.date = convertStringToDate (page.date);
-			page.filename = io.getPostFilename (page.title, page.date);
-			page.path = io.getPostDirectoryPathname (page.date);
-		} else if (page.type === 'page') {
-			page.template = config.paths.templates + 'page.jade';
-			page.filename = page.title.toLowerCase ();
-		} else if (page.type === 'archive') {
-			page.template = config.paths.templates + 'archive.jade';
-			page.filename = 'archive';
-		} else {
-			throw new Error ('Unable to determine template type from page: ' + page);
-		}
-
-		return page;
+		return {};
 	}
 
-
-	// Takes a date object and converts it to the specified date format for display
-	// on both the index and individual post pages.
+	
+	// This will eventually be refactored out; it's a holdover. And I'm too lazy
+	// to do it right now.
 	function formatDateForDisplay (date) {
-		var postDate;
-
-		postDate = moment (date);
-
-		return postDate.format (config.blog.dateFormat);
+		return formatDate (date, $config.blog.dateFormat);
 	}
 
 
-	// Create an excerpt for a post..
-	function getExcerpt (postBody) {
-		var excerpt, output;
+	// Takes a date object and converts it to the specified date format 
+	function formatDate (date, format) {
+		var output;
 
-		excerpt = postBody.match (/<excerpt>((.|\s)+?)<\/excerpt>/);
+		format = format || $config.blog.dateFormat;
+		output = moment (date);
 
-		if (excerpt) {
-			output = excerpt [1];
-		} else {
-			output = postBody;
-		}
-
-		return output;
+		return output.format (format);
 	}
-
+		
 
 	// Parses a file and returns only its content (e.g., the body of a post).
 	function getContent (file) {
-		return parseFile (file) [2];
+		return parsePage (file).content;
 	}
 
 
 	// Parses a file and returns only its metadata.
 	function getMetadata (file) {
-		return parseFile (file) [1];
+		return parsePage (file).metadata;
+	}
+
+
+	function getPages (path) {
+		var page, tmp;
+
+		return _.map (loadPages (path), function (file) {
+			return _.compose (createPage, processFile) (file);
+		});
 	}
 
 
 	// An indirector for clarity.
-	function getNewPages () {
-		return io.readFiles (config.paths.inbox, createPage);
+	function loadPages (path) {
+		try {
+			return $io.readFiles (path);
+		} catch (e) {
+			return null;
+		}
 	}
 
 
 	// Takes the contents of a file as a string and separates the metadata from the
 	// content of the page. 
-	function parseFile (file) {
+	function parsePage (file) {
 		var matches, pattern;
 
 		// Matches '{key: value, key: value, ...} content ...'
-		pattern = /({[\s\w"'\?!,: \-\[\]\{\}\.\n]*})?\n*((.|[\n\r])*)/;
+		pattern = /({[\s\w@/"'\?!,: \-\[\]\{\}\.\n]*})?\n*((.|[\n\r])*)/;
 
 		matches = file.match (pattern);
 
@@ -209,7 +169,10 @@
 			throw new Error ('The file isn\'t the correct format: ' + file);
 		}
 
-		return matches;
+		return {
+			metadata: JSON.parse (matches [1]),
+			content: matches [2] || ''
+		};
 	}
 	
 
@@ -219,17 +182,27 @@
 	}
 
 
+	function processFile (file) {
+		var page, tmp;
+
+		tmp = parsePage (file.content || file);
+
+		page = tmp.metadata;
+		page.content = tmp.content;
+		page.origFilename = file.origFilename;
+
+		return page;
+	}
+
+
 	// Removes any custom mark-up elements from a page's body.
 	function scrubPage (pageBody) {
 		var output, regexp;
 
-		_.each (config.htmlElements.scrub, function (element) {
-//		output = _.reduce (config.htmlElements.scrub, function (res, element) {
+		_.each ($config.htmlElements.scrub, function (element) {
 			regexp = new RegExp ('(<' + element + '>)|(<\/' + element + '>)', 'gi');
 
 			output = pageBody.replace (regexp, '');
-//
-//			return res;
 		});
 
 		return output || pageBody;
@@ -240,20 +213,42 @@
 	function savePage (page, tags) {
 		page.output = compilePage (page, tags);
 
-		io.saveHtmlPage (page);
+		$io.saveHtmlPage (page);
+	}
+
+
+	// Converts text to 'smart' typography.
+	function smartenText (text) {
+		var output, retext;
+
+		retext = new Retext ().use (smartypants);
+		retext.parse (text, function (error, tree) {
+			if (error) {
+				throw error;
+			}
+
+			text = tree.toString ();
+		});
+
+		return text;
 	}
 
 
 	module.exports.compilePage = compilePage;
 	module.exports.convertToHtml = convertToHtml;
 	module.exports.copyObject = copyObject;
-	module.exports.createHomePage = createHomePage;
 	module.exports.createPage = createPage;
+	module.exports.findById = findById;
+	module.exports.filterPages = filterPages;
+	module.exports.formatDate = formatDate;
 	module.exports.formatDateForDisplay = formatDateForDisplay;
-	module.exports.getExcerpt = getExcerpt;
+	module.exports.generateId = $factory.generateId;
+	module.exports.getExcerpt = $factory.getExcerpt;
 	module.exports.getContent = getContent;
 	module.exports.getMetadata = getMetadata;
-	module.exports.getNewPages = getNewPages;
+	module.exports.getPages = getPages;
 	module.exports.prepareForDisplay = prepareForDisplay;
+	module.exports.processFile = processFile;
 	module.exports.savePage = savePage;
+	module.exports.smartenText = smartenText;
 } ());

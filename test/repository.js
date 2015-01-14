@@ -7,6 +7,7 @@
 	var repository = require ('../src/repository.js');
 
 	var repo = {
+		"type": "repository",
 		"lastUpdated": "2015-01-02T03:57:40.754Z",
 		"posts": [
 			{
@@ -25,40 +26,31 @@
 				"tags": ["Guch"],
 				"title": "Second Post"
 			}],
-		"tags": {
-			"Miscellany": {
+		"tags": [
+			{ 
+				"name": "Miscellany",
 				"posts": [
 					"2014-12-20-first-post"
 				]
 			},
-			"Guch": {
+			{
+				"name": "Guch",
 				"posts": [
 					"2014-12-21-second-post"
 				]
 			}
-		}
+		]
 	};
 
-	var emptyRepo= { 
+	var emptyRepo = { 
 		lastUpdated: '',
 		posts: [],
-		tags: []
+		tags: [],
+		type: 'repository'
 	};
 
 
 	describe ('Repository', function () {
-		describe ('getLastIndex', function () {
-			it ('returns the map index of the most recently added post in repository', function () {
-				var actual, expected;
-
-				expected = 2;
-
-				actual = repository.getLastIndex (repo.posts);
-
-				expect (actual).to.equal (expected);
-			});
-		});
-
 		describe ('getPostByIndex', function () {
 			it ('returns from repository a post matching the passed index number', function () {
 				var actual, expected;

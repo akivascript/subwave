@@ -1,175 +1,88 @@
-// This is the 'heart' of subwave. It processes all incoming posts and pages from 
 // the inbox and generates necessary support pages such as archive.html.
 (function () {
 	'use strict';
 
-	var Rss = require ('rss');
 	var _ = require ('underscore-contrib');
 
-	var ar = require ('./archive');
-	var config = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages');
-	var po = require ('./posts');
-	var repo = require ('./repository');
-	var ta = require ('./tags');
+	var $archive = require ('./archive');
+	var $config = require ('../config');
+	var $home = require ('./home');
+	var $info = require ('./info');
+	var $io = require ('./io');
+	var $links = require ('./links');
+	var $miniposts = require ('./miniposts');
+	var $pages = require ('./pages');
+	var $posts = require ('./posts');
+	var $repository = require ('./repository');
+	var $rss = require ('./rss');
+	var $tags = require ('./tags');
+
+	var publish;
 
 
-	// Ceci n'est pas un commentaire.
+	// Ceci n'est pas un commentaire
 	function buildSite () {
-		var homePage, entries, files, pages, path, posts, repository, resources;
+		var entries, files, pages, path, posts, repo;
 
-		if (config.verbose) {
-			console.log ('Compiling the site...');
-		}
+		// Loads all of the files to be published
+		files = $pages.getPages ($config.paths.inbox);
 
-		pages = pa.getNewPages ();
-
-		if (pages.length === 0) {
-			console.log ('No new pages found');
+		if (files.length === 0) {
+			console.log ('No new items found.');
 
 			return 1;
 		}
 
-		repository = _.compose (repo.getRepository, repo.loadRepository) ();
-		posts = po.getPosts (pages);
+		// Loads an existing repo or creates a new one
+		repo = _.compose ($repository.getRepository, $repository.loadRepository) ();
 
-		if (posts.length !== 0) {
-			entries = _.map (posts, function (post) {
-				return ar.createArchiveEntry (post);
-			});
+		// Publishes each type of content page
+		_.each ($config.items, function (type) {
+			pages = $pages.filterPages (files, type);
 
-			handlePosts (repository, posts, entries);
-		}
-
-		// Processes and saves any page files in inbox.
-		_.each (pages, function (page) {
-			if (page.type !== 'post') {
-				pa.savePage (page, repository.tags);
-
-				io.renameFile (config.paths.inbox + page.origFilename, 
-											 config.paths.repository + page.origFilename);
+			if (pages.length > 0) {
+				publish [type] (pages, repo);
 			}
-		});
+		});	
 
-		// Creates the index.html page.
-		homePage = pa.createHomePage (repository.posts.slice (-config.index.postCount), posts);
-
-		pa.savePage (homePage, repository.tags);
-
-		_.each (config.resources, function (resource) {
-			files = io.getFiles (config.paths.resources + resource);
-
-			// Okay, what is this and why
-			for (var file in files) {
-				path = files [file];
-
-				io.copyFile (path + file, config.paths.output + resource + file);
-			}
-		});
-	}
-
-
-	function handleArchive (posts, tags) {
-		var archive;
-
-		archive = _.compose (pa.createPage, JSON.stringify, ar.createArchive) (posts);
-
-		ar.saveArchive (archive, tags);
-	}
-
-
-	// Take [currently only] new posts, add them to the site's repository, process them,
-	// fold them, spindle them, mutilate them...
-	function handlePosts (repository, posts, entries, archive) {
-		var repoPostsPath, file, index, postCount, output, result;
-
-		// Each post gets a unique index number which is later used 
-		// for updates.
-		if (repository.posts && repository.posts.length > 0) {
-			postCount = repo.getLastIndex (repository.posts);
-
-			index = postCount + 1;
-		} else {
-			index = 1;
-		}
-
-		_.each (entries, function (entry, i) {
-			if (!entry.index) {
-				entry.index = index;
-
-				posts [i].index = index;
-			}
-
-			if (entry.index < postCount) {
-				repository.posts [entry.index - 1] = entry;
-			} else {
-				repository.posts.push (entry);
-			}
-				
-			index = index + 1;
-		});
+		// The following are calculated from content pages and are thus
+		// handled separately.
 		
-		// Some last prepatory work on new posts including moving the now loaded
-		// files into the repository.
-		_.each (posts, function (post) {
-			if (config.index.useExcerpts) {
-				post.excerpt = pa.getExcerpt (post.content);
-			}
+		// index.html
+		publish.home (repo);
 
-			_.each (post.tags, function (name) {
-				result = repo.findTag (repository.tags, name);
+		// archive.html
+		publish.archive (repo.posts, repo.tags);
 
-				if (_.isEmpty (result)) {
-					result.tag = ta.createTag (name);
-				} 
+		// tag index files
+		publish.tags (repo);
 
-				result.tag = ta.addPostToTag (result.tag, post.filename);
+		// RSS news feed
+		$rss.updateRssFeed (repo);
 
-				if (!result.index || result.index === -1) {
-					repository.tags = repository.tags.concat (result.tag);
-				} else {
-					repository.tags [result.index] = result.tag;
-				}
+		// And finally...
+		
+		// Support resources such as css and media files
+		copyResources ();
+
+		// Saves the state of the site
+		$repository.saveRepository (repo);
+	}
+
+
+	// This function copies all of the resource directories specified
+	// in the configuration file to their published locations.
+	function copyResources () {
+		var files, targets;
+
+		_.each ($config.resources, function (resource) {
+			files = $io.getFiles ($config.paths.resources + resource);
+
+			_.each (files, function (path, file) { 
+				$io.copyFile (path + file,
+										 $config.paths.output + resource + file);
 			});
-
-			repoPostsPath = config.paths.repository + 'posts/';
-
-			io.createPostDirectory (repoPostsPath + post.path);
-
-			output = JSON.stringify ({
-				type: 'post',
-				index: post.index,
-				title: post.title,
-				author: post.author,
-				date: post.date,
-				tags: post.tags}, null, '  ');
-
-			file = io.readFile (config.paths.inbox + post.origFilename);
-			output = output + '\n\n' + pa.getContent (file);
-
-			io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
-			
-			io.removeFile (config.paths.inbox + post.origFilename);
 		});
-
-		// We handle appending the archive first (above) so we can more easily determine
-		// if a post has siblings that need to be handled.
-		po.handlePostsWithSiblings (repository, posts);
-
-		_.each (posts, function (post) {
-			po.savePost (post, repository.tags);
-		});
-
-		// Create archive.html.
-		handleArchive (repository.posts, repository.tags);
-
-		// Create tag index files in tags directory.
-		ta.createTagPages (repository);
-
-		updateRssFeed (repository);
-
-		repo.saveRepository (repository);
 	}
 
 
@@ -181,78 +94,37 @@
 
 		files = [];
 
-		if (config.verbose) {
+		if ($config.verbose) {
 			console.log ('Rebuilding the site...');
 		}
 
-		io.cleanPublic (false);
+		$io.removeDirectory ($config.paths.output);
 
-		files = io.getFiles (config.paths.repository);
+		files = $io.getFiles ($config.paths.repository);
 
 		for (var file in files) {
 			path = files [file];
 
-			io.copyFile (path + file, config.paths.inbox + file);
+			if (file !== 'repository.json') {
+				$io.copyFile (path + file, $config.paths.inbox + file);
+			}
 		}
+
+//		$io.removeDirectory ($config.paths.repository);
 
 		buildSite ();
 	}
 
 
-	function updateRssFeed (repository) {
-		var content, date, description, feed, feedName, feedOptions, file, i, itemOptions, post, total;
-
-		i = 0;
-		total = 0;
-		feedName = 'rss.xml';
-
-		feedOptions = {
-			title: config.blog.title,
-			description: config.blog.description,
-			feed_url: config.blog.url + '/' + feedName,
-			site_url: config.blog.url,
-			copyright: config.blog.copyright,
-			langauge: 'en',
-			pubDate: new Date ()
-		};
-
-		feed = new Rss (feedOptions);
-
-		repository.posts.reverse ();
-
-		while (total < config.rss.postCount &&
-					i < repository.posts.length) {
-			post = repository.posts [i];
-			date = io.getPostDirectoryPathname (post.date);
-			file = io.readFile (config.paths.repository + 'posts/' + date + post.filename + '.md');
-			content = pa.getContent (file);
-
-			if (config.rss.useExcerpts) {
-				description = _.compose (pa.prepareForDisplay, pa.getExcerpt) (content);
-			} else {
-				description = pa.prepareForDisplay (content);
-			}
-
-			itemOptions = {
-				title: post.title,
-				url: config.blog.url + '/' + config.paths.posts + date + post.filename + '.html',
-				date: post.date,
-				description: description,
-				categories: post.tags,
-				author: post.author
-			};
-
-			feed.item (itemOptions);
-
-			i = i + 1;
-			total = total + 1;
-		}
-
-		repository.posts.reverse ();
-
-		io.writeFile (config.paths.output + feedName, feed.xml ());
-	}
-
+	publish = {
+		archive: $archive.publishArchive,
+		home: $home.publishHome,
+		info: $info.publishInfo,
+		link: $links.publishLinks,
+		mini: $miniposts.publishMiniposts,
+		post: $posts.publishPosts,
+		tags: $tags.publishTags
+	};
 
 	module.exports.buildSite = buildSite;
 	module.exports.rebuildSite = rebuildSite;

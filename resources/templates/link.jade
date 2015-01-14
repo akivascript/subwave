@@ -1,0 +1,24 @@
+doctype html
+html(lang="en")
+	include ./includes/head.jade
+	body
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container.link-page
+				div.row
+					each item in page.items
+						div.row.link
+							div.col-md-4
+								h3.url.text-right
+									a(href=item.url)= item.displayUrlTitle
+								if item.displayTitle
+									div.small.text-right.title!= item.displayTitle
+								div.small.text-right.date= item.displayDate
+							div.col-md-8
+								if item.content
+									div.body!= item.content
+						div.row
+							div.col-xs-12.text-center.small.divider . . 
+								strong . 
+								| . .
+			include ./includes/footer.jade

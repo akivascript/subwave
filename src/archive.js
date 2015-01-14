@@ -6,10 +6,8 @@
 	var jade = require ('jade');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages');
-	var po = require ('./posts');
+	var $io = require ('./io');
+	var $pages = require ('./pages');
 
 
 	// Compile archive.html through Jade.
@@ -18,22 +16,20 @@
 
 		compileFn = function (page) {
 			_.map (page.posts, function (post) {
-				post.path = io.getPostDirectoryPathname (new Date (post.date));
-				post.displayDate = pa.formatDateForDisplay (post.date);
-				post.title = pa.convertToHtml (post.title);
+				post.path = $io.getPostDirectoryPathname (new Date (post.date));
+				post.displayDate = $pages.formatDateForDisplay (post.date);
+				post.title = $pages.convertToHtml (post.title);
 			});
 		};
 
-		return pa.compilePage (page, tags, compileFn);
+		return $pages.compilePage (page, tags, compileFn);
 	}
 
 
 	// Creates a new, empty archive.
-	function createArchive (posts) {
-		return {
-			type: "archive",
-			title: "Archive",
-			posts: posts
+	function createArchive () {
+		return { 
+			type: 'archive'
 		};
 	}
 
@@ -43,19 +39,42 @@
 
 		attributes = ['author', 'date', 'filename', 'index', 'tags', 'title'];
 
-		return pa.copyObject (post, attributes);
+		return $pages.copyObject (post, attributes);
+	}
+
+
+	function processItem (item) {
+		item.displayDate = $pages.formatDateForDisplay (item.date);
+		item.displayTitle = $pages.convertToHtml (item.title);
+		item.filename = $io.getPostFilename (item.title, item.date);
+		item.path = $io.getPostDirectoryPathname (item.date);
+
+		return item;
+	}
+
+
+	// Creates an archive page from all of the published posts stored
+	// in the repository.
+	function publishArchive (posts, tags) {
+		var archive;
+
+		archive = _.compose ($pages.createPage, createArchive) ();
+
+		archive.entries = _.map (posts, function (post) {
+			return processItem (post);
+		});
+
+		saveArchive (archive, tags);
 	}
 
 
 	// Compiles archive.html and commits it to disk.
 	function saveArchive (archive, tags) {
 		archive.output = compileArchive (archive, tags);
-
-		io.saveHtmlPage (archive);
+		
+		$io.saveHtmlPage (archive);
 	}
 
 
-	module.exports.createArchive = createArchive;
-	module.exports.createArchiveEntry = createArchiveEntry;
-	module.exports.saveArchive = saveArchive;
+	module.exports.publishArchive = publishArchive;
 } ());

@@ -1,0 +1,89 @@
+doctype html
+html(lang="en")
+	include ./includes/head.jade
+	body
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container.home-page
+				div.row
+					div.col-lg-12.text-center.hero
+						img(src='/img/desks.png', alt='Office desks')
+				div.row
+					div.col-xs-1
+					div.col-xs-10.center-column
+						each post, index in page.posts.reverse ()
+							if post
+								div.row
+									div.col-xs-12
+										if post.type === 'post'
+											div.post
+												div.metadata
+													if index === 0
+														h5.date= post.displayDate
+														h1.title!= post.displayTitle
+													else 
+														h6.date= post.displayDate
+														h2.title!= post.displayTitle
+												div.tags.text-right
+													each tag in post.tags.sort ()
+														a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
+														| 
+												if post.excerpt
+													div.content!= post.excerpt
+												else
+													div.content!= post.content
+												div.small.text-right
+													| &raquo; 
+													strong
+														a(href='/posts/' + post.path + post.filename + '.html') Read more
+										else if post.type === 'mini'
+											div.minipost
+												div.well.content
+													if post.title
+														div.small.title= post.title
+													div.body!= post.content
+													div.small.text-right.date= post.displayDate
+										else if post.type === 'link'
+											div.link
+												div.line
+												h3
+													a(href=post.url)= post.displayUrlTitle
+												if post.content
+													div.body!= post.content
+												if post.displayTitle
+													div.small.text-right.title!= post.displayTitle
+												div.small.text-right.date= post.displayDate
+								div.row
+									div.col-xs-12.text-center.small.divider . . 
+										strong . 
+										| . .
+				div.row
+					div.post-nav
+						if (page.previous && !page.next)
+							div.col-xs-12
+								div.single
+									div.content.text-center
+										h4.subtitle
+											a(href=page.previous + '.html') Previous
+						else if (page.next && !page.previous)
+							div.col-xs-12
+								div.single
+									div.content.text-center
+										h4.subtitle
+											a(href=page.next + '.html') Next
+						else
+							div.double
+								div.col-xs-6
+									div.content
+										div.divider-l
+										if page.previous
+											h4.subtitle
+												a(href=page.previous + '.html') Previous
+								div.col-xs-6
+									div.content
+										div.divider-r
+										if page.next
+											h4.subtitle
+												a(href=page.next + '.html') Next
+					div.col-xs-1
+			include ./includes/footer.jade

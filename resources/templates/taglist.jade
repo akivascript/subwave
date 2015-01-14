@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+	include ./includes/head.jade
+	body
+		div(id='wrapper')
+			include ./includes/nav-top.jade
+			div.container.tags-page
+				div.row
+					div.col-md-2
+					div.col-md-8
+						div.page-header
+							h1.text-center!= page.name
+						each tag in page.tags
+							div.row
+								div.col-md-12.text-center
+									a(href='/tags/' + tag.name.toLowerCase () + '.html')!= tag.name
+					div.col-md-2
+			include ./includes/footer.jade

@@ -4,28 +4,54 @@ html(lang="en")
 	body
 		div(id='wrapper')
 			include ./includes/nav-top.jade
-			div.container(style='margin-top: 75px;')
+			div.container.home-page
 				div.row
 					div.col-md-1
-					div.col-xs-10(style='padding-left: 40px; padding-right: 40px;')
-						div.post-matter
-							h5.post-date= page.displayDate
-							h1.post-title!= page.title
-						div.tags.text-right
-							each tag in page.tags.sort ()
-								a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag') #{tag}
-								| 
-						div.post-content!= page.content
-						div.post-nav
-							div.col-md-6.text-right.post-nav-divider-l
-								if page.previous
-									h3
-										a(href='/posts/' + page.previous.path + page.previous.filename + '.html') #{page.previous.title}
-									h4.post-nav-label Previous
-							div.col-md-6.text-left.post-nav-divider-r
-								if page.next
-									h3
-										a(href='/posts/' + page.next.path + page.next.filename + '.html') #{page.next.title}
-									h4.post-nav-label Next
+					div.col-xs-10.center-column
+						div.post
+							div.metadata
+								h5.date= page.displayDate
+								h1.title!= page.title
+							div.tags.text-right
+								each tag in page.tags.sort ()
+									a(href='/tags/' + tag.toLowerCase () + '.html', class='btn btn-info btn-tag')= tag
+									| 
+							div.content!= page.content
+						div.row
+							div.col-xs-12.text-center.small.divider . . 
+								strong . 
+								| . .
+						div.row
+							div.post-nav
+								if (page.previous && !page.next)
+									div.col-xs-12
+										div.single
+											div.content.text-center
+												h3.title
+													a(href='/posts/' + page.previous.path + page.previous.filename + '.html')= page.previous.title
+												h4.subtitle Previous
+								else if (page.next && !page.previous)
+									div.col-xs-12
+										div.single
+											div.content.text-center
+												h3.title
+													a(href='/posts/' + page.next.path + page.next.filename + '.html')= page.next.title
+												h4.subtitle Next
+								else
+									div.double
+										div.col-xs-6
+											div.content
+												div.divider-l
+													if page.previous
+														h3.title
+															a(href='/posts/' + page.previous.path + page.previous.filename + '.html')= page.previous.title
+														h4.subtitle Previous
+										div.col-xs-6
+											div.content
+												div.divider-r
+													if page.next
+														h3.title
+															a(href='/posts/' + page.next.path + page.next.filename + '.html')= page.next.title
+														h4.subtitle Next
 					div.col-md-1
-		include ./includes/footer.jade
+			include ./includes/footer.jade

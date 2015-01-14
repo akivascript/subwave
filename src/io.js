@@ -5,74 +5,10 @@
 
 	var fs = require ('fs-extra');
 	var moment = require ('moment');
+	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
-
-
-	// Resets the /resources/repository to its default state... empty.
-	function cleanRepository () {
-		var deletes, prunes;
-
-		if (config.verbose) {
-			console.log ('Cleaning repository...');
-		}
-
-		deletes = [];
-		prunes = [];
-
-		deletes.push (config.paths.repository);
-		prunes.push (config.paths.repository + 'posts/');
-
-		clean (deletes, prunes, config.verbose);
-	}
-
-
-	// Deletes and prunes files and directories.
-	function clean (deletes, prunes) {
-		if (deletes.length > 0) {
-			deletes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isFile ()) {
-						removeFile (target);
-					}
-				});
-			});
-		}
-
-		if (prunes.length > 0) {
-			prunes.forEach (function (path) {
-				processFiles (path, function (target, stats) {
-					if (stats.isDirectory ()) {
-						removeDirectories (target);
-					}
-				});
-			});
-		}
-	}
-
-
-	// Resets the /public directory to its default state... empty.
-	function cleanPublic () {
-		var deletes, prunes;
-
-		deletes = [];
-		prunes = [];
-
-		if (config.verbose) {
-			console.log ('Cleaning public...');
-		}
-
-		deletes.push (config.paths.output);
-		deletes.push (config.paths.output + 'css/');
-		deletes.push (config.paths.output + 'img/');
-		deletes.push (config.paths.output + 'js/');
-		deletes.push (config.paths.tags);
-		prunes.push (config.paths.posts);
-
-		clean (deletes, prunes, config.verbose);
-
-		removeFile (config.paths.resources + 'repository.json');
-	}
+	var $config = require ('../config');
+	var $pages = require ('./pages');
 
 
 	// Copies a file.
@@ -87,6 +23,7 @@
 		if (type === 'post') {
 			metadata = {
 				type: type,
+				id: $pages.generateId (),
 				title: 'Untitled',
 				author: 'John Doe',
 				date: formatDateForMetadata (Date.now ()),
@@ -108,16 +45,14 @@
 			filename = 'untitled.md';
 		}
 
-		writeFile (config.paths.inbox + filename, content);
+		writeFile ($config.paths.inbox + filename, content);
 
 		console.log ('Successfully created new ' + metadata.type + ' in inbox: ' + filename);
 	}
 
 
-	// In subwave, posts are grouped by year and then by month; this function
-	// creates this year/month path based on the filename of the post itself.
-	function createPostDirectory (path) {
-		fs.mkdirsSync (path);
+	function createDirectory (path) {
+		fs.ensureDirSync (path);
 	}
 
 
@@ -171,6 +106,10 @@
 	function getPostFilename (title, date) {
 		var dateArray, day, filename, month, newTitle, titleArray, year;
 
+		if (!title) {
+			title = 'untitled';
+		}
+
 		titleArray = title.replace (/[\.,-\/#!\?$%\^&\*\';:{}=\-_`~()]/g, '').split (' ');
 		newTitle = titleArray.join ('-');
 
@@ -186,7 +125,7 @@
 
 
 	// Return a list of all the markdown files from a given directory.
-	function getFileList (path) {
+	function getFilelist (path) {
 		var fileList;
 
 		fileList = fs.readdirSync (path);
@@ -199,6 +138,17 @@
 			}
 
 			return true;
+		});
+	}
+
+
+	function moveFile (src, dest, callback) {
+		fs.move (src, dest, function (err) {
+			if (err) {
+				console.log (err);
+			}
+
+			console.log ('success!');
 		});
 	}
 
@@ -228,46 +178,28 @@
 	}
 
 
-	// Reads the contents of a list of files and add them to an array. If a function
-	// is provided, process the file contents first.
-	function readFiles (path, fn) {
-		var file, filelist, files;
+	// Reads the contents of a list of files and add them to an array.
+	function readFiles (path) {
+		var file;
 
-		files = [];
-		filelist = getFileList (path);
+		return _.map (getFilelist (path), function (filename) {
+			file = {};
+			file.content = readFile (path + filename);
+			file.origFilename = filename;
 
-		for (var i = 0; i < filelist.length; i++) {
-			file = readFile (path + filelist [i]);
-
-			if (fn) {
-				file = fn (file);
-				
-				file.origFilename = filelist [i];
-			}
-
-			files.push (file);
-		}
-
-		return files;
+			return file;
+		});
 	}
 
 
 	// Deletes a file or directory (recursively) from disk.
 	function remove (target) {
-		fs.remove (target, function (error) {
-			if (error) {
-				throw error;
-			}
-
-			if (config.verbose) {
-				console.log ('Deleted ' + target + '...');
-			}
-		});
+		fs.removeSync (target);
 	}
 
 
 	// Deletes a directory recursively from disk.
-	function removeDirectories (path) {
+	function removeDirectory (path) {
 		remove (path);
 	}
 
@@ -280,32 +212,24 @@
 
 	// Renames and/or moves a file.
 	function renameFile (oldPath, newPath) {
-		fs.renameSync (oldPath, newPath);
+		if ($config.verbose) {
+			console.log ('Renaming/moving files...');
+		}
+
+		fs.rename (oldPath, newPath, function (err) {
+			if (err) console.log (err);
+
+			if ($config.verbose) {
+				console.log (oldPath + ' => ' + newPath);
+			}
+		});
 	}
 	
 
 	// Commits a page, expected to have HTML content, to disk. Otherwise, you just end up
 	// with a file written with an '.html' extension. Maybe you're into that.
 	function saveHtmlPage (page) {
-		var path;
-
-		if (page.type === 'post') {
-			path = config.paths.posts;
-		} else if (page.type === 'tag') {
-			path = config.paths.tags;
-		} else if (page.type === 'page' || 
-							 page.type === 'archive' ||
-							 page.type === 'index') {
-			path = config.paths.output;
-		} else {
-			throw new Error ('Unable to determine page type.');
-		}
-
-		if (page.path) {
-			path = path + page.path;
-		}
-
-		writeFile (path + '/' + page.filename + '.html', page.output);
+		writeFile (page.outputPath + (page.path || '') + page.filename + '.html', page.output);
 	}
 	
 
@@ -324,20 +248,20 @@
 
 	// Commits the contents of a file to disk.
 	function writeFile (filename, content) {
-		fs.writeFileSync (filename, content);
+		fs.outputFileSync (filename, content);
 	}
 
 	
-	module.exports.cleanRepository = cleanRepository; 
-	module.exports.cleanPublic = cleanPublic; 
 	module.exports.copyFile = copyFile;
+	module.exports.createDirectory = createDirectory;
 	module.exports.createNewFile = createNewFile;
-	module.exports.createPostDirectory = createPostDirectory;
+	module.exports.formatDateForMetadata = formatDateForMetadata;
 	module.exports.getFiles = getFiles;
 	module.exports.getPostDirectoryPathname = getPostDirectoryPathname;
 	module.exports.getPostFilename = getPostFilename;
 	module.exports.readFile = readFile;
 	module.exports.readFiles = readFiles;
+	module.exports.removeDirectory = removeDirectory;
 	module.exports.removeFile = removeFile;
 	module.exports.renameFile = renameFile;
 	module.exports.writeFile = writeFile;

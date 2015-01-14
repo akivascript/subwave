@@ -6,7 +6,11 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
 				li 
 					a(href='/') Home
 				li 
-					a(href='/archive.html')!= page.title
+					a(href='/archive.html')!= config.archive.title
+				li
+					a(href='/' + config.miniposts.title.toLowerCase () + '/1.html')!= config.miniposts.title
+				li
+					a(href='/links/1.html') Links
 				li.dropdown
 					a.dropdown-toggle(href='/#', data-toggle='dropdown', aria-expanded='false') Tags 
 						b.caret

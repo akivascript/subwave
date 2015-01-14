@@ -1,8 +1,11 @@
 node_modules/**/build
 public/
-resources/repository/
+repository/
 resources/drafts/
 resources/inbox/
-resources/public/
+tmp/
+dist/
+.nar/
 *.json
 .DS_Store
+.sass-cache

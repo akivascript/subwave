@@ -3,12 +3,13 @@
 	'use strict';
 
 	var jade = require ('jade');
+	var moment = require ('moment');
 	var _ = require ('underscore-contrib');
 
-	var config = require ('../resources/config');
-	var io = require ('./io');
-	var pa = require ('./pages');
-	var rp = require ('./repository');
+	var $config = require ('../config');
+	var $io = require ('./io');
+	var $pages = require ('./pages');
+	var $repository = require ('./repository');
 
 
 	// Allows sorting of posts by date.
@@ -24,23 +25,23 @@
 		var filename, date, post, path, repo;
 
 		if (index) {
-			repo = rp.getRepository ();
-			post = rp.getPostByIndex (index, rp.posts);
+			repo = $repository.getRepository ();
+			post = $repository.getPostByIndex (index, $repository.posts);
 
 			if (!post) {
 				throw new Error ('Unable to find post with index ' + index + '.');
 			}
 
-			date = pa.formatDateForDisplay (post.date);
-			path = io.getPostDirectoryPathname (post.date);
+			date = $pages.formatDateForDisplay (post.date);
+			path = $io.getPostDirectoryPathname (post.date);
 
-			if (config.verbose) {
-				console.log ('Copying from ' + config.paths.repository + 'posts/' + path + post.filename + '.md' +
-									 ' to ' +	config.paths.inbox + post.filename + '.md');
+			if ($config.verbose) {
+				console.log ('Copying from ' + $config.paths.repository + 'posts/' + path + post.filename + '.md' +
+									 ' to ' +	$config.paths.inbox + post.filename + '.md');
 			}
 			
-			io.copyFile (config.paths.repository + 'posts/' + path + post.filename + '.md',
-									 config.paths.inbox + post.filename + '.md');
+			$io.copyFile ($config.paths.repository + 'posts/' + path + post.filename + '.md',
+									 $config.paths.inbox + post.filename + '.md');
 
 			console.log (post.title + ' from ' + date + ' ready for editing.');
 		} else {
@@ -48,64 +49,22 @@
 		}
 	}
 
+
+	function createPost (post) {
+		post.date = new Date (post.date);
+
+		if (!post.id) {
+			post.id = generateId ();
+		}
+
+		if ($config.index.useExcerpts) {
+			post.excerpt = $pages.getExcerpt (post.content);
+		}
+
+		return post;
+	}
+
 	
-	// Searches a site's posts' metadata for a match.
-	function findPosts (criterion) {
-		var compare, date, matches, post, repo;
-
-		matches = [];
-
-		compare = function (valueA, valueB) {
-			var result;
-
-			valueA = valueA.toLowerCase ();
-			valueB = valueB.toLowerCase ();
-			result = valueA.search (valueB);
-
-			if (result === -1) {
-				return false;
-			}
-
-			return true;
-		};
-
-		repo = rp.getRepository ();
-
-		// Goes through each post in the site and looks through each attribute it has,
-		// searching for matches.
-		// TODO: Refactor this
-		_.each (repo.posts, function (post) {
-			_.each (post, function (value, key) {
-				if (typeof value === 'string') {
-					if (key === 'date') {
-						value = pa.formatDateForDisplay (value);
-					}
-
-					if (compare (value, criterion)) {
-						matches.push (post);
-					}
-				} else if (typeof value === 'object') {
-					_.each (value, function (val) {
-						if (compare (val, criterion)) {
-							matches.push (post);
-						}
-					});
-			 	}
-			});
-		});
-
-		return _.uniq (matches);
-	}
-
-
-	// Filters out any pages that aren't posts.
-	function getPosts (files) {
-		return _.filter (files, function (file) {
-			return file.type === 'post';
-		});
-	}
-
-
 	function handlePostsWithSiblings (repo, posts) {
 		var idx, next, previous;
 
@@ -133,10 +92,10 @@
 	function linkSibling (source) {
 		var target;
 
-		target = pa.copyObject (source, ['date', 'filename', 'title']);
+		target = $pages.copyObject (source, ['date', 'filename', 'title']);
 
 		if (!source.path) {
-			target.path = io.getPostDirectoryPathname (source.date);
+			target.path = $io.getPostDirectoryPathname (source.date);
 		} else {
 			target.path = source.path;
 		}	
@@ -145,17 +104,43 @@
 	}
 
 
+	function loadPost (post) {
+		var file, path;
+
+		path = $config.paths.repository + 'posts/' + 
+			$io.getPostDirectoryPathname (post.date) + post.filename + '.md';
+
+		return $io.readFile (path);
+	}
+
+
+	function loadPosts (path) {
+		var files, posts;
+
+		path = path || $config.paths.repository + 'posts/';
+
+		files = $io.getFiles (path);
+
+		for (var file in files) {
+			path = files [file];
+
+			if (file !== 'repository.json') {
+				$io.copyFile (path + file, $config.paths.inbox + file);
+			}
+		}
+	}
+
 	// Loads and processes an existing post from resources/archives/..
 	function processSibling (sibling, direction) {
 		var file, filename, path;
 
-		path = io.getPostDirectoryPathname (sibling.date);
+		path = $io.getPostDirectoryPathname (sibling.date);
 		filename = sibling.filename;
-		file = io.readFile (config.paths.repository + 'posts/' + path + filename + '.md');
+		file = $io.readFile ($config.paths.repository + 'posts/' + path + filename + '.md');
 
 		sibling.type = 'post';
-		sibling.template = config.paths.templates + 'post.jade';
-		sibling.title = pa.convertToHtml (sibling.title);
+		sibling.template = $config.paths.templates + 'post.jade';
+		sibling.title = $pages.convertToHtml (sibling.title);
 
 		return sibling;
 	}
@@ -167,7 +152,7 @@
 	function processSiblingPosts (post, sibling, repo, posts, index, direction) {
 		var oppDirection, nextSibling, tmpSibling;
 
-		tmpSibling = pa.copyObject (sibling);
+		tmpSibling = $pages.copyObject (sibling);
 
 		if (direction === 'previous') {
 			oppDirection = 'next';
@@ -184,32 +169,76 @@
 		// This allows us to handle the case when more than one new post is added simultaneously
 		// and the previous most recent post is part of the sibling chain.
 		if (repo.posts [index]) {
-			nextSibling = pa.copyObject (repo.posts [index]);
+			nextSibling = $pages.copyObject (repo.posts [index]);
 
 			tmpSibling [direction] = linkSibling (nextSibling);
 		}
 
 		tmpSibling = processSibling (tmpSibling, oppDirection);
-		tmpSibling.path = io.getPostDirectoryPathname (tmpSibling.date);
+		tmpSibling.path = $io.getPostDirectoryPathname (tmpSibling.date);
 
 		savePost (tmpSibling, repo.tags);
+	}
+
+	
+	// Take new posts, add them to the site's repository, process them,
+	// fold them, spindle them, mutilate them...
+	function publishPosts (posts, repo) {
+		var repoPostsPath, output;
+
+		repoPostsPath = $config.paths.repository + 'posts/';
+
+		posts = _.map (posts, function (post) {
+			return _.compose ($pages.createPage, createPost) (post);
+		});
+		
+		_.each (posts, function (p) {
+			var post = p;
+
+			repo.tags = _.reduce (post.tags, function (res, tag) {
+				return $repository.addTagToRepository (repo.tags, tag, post);
+			}, repo.tags);
+
+			post.date = $pages.formatDate (post.date, 'YYYY-MM-DD HH:mm');
+
+			output = JSON.stringify (_.pick (post, 'type', 'id', 'title', 'author', 'date', 'tags'),
+															null, '  ');
+			output = output + '\n\n' + post.content;
+
+			$io.writeFile (repoPostsPath + post.path + post.filename + '.md', output);
+
+			$io.removeFile ($config.paths.inbox + post.origFilename);
+
+			post.date = new Date (post.date);
+		});
+
+		repo.posts = _.reduce (posts, function (res, post) {
+			return $repository.addPostToRepository (repo.posts, post);
+		}, repo.posts);
+
+		repo.posts = _.sortBy (repo.posts, function (post) { return post.date; });
+
+		handlePostsWithSiblings (repo, posts);
+
+		_.each (posts, function (post) {
+			savePost (post, repo.tags);
+		});
 	}
 
 
 	// Commit a post to disk.
 	function savePost (post, tags) {
-		post.output = pa.compilePage (post, tags);
+		post.output = $pages.compilePage (post, tags);
 
-		io.createPostDirectory (config.paths.posts + post.path);
-
-		io.saveHtmlPage (post);
+		$io.saveHtmlPage (post);
 	}
 
 
 	module.exports.comparePostsByDate = comparePostsByDate;
 	module.exports.copyPostFromRepository = copyPostFromRepository;
-	module.exports.findPosts = findPosts;
-	module.exports.getPosts = getPosts;
+	module.exports.createPost = createPost;
 	module.exports.handlePostsWithSiblings = handlePostsWithSiblings;
+	module.exports.loadPost = loadPost;
+	module.exports.publishPosts = publishPosts;
 	module.exports.savePost = savePost;
 } ());
