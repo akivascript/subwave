@@ -10,7 +10,7 @@ html(lang="en")
 					div.col-md-8
 						div.page-header
 							h1.text-center= page.title
-						each entry in page.entries.reverse ()
+						each entry in page.entries
 							div.row
 								div.col-md-6.text-left
 									a(href='/posts/' + entry.path + entry.filename + '.html')!= entry.title

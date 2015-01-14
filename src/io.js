@@ -178,8 +178,7 @@
 	}
 
 
-	// Reads the contents of a list of files and add them to an array. If a function
-	// is provided, process the file contents first.
+	// Reads the contents of a list of files and add them to an array.
 	function readFiles (path) {
 		var file;
 
