@@ -209,6 +209,8 @@
 			return $repository.addPostToRepository (repo.posts, post);
 		}, repo.posts);
 
+		repo.posts = _.sortBy (repo.posts, function (post) { return new Date (post.date); });
+
 		handlePostsWithSiblings (repo, posts);
 
 		_.each (posts, function (post) {
