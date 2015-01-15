@@ -22,7 +22,7 @@
 
 	// Ceci n'est pas un commentaire
 	function buildSite () {
-		var entries, files, pages, path, posts, repo;
+		var entries, files, pages, path, postCount, posts, repo;
 
 		// Loads all of the files to be published
 		files = $pages.getPages ($config.paths.inbox);
@@ -58,7 +58,11 @@
 		publish.tags (repo);
 
 		// RSS news feed
-		$rss.updateRssFeed (repo);
+		postCount =	$pages.filterPages (files, 'post').length;
+
+		if (postCount > 0) {
+			$rss.updateRssFeed (repo);
+		}
 
 		// And finally...
 		
