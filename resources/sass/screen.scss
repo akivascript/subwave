@@ -141,10 +141,12 @@ div.home-page {
 	div.link {
 		padding-top: 30px;
 
-		h3 {
-			margin-top: -17px;
+		h4 {
+			margin-top: -12px;
 
 			a {
+				display: inline-block;
+				max-width: 80%;
 				padding-right: 10px;
 				padding-bottom: 4px;
 				border-right: 1px solid #ddd;
@@ -152,6 +154,10 @@ div.home-page {
 				background-color: $background-color;
 				color: #87A794;
 
+				white-space: pre;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				
 				&:hover {
 					color: #444;
 				}
