@@ -27,6 +27,8 @@
 
 		feed = new Rss (feedOptions);
 
+		repo.posts.reverse ();
+
 		while (total < cf.rss.postCount &&
 					i < repo.posts.length) {
 			post = repo.posts [i];
