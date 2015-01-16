@@ -168,6 +168,10 @@ div.home-page {
 			padding: 10px;
 
 			font-size: 90%;
+
+			blockquote {
+				font-size: 100%;
+			}
 		}
 
 		div.line {
@@ -199,14 +203,16 @@ div.link-page {
 	margin-bottom: 50px;
 
 	div.link {
-		h3 {
+		h4 {
 			margin: 0px;
 		}
 
 		div.body {
-			padding-top: 4px;
-
 			font-size: 90%;
+
+			blockquote {
+				font-size: 100%;
+			}
 		}
 
 		div.title {
